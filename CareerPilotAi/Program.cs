@@ -1,7 +1,37 @@
-var builder = WebApplication.CreateBuilder(args);
+using System.Net.Http.Headers;
+using CareerPilotAi.Infrastructure;
+using CareerPilotAi.Services;
+using Microsoft.AspNetCore.Mvc;
 
-// Add services to the container.
-builder.Services.AddControllersWithViews();
+var builder = WebApplication.CreateBuilder(args);
+var services = builder.Services;
+
+services
+.AddHttpContextAccessor()
+.AddInfrastructure(builder.Configuration)
+.AddScoped<IUserService, UserService>();
+
+
+services.AddHttpClient("OpenRouter", (client) =>
+{
+    var baseAddress = builder.Configuration["OpenRouter:BaseAddress"] ?? throw new ArgumentNullException("BaseAddress");
+    var authToken = builder.Configuration["OpenRouter:AuthToken"] ?? throw new ArgumentNullException("AuthToken");
+
+    client.BaseAddress = new Uri(baseAddress);
+    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
+});
+
+services.AddControllersWithViews(options =>
+{
+    options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
+});
+
+services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromMinutes(30);
+    options.Cookie.HttpOnly = true;
+    options.Cookie.IsEssential = true;
+});
 
 var app = builder.Build();
 
@@ -14,16 +44,18 @@ if (!app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+app.UseStaticFiles();
 app.UseRouting();
 
+// Add Identity middleware
+app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapStaticAssets();
+app.UseSession();
 
 app.MapControllerRoute(
     name: "default",
-    pattern: "{controller=Home}/{action=Index}/{id?}")
-    .WithStaticAssets();
+    pattern: "{controller=Home}/{action=Index}/{id?}");
 
 
 app.Run();
