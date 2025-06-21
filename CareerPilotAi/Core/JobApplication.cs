@@ -1,73 +1,58 @@
 using CareerPilotAi.Application.Helpers;
+using CareerPilotAi.Core.Exceptions;
 
 namespace CareerPilotAi.Core;
 
 internal class JobApplication
 {
+    private const int _maxWords = 5000;
     internal Guid JobApplicationId { get; private set; }
     internal string UserId { get; private set; }
-    internal EntryJobDetails EntryJobDetails { get; private set; }
-    internal PersonalDetails? PersonalDetails { get; private set; }
+    internal string JobDescription { get; private set; }
+    internal string Title { get; private set; }
+    internal string Company { get; private set; }
+    internal string? URL { get; private set; }
 
-    internal JobApplication(Guid jobApplicationId, string userId, EntryJobDetails entryJobDetails, PersonalDetails? personalDetails)
+    internal JobApplication(Guid jobApplicationId, string userId, string title, string company, string text, string? url)
     {
         if (string.IsNullOrWhiteSpace(userId))
-        {
-            throw new ArgumentException("UserId is required", nameof(userId));
-        }
+            throw new JobApplicationUserIdCannotBeEmptyException();
 
         if (Guid.Empty == jobApplicationId)
-        {
-            throw new ArgumentException("JobApplicationId is required", nameof(jobApplicationId));
-        }
+            throw new JobApplicationIdCannotBeEmptyException();
 
-        if (entryJobDetails == null)
-        {
-            throw new ArgumentException("EntryJobDetails is required", nameof(entryJobDetails));
-        }
+        if (string.IsNullOrWhiteSpace(title))
+            throw new JobApplicationTitleCannotBeEmptyException();
+
+        if (string.IsNullOrWhiteSpace(company))
+            throw new JobApplicationCompanyCannotBeEmptyException();
+
+        if (string.IsNullOrWhiteSpace(text))
+            throw new EntryJobDetailsTextCannotBeEmptyException();
+
+        if (!MaxTextWordsValidator.ValidateText(text, _maxWords))
+            throw new EntryJobDetailsTextTooLongException(_maxWords);
+
+        if (!string.IsNullOrWhiteSpace(url))
+            UrlValidator.ValidateUrl(url);
 
         UserId = userId;
         JobApplicationId = jobApplicationId;
-        EntryJobDetails = entryJobDetails;
-        PersonalDetails = personalDetails;
+        Title = title;
+        Company = company;
+        JobDescription = text;
+        URL = url;
     }
-}
 
-internal class EntryJobDetails
-{
-    internal string? Url { get; }
-    internal string Text { get; }
-
-    internal EntryJobDetails(string? url, string text)
+    internal void UpdateJobDescription(string jobDescriptionText)
     {
-        if (string.IsNullOrWhiteSpace(text))
-            throw new ArgumentException($"{nameof(EntryJobDetails)} Text cannot be null or empty", nameof(text));
+        if (string.IsNullOrWhiteSpace(jobDescriptionText))
+            throw new EntryJobDetailsTextCannotBeEmptyException();
 
-        if(!string.IsNullOrWhiteSpace(url))
-            UrlValidator.ValidateUrl(url);
+        if (!MaxTextWordsValidator.ValidateText(jobDescriptionText, _maxWords))
+            throw new EntryJobDetailsTextTooLongException(_maxWords);
 
-        var validationText = text.ToString()!;
-        var wordCount = validationText.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
-
-        if (wordCount > 10000)
-            throw new ArgumentException($"{nameof(EntryJobDetails)} Text cannot contain more than 10,000 words", nameof(text));
-
-        Url = url;
-        Text = text;
+        JobDescription = jobDescriptionText;
     }
 }
 
-internal class PersonalDetails
-{
-    internal PersonalDetails(string text)
-    {
-        if (string.IsNullOrWhiteSpace(text))
-        {
-            throw new ArgumentException("Text cannot be null or empty", nameof(text));
-        }
-
-        Text = text;
-    }
-
-    internal string Text { get; }
-}

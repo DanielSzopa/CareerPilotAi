@@ -1,36 +1,22 @@
-using System.Net.Http.Headers;
 using CareerPilotAi.Infrastructure;
 using CareerPilotAi.Services;
 using Microsoft.AspNetCore.Mvc;
+using CareerPilotAi.Prompts;
+using CareerPilotAi.Application.Commands;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
 
 services
-.AddHttpContextAccessor()
-.AddInfrastructure(builder.Configuration)
-.AddScoped<IUserService, UserService>();
-
-
-services.AddHttpClient("OpenRouter", (client) =>
-{
-    var baseAddress = builder.Configuration["OpenRouter:BaseAddress"] ?? throw new ArgumentNullException("BaseAddress");
-    var authToken = builder.Configuration["OpenRouter:AuthToken"] ?? throw new ArgumentNullException("AuthToken");
-
-    client.BaseAddress = new Uri(baseAddress);
-    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-});
+    .RegisterPrompts()
+    .AddHttpContextAccessor()
+    .AddInfrastructure(builder.Configuration)
+    .RegisterCommands()
+    .AddScoped<IUserService, UserService>();
 
 services.AddControllersWithViews(options =>
 {
     options.Filters.Add(new AutoValidateAntiforgeryTokenAttribute());
-});
-
-services.AddSession(options =>
-{
-    options.IdleTimeout = TimeSpan.FromMinutes(30);
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
@@ -51,11 +37,8 @@ app.UseRouting();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.UseSession();
-
 app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
-
 
 app.Run();

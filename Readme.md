@@ -3,26 +3,6 @@ I would like to create the application called CareerPilotAi for creating CV/Resu
 
 Idea is to provide possibility to generate the Resume in the 3 steps.
 
-### First Step
-Provide the job offer details. User should see text area when he can add all job details
-AI mechanism should select the most important things - but for First POC, dummy data would be enough, in order to present the flow of application.
-
-### Second step
-User can go to second step, only when all data are added in the first step. User can back to first step to correct something.
-
-Second step is responsible to provide personal data about user. Experience, skills, educations, something about the user etc. The most common things resume/cv related.
-
-User should have possibility to do it on two ways:
-
-- Import pdf with resume, AI mechanism should select the most important things - but for First POC, dummy data would be enough, in order to present the flow of application.
-
-- Provide data manualy
-
-### Third step
-User can go to Third step, only when Second step is finished. 
-
-User should see all information from step number one and step number two. User should have possibility to correct something. This view is responsible for present the result from previous steps.
-
 # Technologies
 - Application should be write in ASP .NET Core MVC in C# language
 - .NET 8

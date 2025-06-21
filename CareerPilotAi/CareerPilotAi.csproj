@@ -21,4 +21,13 @@
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.0" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Update="Prompts\EnhanceJobDescription\EnhanceJobDescriptionPrompt.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Prompts\PersonalDataPdfScrape\PersonalDataPdfScrapePrompt.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+
 </Project>

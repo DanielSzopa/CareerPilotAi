@@ -1,0 +1,320 @@
+@model CareerPilotAi.Models.JobApplication.JobApplicationDetailsViewModel
+@{
+    ViewData["Title"] = Model.JobTitle + " - " + Model.CompanyName;
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <div>
+                    <h2 class="mb-0">@Model.JobTitle</h2>
+                    <p class="text-muted mb-0">@Model.CompanyName</p>
+                </div>
+                <a href="/job-applications" class="btn btn-outline-secondary">
+                    <i class="fas fa-arrow-left me-2"></i>Back to Applications
+                </a>
+            </div>
+
+            <!-- Tab Navigation -->
+            <ul class="nav nav-tabs" id="jobApplicationTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link active" id="job-details-tab" data-bs-toggle="tab" data-bs-target="#job-details" type="button" role="tab">
+                        <i class="fas fa-briefcase me-2"></i>Job Details
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="interview-questions-tab" data-bs-toggle="tab" data-bs-target="#interview-questions" type="button" role="tab">
+                        <i class="fas fa-question-circle me-2"></i>Interview Questions
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cv-builder-tab" data-bs-toggle="tab" data-bs-target="#cv-builder" type="button" role="tab">
+                        <i class="fas fa-file-alt me-2"></i>CV Builder
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link" id="cover-letter-tab" data-bs-toggle="tab" data-bs-target="#cover-letter" type="button" role="tab">
+                        <i class="fas fa-envelope me-2"></i>Cover Letter
+                    </button>
+                </li>
+            </ul>
+
+            <!-- Tab Content -->
+            <div class="tab-content" id="jobApplicationTabContent">
+                <!-- Job Details Tab -->
+                <div class="tab-pane fade show active" id="job-details" role="tabpanel">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <label class="form-label fw-bold">Job Description & Requirements</label>
+                            
+                            <!-- Display Mode -->
+                            <div id="jobDescriptionDisplay" class="job-description-display">
+                                @Html.Raw(Model.JobDescription.Replace("\n", "<br>"))
+                            </div>
+                            
+                            <!-- Edit Mode -->
+                            <div id="jobDescriptionEdit" style="display: none;">
+                                <textarea id="jobDescriptionTextArea" class="form-control" rows="15">@Model.JobDescription</textarea>
+                                <div class="mt-2">
+                                    <div class="text-muted">Word count: <span id="wordCount">0</span> / 5,000</div>
+                                </div>
+                                <div id="wordLimitError" class="text-danger mt-1" style="display: none;">
+                                    Text exceeds the maximum limit of 5,000 words. Please shorten your text to continue.
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="mt-3">
+                                <div id="editActions">
+                                    <button type="button" class="btn btn-outline-primary" id="editJobDescriptionBtn">
+                                        <i class="fas fa-edit me-2"></i>Edit
+                                    </button>
+                                </div>
+                                <div id="saveActions" style="display: none;">
+                                    <button type="button" class="btn btn-success me-2" id="saveJobDescriptionBtn">
+                                        <i class="fas fa-save me-2"></i>Save
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="cancelEditBtn">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Interview Questions Tab -->
+                <div class="tab-pane fade" id="interview-questions" role="tabpanel">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">Potential Interview Questions</h5>
+                                <button class="btn btn-primary" id="generateQuestions">
+                                    <i class="fas fa-magic me-2"></i>Generate Questions
+                                </button>
+                            </div>
+                            <div id="questionsContainer">
+                                <div class="text-muted text-center py-5">
+                                    <i class="fas fa-question-circle fa-3x mb-3"></i>
+                                    <p>Click "Generate Questions" to create interview questions based on your job details.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- CV Builder Tab -->
+                <div class="tab-pane fade" id="cv-builder" role="tabpanel">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">CV Builder</h5>
+                                <div>
+                                    <button class="btn btn-outline-primary me-2" id="generateCV">
+                                        <i class="fas fa-magic me-2"></i>Generate CV
+                                    </button>
+                                    <button class="btn btn-primary" id="downloadCV">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="cvContainer">
+                                <div class="text-muted text-center py-5">
+                                    <i class="fas fa-file-alt fa-3x mb-3"></i>
+                                    <p>Create a tailored CV for this job application.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Cover Letter Tab -->
+                <div class="tab-pane fade" id="cover-letter" role="tabpanel">
+                    <div class="card mt-3">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="card-title mb-0">Cover Letter</h5>
+                                <div>
+                                    <button class="btn btn-outline-primary me-2" id="generateCoverLetter">
+                                        <i class="fas fa-magic me-2"></i>Generate Letter
+                                    </button>
+                                    <button class="btn btn-primary" id="downloadCoverLetter">
+                                        <i class="fas fa-download me-2"></i>Download
+                                    </button>
+                                </div>
+                            </div>
+                            <div id="coverLetterContainer">
+                                <div class="text-muted text-center py-5">
+                                    <i class="fas fa-envelope fa-3x mb-3"></i>
+                                    <p>Generate a personalized cover letter for this job application.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .job-description-display {
+        word-wrap: break-word;
+        border: 1px solid #e9ecef;
+        border-radius: 0.375rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        min-height: 300px;
+        line-height: 1.6;
+    }
+    
+    .tab-content {
+        min-height: 500px;
+    }
+</style>
+
+@section Scripts {
+    <script src="~/js/word-counter.js"></script>
+    <script>
+        $(document).ready(function() {
+            let originalJobDescription = '@Html.Raw(Html.Encode(Model.JobDescription))';
+            let wordCounter;
+            
+            // Initialize word counter when entering edit mode
+            function initializeWordCounter() {
+                wordCounter = new WordCounter({
+                    textAreaSelector: '#jobDescriptionTextArea',
+                    wordCountSelector: '#wordCount',
+                    maxWords: 5000,
+                    warningThreshold: 4000,
+                    submitButtonSelector: '#saveJobDescriptionBtn',
+                    errorMessageSelector: '#wordLimitError'
+                });
+            }
+            
+            // Edit button click
+            $('#editJobDescriptionBtn').on('click', function() {
+                $('#jobDescriptionDisplay').hide();
+                $('#jobDescriptionEdit').show();
+                $('#editActions').hide();
+                $('#saveActions').show();
+                
+                // Initialize word counter
+                initializeWordCounter();
+                
+                // Focus on textarea
+                $('#jobDescriptionTextArea').focus();
+            });
+            
+            // Cancel button click
+            $('#cancelEditBtn').on('click', function() {
+                // Reset textarea to original value
+                $('#jobDescriptionTextArea').val(originalJobDescription);
+                
+                // Switch back to display mode
+                $('#jobDescriptionDisplay').show();
+                $('#jobDescriptionEdit').hide();
+                $('#editActions').show();
+                $('#saveActions').hide();
+            });
+            
+            // Save button click
+            $('#saveJobDescriptionBtn').on('click', function() {
+                const $button = $(this);
+                const newJobDescription = $('#jobDescriptionTextArea').val().trim();
+                
+                // Validate word count
+                if (wordCounter && !wordCounter.validateWordCount().isValid) {
+                    return;
+                }
+                
+                if (!newJobDescription) {
+                    alert('Job description cannot be empty.');
+                    return;
+                }
+                
+                // Show loading state
+                $button.prop('disabled', true);
+                $button.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...');
+                
+                // Make API call to save
+                fetch('/job-applications/api/update-job-description', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
+                    },
+                    body: JSON.stringify({
+                        JobApplicationId: '@Model.JobApplicationId',
+                        JobDescription: newJobDescription
+                    })
+                })
+                .then(response => {
+                    if (!response.ok) {
+                        return response.json().then(errorData => {
+                            // Handle ProblemDetails response format
+                            const errorMessage = errorData.detail || errorData.error || 'Failed to save job description.';
+                            throw new Error(errorMessage);
+                        });
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    // Update the display with new content and original variable
+                    originalJobDescription = newJobDescription;
+                    $('#jobDescriptionDisplay').html(newJobDescription.replace(/\n/g, '<br>'));
+                    
+                    // Switch back to display mode
+                    $('#jobDescriptionDisplay').show();
+                    $('#jobDescriptionEdit').hide();
+                    $('#editActions').show();
+                    $('#saveActions').hide();
+                    
+                    // Show success message
+                    showSuccessMessage('Job description updated successfully!');
+                })
+                .catch(error => {
+                    console.error('Error saving job description:', error);
+                    showErrorMessage(error.message);
+                })
+                .finally(() => {
+                    // Reset button state
+                    $button.prop('disabled', false);
+                    $button.html('<i class="fas fa-save me-2"></i>Save');
+                });
+            });
+            
+            function showSuccessMessage(message) {
+                const successHtml = `
+                    <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+                        <i class="fas fa-check-circle me-2"></i>${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                $('.card-body').prepend(successHtml);
+                
+                // Auto-hide after 3 seconds
+                setTimeout(() => {
+                    $('.alert-success').fadeOut();
+                }, 3000);
+            }
+            
+            function showErrorMessage(message) {
+                const errorHtml = `
+                    <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                        <i class="fas fa-exclamation-triangle me-2"></i>${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                $('.card-body').prepend(errorHtml);
+                
+                // Auto-hide after 5 seconds
+                setTimeout(() => {
+                    $('.alert-danger').fadeOut();
+                }, 5000);
+            }
+        });
+    </script>
+}
+

@@ -1,0 +1,4 @@
+3. Is it time for Request/Response approach?
+4. Implement the OpenTelemetry
+5. Implement cache mechanisms
+6. add URL to JobApplicationDetailsViewModel

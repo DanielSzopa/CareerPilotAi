@@ -28,14 +28,19 @@ namespace CareerPilotAi.Infrastructure.Persistence.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("uuid");
 
-                    b.Property<string>("EntryJobDetails_Text")
+                    b.Property<string>("Company")
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("EntryJobDetails_Url")
+                    b.Property<string>("JobDescription")
+                        .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<string>("PersonalDetails_Text")
+                    b.Property<string>("Title")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Url")
                         .HasColumnType("text");
 
                     b.Property<string>("UserId")

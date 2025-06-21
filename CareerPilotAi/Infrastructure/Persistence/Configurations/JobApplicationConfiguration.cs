@@ -9,15 +9,18 @@ internal class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplica
     public void Configure(EntityTypeBuilder<JobApplicationDataModel> builder)
     {
         builder.HasKey(x => x.JobApplicationId);
-            
-        builder.Property(x => x.EntryJobDetails_Url)
+
+        builder.Property(x => x.Title)
+            .IsRequired();
+
+        builder.Property(x => x.Company)
+            .IsRequired();
+
+        builder.Property(x => x.Url)
             .IsRequired(false);
-            
-        builder.Property(x => x.EntryJobDetails_Text)
+
+        builder.Property(x => x.JobDescription)
             .IsRequired(true);
-            
-        builder.Property(x => x.PersonalDetails_Text)
-            .IsRequired(false);
             
         // Configure relationship with IdentityUser
         builder.HasOne(x => x.User)

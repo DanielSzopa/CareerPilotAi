@@ -9,7 +9,7 @@ namespace CareerPilotAi.Models.JobApplication
         public Guid? JobApplicationId { get; set; }
 
         [Required(ErrorMessage = "Personal details are required")]
-        [MaxWords(10000, ErrorMessage = "Personal details cannot exceed 10,000 words")]
+        [MaxWords(5000, ErrorMessage = "Personal details cannot exceed 5,000 words")]
         [Display(Name = "Personal Details")]
         public string PersonalDetails { get; set; } = string.Empty;
     }

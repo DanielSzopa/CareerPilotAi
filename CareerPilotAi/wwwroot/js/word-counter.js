@@ -6,8 +6,8 @@ class WordCounter {
     constructor(options) {
         this.textAreaSelector = options.textAreaSelector;
         this.wordCountSelector = options.wordCountSelector;
-        this.maxWords = options.maxWords || 10000;
-        this.warningThreshold = options.warningThreshold || 9000;
+        this.maxWords = options.maxWords || 5000;
+        this.warningThreshold = options.warningThreshold || 4000;
         this.submitButtonSelector = options.submitButtonSelector;
         this.errorMessageSelector = options.errorMessageSelector;
         

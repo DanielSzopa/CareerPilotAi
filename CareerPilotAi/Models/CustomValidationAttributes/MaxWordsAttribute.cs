@@ -1,3 +1,4 @@
+using CareerPilotAi.Application.Helpers;
 using System.ComponentModel.DataAnnotations;
 
 namespace CareerPilotAi.Models.CustomValidationAttributes
@@ -16,18 +17,17 @@ namespace CareerPilotAi.Models.CustomValidationAttributes
         {
             if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
             {
-                return ValidationResult.Success;
+                return new ValidationResult("The field is required.");
             }
 
-            var text = value.ToString()!;
-            var wordCount = text.Split(new[] { ' ', '\t', '\n', '\r' }, StringSplitOptions.RemoveEmptyEntries).Length;
-
-            if (wordCount > _maxWords)
+            if (MaxTextWordsValidator.ValidateText(value?.ToString(), _maxWords))
+            {
+                return ValidationResult.Success;
+            }
+            else
             {
                 return new ValidationResult(ErrorMessage);
             }
-
-            return ValidationResult.Success;
         }
     }
 } 
