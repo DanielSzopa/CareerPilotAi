@@ -22,6 +22,37 @@ namespace CareerPilotAi.Infrastructure.Persistence.Migrations
 
             NpgsqlModelBuilderExtensions.UseIdentityByDefaultColumns(modelBuilder);
 
+            modelBuilder.Entity("CareerPilotAi.Infrastructure.Persistence.DataModels.InterviewQuestionDataModel", b =>
+                {
+                    b.Property<Guid>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Answer")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("FeedbackMessage")
+                        .HasColumnType("text");
+
+                    b.Property<Guid>("JobApplicationId")
+                        .HasColumnType("uuid");
+
+                    b.Property<string>("Question")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasColumnType("text");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("JobApplicationId");
+
+                    b.ToTable("InterviewQuestions");
+                });
+
             modelBuilder.Entity("CareerPilotAi.Infrastructure.Persistence.DataModels.JobApplicationDataModel", b =>
                 {
                     b.Property<Guid>("JobApplicationId")
@@ -31,6 +62,9 @@ namespace CareerPilotAi.Infrastructure.Persistence.Migrations
                     b.Property<string>("Company")
                         .IsRequired()
                         .HasColumnType("text");
+
+                    b.Property<DateTime>("CreatedAt")
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("JobDescription")
                         .IsRequired()
@@ -250,6 +284,15 @@ namespace CareerPilotAi.Infrastructure.Persistence.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CareerPilotAi.Infrastructure.Persistence.DataModels.InterviewQuestionDataModel", b =>
+                {
+                    b.HasOne("CareerPilotAi.Infrastructure.Persistence.DataModels.JobApplicationDataModel", null)
+                        .WithMany("InterviewQuestions")
+                        .HasForeignKey("JobApplicationId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+                });
+
             modelBuilder.Entity("CareerPilotAi.Infrastructure.Persistence.DataModels.JobApplicationDataModel", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityUser", "User")
@@ -310,6 +353,11 @@ namespace CareerPilotAi.Infrastructure.Persistence.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("CareerPilotAi.Infrastructure.Persistence.DataModels.JobApplicationDataModel", b =>
+                {
+                    b.Navigation("InterviewQuestions");
                 });
 #pragma warning restore 612, 618
         }

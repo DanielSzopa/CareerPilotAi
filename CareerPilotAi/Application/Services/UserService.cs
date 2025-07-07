@@ -1,7 +1,7 @@
 using CareerPilotAi.Application.Exceptions;
 using System.Security.Claims;
 
-namespace CareerPilotAi.Services;
+namespace CareerPilotAi.Application.Services;
 
 internal class UserService : IUserService
 {

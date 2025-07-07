@@ -1,7 +1,7 @@
 using CareerPilotAi.Application.Commands.Abstractions;
+using CareerPilotAi.Application.Services;
 using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.Persistence;
-using CareerPilotAi.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;

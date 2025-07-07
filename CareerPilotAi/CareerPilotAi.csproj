@@ -28,6 +28,9 @@
     <None Update="Prompts\PersonalDataPdfScrape\PersonalDataPdfScrapePrompt.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <None Update="Prompts\GenerateInterviewQuestions\GenerateInterviewQuestionsPrompt.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

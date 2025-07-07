@@ -1,8 +1,8 @@
 using CareerPilotAi.Application.Commands.Abstractions;
+using CareerPilotAi.Application.Services;
 using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.Persistence;
 using CareerPilotAi.Infrastructure.Persistence.DataModels;
-using CareerPilotAi.Services;
 
 namespace CareerPilotAi.Application.Commands.CreateJobApplication;
 
@@ -31,6 +31,7 @@ public class CreateJobApplicationCommandHandler : ICommandHandler<CreateJobAppli
             Company = jobApplication.Company,
             Url = jobApplication.URL,
             JobDescription = jobApplication.JobDescription,
+            CreatedAt = DateTime.UtcNow,
         }, cancellationToken);
 
         await _dbContext.SaveChangesAsync(cancellationToken);

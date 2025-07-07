@@ -1,11 +1,13 @@
 ﻿using CareerPilotAi.Application.Commands.CreateJobApplication;
+using CareerPilotAi.Application.Commands.DeleteJobApplication;
 using CareerPilotAi.Application.Commands.Dispatcher;
 using CareerPilotAi.Application.Commands.EnhanceJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobDescription;
+using CareerPilotAi.Application.Services;
 using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.Persistence;
+using CareerPilotAi.Models;
 using CareerPilotAi.Models.JobApplication;
-using CareerPilotAi.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -29,6 +31,25 @@ namespace CareerPilotAi.Controllers
             _applicationDbContext = applicationDbContext;
             _logger = logger;
             _commandDispatcher = commandDispatcher;
+        }
+
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var userId = _userService.GetUserIdOrThrowException();
+            var jobApplicationsCards = await _applicationDbContext.JobApplications
+                .AsNoTracking()
+                .Where(j => j.UserId == userId)
+                .Select(j => new JobApplicationCardViewModel
+                {
+                    JobApplicationId = j.JobApplicationId,
+                    Title = j.Title,
+                    Company = j.Company,
+                    CardDate = new CardDate(j.CreatedAt)
+                })
+                .ToListAsync();
+
+            return View(jobApplicationsCards);
         }
 
         [HttpGet]
@@ -165,6 +186,53 @@ namespace CareerPilotAi.Controllers
                     type: HttpStatusCode.InternalServerError.ToString(),
                     title: "Internal Server Error",
                     detail: "An error occurred while updating the job description. Please try again.",
+                    statusCode: (int)HttpStatusCode.InternalServerError,
+                    instance: HttpContext.Request.Path.ToString()
+                );
+            }
+        }
+
+        [HttpDelete]
+        [Route("api/delete/{jobApplicationId:guid}")]
+        public async Task<IActionResult> DeleteJobApplication(Guid jobApplicationId, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (jobApplicationId == Guid.Empty)
+                {
+                    _logger.LogError("JobApplicationId cannot be empty during delete action");
+                    return Problem(
+                        type: HttpStatusCode.BadRequest.ToString(),
+                        title: "Invalid Job Application ID",
+                        detail: "The job application ID cannot be empty.",
+                        statusCode: (int)HttpStatusCode.BadRequest,
+                        instance: HttpContext.Request.Path.ToString()
+                    );
+                }
+
+                var response = await _commandDispatcher.DispatchAsync<DeleteJobApplicationCommand, DeleteJobApplicationResponse>(
+                    new DeleteJobApplicationCommand(jobApplicationId), cancellationToken);
+
+                if (!response.IsSuccess)
+                {
+                    return Problem(
+                        type: HttpStatusCode.NotFound.ToString(),
+                        title: "Job Application Not Found",
+                        detail: response.ErrorMessage ?? "The job application could not be found.",
+                        statusCode: (int)HttpStatusCode.NotFound,
+                        instance: HttpContext.Request.Path.ToString()
+                    );
+                }
+
+                return Ok(new { success = true, message = "Job application deleted successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting job application: {jobApplicationId}", jobApplicationId);
+                return Problem(
+                    type: HttpStatusCode.InternalServerError.ToString(),
+                    title: "Internal Server Error",
+                    detail: "An error occurred while deleting the job application. Please try again.",
                     statusCode: (int)HttpStatusCode.InternalServerError,
                     instance: HttpContext.Request.Path.ToString()
                 );

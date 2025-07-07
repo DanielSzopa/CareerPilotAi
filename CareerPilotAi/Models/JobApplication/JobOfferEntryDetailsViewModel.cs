@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using CareerPilotAi.Models.CustomValidationAttributes;
+using CareerPilotAi.Application.CustomValidationAttributes;
 
 namespace CareerPilotAi.Models.JobApplication
 {

@@ -2,3 +2,13 @@
 4. Implement the OpenTelemetry
 5. Implement cache mechanisms
 6. add URL to JobApplicationDetailsViewModel
+7. CreatedAt = DateTime.UtcNow, - Fix the UTC to local time
+
+-------------------------------------- 
+- Explain architecture of CareerPilotAi
+- What Application, Core, Infrastructure, Models, Prompts, View keeps
+- DI registration, how to register things in DI
+- How Prompts works, explain mechanism
+- Logging, how to write logs
+- Adding information to styling: one lines if statements, one line namespaces
+- Create command handler architecture description

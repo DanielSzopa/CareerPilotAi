@@ -5,36 +5,42 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="col-12">            <div class="d-flex justify-content-between align-items-center mb-4">
                 <div>
                     <h2 class="mb-0">@Model.JobTitle</h2>
                     <p class="text-muted mb-0">@Model.CompanyName</p>
                 </div>
-                <a href="/job-applications" class="btn btn-outline-secondary">
-                    <i class="fas fa-arrow-left me-2"></i>Back to Applications
-                </a>
+                <div class="d-flex gap-2">
+                    <button type="button" 
+                            class="btn btn-outline-danger" 
+                            onclick="confirmDelete('@Model.JobApplicationId', '@Model.JobTitle')">
+                        <i class="fas fa-trash me-2"></i>Delete Application
+                    </button>
+                    <a href="/job-applications" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-2"></i>Back to Applications
+                    </a>
+                </div>
             </div>
 
             <!-- Tab Navigation -->
             <ul class="nav nav-tabs" id="jobApplicationTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link active" id="job-details-tab" data-bs-toggle="tab" data-bs-target="#job-details" type="button" role="tab">
+                    <button class="nav-link" id="job-details-tab" data-bs-toggle="tab" data-bs-target="#job-details" type="button" role="tab" data-tab-param="job-details">
                         <i class="fas fa-briefcase me-2"></i>Job Details
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="interview-questions-tab" data-bs-toggle="tab" data-bs-target="#interview-questions" type="button" role="tab">
+                    <button class="nav-link" id="interview-questions-tab" data-bs-toggle="tab" data-bs-target="#interview-questions" type="button" role="tab" data-tab-param="interview-questions">
                         <i class="fas fa-question-circle me-2"></i>Interview Questions
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="cv-builder-tab" data-bs-toggle="tab" data-bs-target="#cv-builder" type="button" role="tab">
+                    <button class="nav-link" id="cv-builder-tab" data-bs-toggle="tab" data-bs-target="#cv-builder" type="button" role="tab" data-tab-param="cv-builder">
                         <i class="fas fa-file-alt me-2"></i>CV Builder
                     </button>
                 </li>
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="cover-letter-tab" data-bs-toggle="tab" data-bs-target="#cover-letter" type="button" role="tab">
+                    <button class="nav-link" id="cover-letter-tab" data-bs-toggle="tab" data-bs-target="#cover-letter" type="button" role="tab" data-tab-param="cover-letter">
                         <i class="fas fa-envelope me-2"></i>Cover Letter
                     </button>
                 </li>
@@ -43,9 +49,12 @@
             <!-- Tab Content -->
             <div class="tab-content" id="jobApplicationTabContent">
                 <!-- Job Details Tab -->
-                <div class="tab-pane fade show active" id="job-details" role="tabpanel">
+                <div class="tab-pane fade" id="job-details" role="tabpanel">
                     <div class="card mt-3">
                         <div class="card-body">
+                            <!-- Tab-specific message container -->
+                            <div id="jobDetailsMessages"></div>
+                            
                             <label class="form-label fw-bold">Job Description & Requirements</label>
                             
                             <!-- Display Mode -->
@@ -88,6 +97,9 @@
                 <div class="tab-pane fade" id="interview-questions" role="tabpanel">
                     <div class="card mt-3">
                         <div class="card-body">
+                            <!-- Tab-specific message container -->
+                            <div id="interviewQuestionsMessages"></div>
+                            
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0">Potential Interview Questions</h5>
                                 <button class="btn btn-primary" id="generateQuestions">
@@ -108,6 +120,9 @@
                 <div class="tab-pane fade" id="cv-builder" role="tabpanel">
                     <div class="card mt-3">
                         <div class="card-body">
+                            <!-- Tab-specific message container -->
+                            <div id="cvBuilderMessages"></div>
+                            
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0">CV Builder</h5>
                                 <div>
@@ -133,6 +148,9 @@
                 <div class="tab-pane fade" id="cover-letter" role="tabpanel">
                     <div class="card mt-3">
                         <div class="card-body">
+                            <!-- Tab-specific message container -->
+                            <div id="coverLetterMessages"></div>
+                            
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0">Cover Letter</h5>
                                 <div>
@@ -172,14 +190,242 @@
     .tab-content {
         min-height: 500px;
     }
+    
+    /* Tab-specific message containers styling */
+    #jobDetailsMessages:empty,
+    #interviewQuestionsMessages:empty,
+    #cvBuilderMessages:empty,
+    #coverLetterMessages:empty {
+        display: none;
+    }
+    
+    .question-warning {
+        border-left: 4px solid #ffc107 !important;
+        background-color: #fff3cd;
+    }
+    
+    .warning-badge {
+        background-color: #ffc107;
+        color: #000;
+        font-size: 0.75rem;
+        padding: 0.25rem 0.5rem;
+        border-radius: 0.25rem;
+        font-weight: 500;
+    }
+    
+    .feedback-section {
+        background-color: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 0.375rem;
+        padding: 0.75rem;
+        margin-top: 0.5rem;
+    }
+    
+    .feedback-section .feedback-label {
+        font-weight: 600;
+        color: #495057;
+        font-size: 0.875rem;
+        margin-bottom: 0.25rem;
+    }
+    
+    .feedback-section .feedback-text {
+        color: #6c757d;
+        font-size: 0.875rem;
+        margin-bottom: 0;
+    }
+    
+    /* Question actions styling */
+    .question-item .card-header .dropdown-toggle::after {
+        display: none; /* Hide default bootstrap dropdown arrow */
+    }
+    
+    .question-item .dropdown-menu {
+        min-width: 120px;
+        border: 1px solid #dee2e6;
+        box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+    }
+    
+    .question-item .dropdown-item {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .question-item .dropdown-item:hover {
+        background-color: #f8f9fa;
+    }
+    
+    .question-item .dropdown-item.text-danger:hover {
+        background-color: #f8d7da;
+        color: #721c24 !important;
+    }
 </style>
 
 @section Scripts {
     <script src="~/js/word-counter.js"></script>
     <script>
         $(document).ready(function() {
-            let originalJobDescription = '@Html.Raw(Html.Encode(Model.JobDescription))';
+            // ===========================================
+            // VARIABLE DECLARATIONS (must be at top for tab initialization)
+            // ===========================================
+            
+            let originalJobDescription = @Html.Raw(Json.Serialize(Model.JobDescription));
             let wordCounter;
+            let interviewQuestions = [];
+            let questionsLoaded = false;
+            
+            // ===========================================
+            // TAB MANAGEMENT SYSTEM (Query Parameter-based)
+            // ===========================================
+            
+            const TabManager = {
+                defaultTab: 'job-details',
+                paramName: 'tab',
+                
+                // Configuration for all tabs - easily extendable for future tabs
+                tabConfigs: {
+                    'job-details': {
+                        tabSelector: '#job-details-tab',
+                        contentSelector: '#job-details',
+                        onActivate: function() {
+                            // Job details specific initialization if needed
+                        }
+                    },
+                    'interview-questions': {
+                        tabSelector: '#interview-questions-tab',
+                        contentSelector: '#interview-questions',
+                        onActivate: function() {
+                            if (!questionsLoaded) {
+                                fetchExistingInterviewQuestions();
+                            }
+                        }
+                    },
+                    'cv-builder': {
+                        tabSelector: '#cv-builder-tab',
+                        contentSelector: '#cv-builder',
+                        onActivate: function() {
+                            // CV Builder specific initialization if needed
+                        }
+                    },
+                    'cover-letter': {
+                        tabSelector: '#cover-letter-tab',
+                        contentSelector: '#cover-letter',
+                        onActivate: function() {
+                            // Cover Letter specific initialization if needed
+                        }
+                    }
+                },
+                
+                // Initialize tab management system
+                init: function() {
+                    this.bindEvents();
+                    this.activateTabFromUrl();
+                },
+                
+                // Bind events for tab management
+                bindEvents: function() {
+                    const self = this;
+                    
+                    // Handle tab clicks to update URL parameters
+                    $('#jobApplicationTabs button[data-bs-toggle="tab"]').on('click', function(e) {
+                        e.preventDefault(); // Prevent default Bootstrap behavior temporarily
+                        
+                        const tabParam = $(this).data('tab-param');
+                        if (tabParam) {
+                            self.updateUrlParameter(tabParam);
+                            self.activateTab(tabParam);
+                        }
+                        clearTabMessages();
+                    });
+                    
+                    // Handle browser back/forward buttons
+                    $(window).on('popstate', function() {
+                        self.activateTabFromUrl();
+                    });
+                    
+                    // Handle Bootstrap tab shown event for custom logic
+                    $('#jobApplicationTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
+                        const tabParam = $(e.target).data('tab-param');
+                        const config = self.tabConfigs[tabParam];
+                        if (config && config.onActivate) {
+                            config.onActivate();
+                        }
+                    });
+                },
+                
+                // Get URL search parameters
+                getUrlParams: function() {
+                    return new URLSearchParams(window.location.search);
+                },
+                
+                // Get current tab from URL parameter
+                getCurrentTabFromUrl: function() {
+                    return this.getUrlParams().get(this.paramName);
+                },
+                
+                // Update URL parameter without page reload
+                updateUrlParameter: function(tabParam) {
+                    const url = new URL(window.location);
+                    
+                    if (tabParam === this.defaultTab) {
+                        // Remove tab parameter for default tab to keep URL clean
+                        url.searchParams.delete(this.paramName);
+                    } else {
+                        url.searchParams.set(this.paramName, tabParam);
+                    }
+                    
+                    // Update URL without triggering page reload
+                    window.history.pushState({ tab: tabParam }, '', url);
+                },
+                
+                // Activate tab based on current URL parameter
+                activateTabFromUrl: function() {
+                    const currentTab = this.getCurrentTabFromUrl();
+                    const targetTab = currentTab && this.tabConfigs[currentTab] ? currentTab : this.defaultTab;
+                    
+                    // Activate the target tab
+                    this.activateTab(targetTab);
+                },
+                
+                // Activate specific tab programmatically
+                activateTab: function(tabParam) {
+                    const config = this.tabConfigs[tabParam];
+                    if (!config) {
+                        console.warn(`Tab configuration not found for: ${tabParam}`);
+                        return;
+                    }
+                    
+                    // Remove active classes from all tabs and content
+                    $('#jobApplicationTabs .nav-link').removeClass('active');
+                    $('.tab-pane').removeClass('show active');
+                    
+                    // Activate the target tab and content
+                    $(config.tabSelector).addClass('active');
+                    $(config.contentSelector).addClass('show active');
+                    
+                    // Trigger Bootstrap's shown event manually for custom logic
+                    $(config.tabSelector).trigger('shown.bs.tab');
+                },
+                
+                // Helper method to add new tab configuration (for future extensibility)
+                addTab: function(tabParam, config) {
+                    this.tabConfigs[tabParam] = config;
+                },
+                
+                // Helper method to navigate to a specific tab programmatically
+                navigateToTab: function(tabParam) {
+                    if (this.tabConfigs[tabParam]) {
+                        this.updateUrlParameter(tabParam);
+                        this.activateTab(tabParam);
+                    }
+                }
+            };
+            
+            // Initialize the tab management system
+            TabManager.init();
+            
+            // ===========================================
+            // EXISTING FUNCTIONALITY
+            // ===========================================
             
             // Initialize word counter when entering edit mode
             function initializeWordCounter() {
@@ -257,7 +503,7 @@
                             const errorMessage = errorData.detail || errorData.error || 'Failed to save job description.';
                             throw new Error(errorMessage);
                         });
-                    }
+                    }    
                     return response.json();
                 })
                 .then(data => {
@@ -272,11 +518,11 @@
                     $('#saveActions').hide();
                     
                     // Show success message
-                    showSuccessMessage('Job description updated successfully!');
+                    showSuccessMessage('Job description updated successfully!', 'jobDetailsMessages');
                 })
                 .catch(error => {
                     console.error('Error saving job description:', error);
-                    showErrorMessage(error.message);
+                    showErrorMessage(error.message, 'jobDetailsMessages');
                 })
                 .finally(() => {
                     // Reset button state
@@ -285,36 +531,418 @@
                 });
             });
             
-            function showSuccessMessage(message) {
+            function showSuccessMessage(message, containerId = 'jobDetailsMessages') {
                 const successHtml = `
                     <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
                         <i class="fas fa-check-circle me-2"></i>${message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
-                $('.card-body').prepend(successHtml);
+                $(`#${containerId}`).prepend(successHtml);
                 
                 // Auto-hide after 3 seconds
                 setTimeout(() => {
-                    $('.alert-success').fadeOut();
+                    $(`#${containerId} .alert-success`).fadeOut();
                 }, 3000);
             }
             
-            function showErrorMessage(message) {
+            function showErrorMessage(message, containerId = 'jobDetailsMessages') {
                 const errorHtml = `
                     <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>${message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
-                $('.card-body').prepend(errorHtml);
+                $(`#${containerId}`).prepend(errorHtml);
                 
                 // Auto-hide after 5 seconds
                 setTimeout(() => {
-                    $('.alert-danger').fadeOut();
+                    $(`#${containerId} .alert-danger`).fadeOut();
                 }, 5000);
             }
+            
+            // ===========================================
+            // INTERVIEW QUESTIONS FUNCTIONALITY
+            // ===========================================
+            
+            // Tab switching handlers to clear messages
+            function clearTabMessages() {
+                // Clear messages from all tabs except auto-hiding ones
+                $('#jobDetailsMessages .alert:not(.fade)').remove();
+                $('#interviewQuestionsMessages .alert:not(.fade)').remove();
+                $('#cvBuilderMessages .alert:not(.fade)').remove();
+                $('#coverLetterMessages .alert:not(.fade)').remove();
+            }
+            
+            // Utility function for showing messages in specific tabs
+            function showTabMessage(message, type = 'info', containerId = 'jobDetailsMessages', autoHide = true) {
+                let alertClass = 'alert-info';
+                let iconClass = 'fas fa-info-circle';
+                
+                switch (type.toLowerCase()) {
+                    case 'success':
+                        alertClass = 'alert-success';
+                        iconClass = 'fas fa-check-circle';
+                        break;
+                    case 'warning':
+                        alertClass = 'alert-warning';
+                        iconClass = 'fas fa-exclamation-triangle';
+                        break;
+                    case 'error':
+                    case 'danger':
+                        alertClass = 'alert-danger';
+                        iconClass = 'fas fa-exclamation-circle';
+                        break;
+                }
+                
+                const messageHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show mt-2" role="alert">
+                        <i class="${iconClass} me-2"></i>${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                $(`#${containerId}`).prepend(messageHtml);
+                
+                if (autoHide) {
+                    const hideDelay = type.toLowerCase() === 'success' ? 3000 : 5000;
+                    setTimeout(() => {
+                        $(`#${containerId} .alert-${alertClass.split('-')[1]}`).fadeOut();
+                    }, hideDelay);
+                }
+            }
+            
+            // Handle Interview Questions tab click - removed as it's now handled by TabManager
+            
+            // Generate Questions button click
+            $('#generateQuestions').on('click', function() {
+                generateInterviewQuestions();
+            });
+            
+            // Generate more questions button click
+            $(document).on('click', '#generateMoreQuestions', function() {
+                generateInterviewQuestions();
+            });
+            
+            // Remove question functionality
+            $(document).on('click', '.remove-question', function(e) {
+                e.preventDefault(); // Prevent default link behavior for dropdown items
+                const questionIndex = $(this).data('index');
+                removeQuestion(questionIndex);
+            });
+            
+            // Toggle question answer
+            $(document).on('click', '.toggle-answer', function() {
+                const questionIndex = $(this).data('index');
+                toggleAnswer(questionIndex);
+            });
+            
+            async function fetchExistingInterviewQuestions(showLoading = true) {
+                questionsLoaded = true;
+                
+                if (showLoading) {
+                    $('#questionsContainer').html(`
+                        <div class="text-center py-5">
+                            <div class="spinner-border text-primary" role="status">
+                                <span class="visually-hidden">Loading...</span>
+                            </div>
+                            <p class="mt-3 text-muted">Loading interview questions...</p>
+                        </div>
+                    `);
+                }
+                
+                try {
+                    const response = await fetch(`/InterviewQuestions/api/fetch/@Model.JobApplicationId`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || 'Failed to fetch interview questions.');
+                    }
+                    
+                    const data = await response.json();
+                    const questionsArray = data.interviewQuestions || data.InterviewQuestions || [];
+                    
+                    if (questionsArray && questionsArray.length > 0) {
+                        interviewQuestions = questionsArray;
+                        renderInterviewQuestions();
+                    } else {
+                        interviewQuestions = [];
+                        $('#questionsContainer').html(`
+                            <div class="text-muted text-center py-5">
+                                <i class="fas fa-question-circle fa-3x mb-3"></i>
+                                <p>Click "Generate Questions" to create interview questions based on your job details.</p>
+                            </div>
+                        `);
+                    }
+                    
+                } catch (error) {
+                    console.error('Error fetching interview questions:', error);
+                    showOutputFeedbackMessage('Error', `Failed to load interview questions: ${error.message}`);
+                    $('#questionsContainer').html(`
+                        <div class="text-muted text-center py-5">
+                            <i class="fas fa-question-circle fa-3x mb-3"></i>
+                            <p>Click "Generate Questions" to create interview questions based on your job details.</p>
+                        </div>
+                    `);
+                }
+            }
+
+            async function generateInterviewQuestions() {
+                const $generateBtn = $('#generateQuestions');
+                const $generateMoreBtn = $('#generateMoreQuestions');
+                const activeBtn = $generateBtn.is(':visible') ? $generateBtn : $generateMoreBtn;
+                
+                // Show loading state
+                activeBtn.prop('disabled', true);
+                activeBtn.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Generating...');
+                
+                try {
+                    const response = await fetch(`/InterviewQuestions/api/generate/@Model.JobApplicationId`, {
+                        method: 'GET',
+                        headers: {
+                            'Content-Type': 'application/json'
+                        }
+                    });
+                    
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        throw new Error(errorData.detail || 'Failed to generate interview questions.');
+                    }
+                    
+                    const data = await response.json();
+                    
+                    // Handle OutputStatus and OutputFeedbackMessage
+                    if (data.outputStatus === 'Error') {
+                        showOutputFeedbackMessage('Error', data.outputFeedbackMessage || 'Unable to generate interview questions.');
+                        return;
+                    }
+                    
+                    if (data.outputStatus === 'Success') {
+                        const questionsCount = data.interviewQuestions ? data.interviewQuestions.length : 0;
+                        showOutputFeedbackMessage('Success', data.outputFeedbackMessage || `Successfully generated ${questionsCount} interview questions.`);
+                    }
+                    
+                    // Add new questions to existing ones
+                    if (data.interviewQuestions && data.interviewQuestions.length > 0) {
+                        interviewQuestions = [...interviewQuestions, ...data.interviewQuestions];
+                        renderInterviewQuestions();
+                    } else if (data.outputStatus === 'Success') {
+                        // Show empty state if no questions but status is success
+                        showOutputFeedbackMessage('Warning', 'No interview questions could be generated based on the current job description.');
+                    }
+                    
+                } catch (error) {
+                    console.error('Error generating interview questions:', error);
+                    showOutputFeedbackMessage('Error', error.message);
+                } finally {
+                    // Reset button state
+                    activeBtn.prop('disabled', false);
+                    activeBtn.html('<i class="fas fa-magic me-2"></i>' + (activeBtn.attr('id') === 'generateQuestions' ? 'Generate Questions' : 'Generate 5 More Questions'));
+                }
+            }
+            
+            function showOutputFeedbackMessage(status, message) {
+                if (!message) return;
+                
+                // Remove existing output feedback messages from the interview questions tab
+                $('#interviewQuestionsMessages .output-feedback-message').remove();
+                
+                let alertClass = 'alert-info';
+                let iconClass = 'fas fa-info-circle';
+                
+                switch (status.toLowerCase()) {
+                    case 'success':
+                        alertClass = 'alert-success';
+                        iconClass = 'fas fa-check-circle';
+                        break;
+                    case 'warning':
+                        alertClass = 'alert-warning';
+                        iconClass = 'fas fa-exclamation-triangle';
+                        break;
+                    case 'error':
+                        alertClass = 'alert-danger';
+                        iconClass = 'fas fa-exclamation-circle';
+                        break;
+                }
+                
+                const feedbackHtml = `
+                    <div class="alert ${alertClass} alert-dismissible fade show output-feedback-message" role="alert">
+                        <i class="${iconClass} me-2"></i>${message}
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                `;
+                
+                $('#interviewQuestionsMessages').prepend(feedbackHtml);
+                
+                // Auto-hide success messages after 8 seconds, keep error/warning messages longer
+                const autoHideDelay = status.toLowerCase() === 'success' ? 8000 : 15000;
+                setTimeout(() => {
+                    $('#interviewQuestionsMessages .output-feedback-message').fadeOut();
+                }, autoHideDelay);
+            }
+            
+            function renderInterviewQuestions() {
+                $('#questionsContainer').empty();
+                
+                if (interviewQuestions.length === 0) {
+                    $('#questionsContainer').html(`
+                        <div class="text-muted text-center py-5">
+                            <i class="fas fa-question-circle fa-3x mb-3"></i>
+                            <p>Click "Generate Questions" to create interview questions based on your job details.</p>
+                        </div>
+                    `);
+                    return;
+                }
+                
+                let questionsHtml = '';
+                
+                interviewQuestions.forEach((question, index) => {
+                    const hasWarning = question.status && question.status.toLowerCase() === 'warning';
+                    const warningClass = hasWarning ? 'question-warning' : '';
+                    
+                    questionsHtml += `
+                        <div class="question-item mb-3" data-index="${index}">
+                            <div class="card ${warningClass}">
+                                <div class="card-header d-flex justify-content-between align-items-center">
+                                    <div class="flex-grow-1 d-flex align-items-center">
+                                        <h6 class="mb-0 me-2">Question ${index + 1}</h6>
+                                        ${hasWarning ? '<span class="warning-badge"><i class="fas fa-exclamation-triangle me-1"></i>Warning</span>' : ''}
+                                    </div>
+                                    <div class="d-flex gap-2">
+                                        <button type="button" class="btn btn-outline-primary btn-sm toggle-answer" data-index="${index}">
+                                            <i class="fas fa-eye me-1"></i>Show Answer
+                                        </button>
+                                        <div class="dropdown">
+                                            <button type="button" class="btn btn-outline-secondary btn-sm" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="fas fa-ellipsis-v"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li><a class="dropdown-item text-danger remove-question" href="#" data-index="${index}">
+                                                    <i class="fas fa-trash me-2"></i>Delete Question
+                                                </a></li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <p class="question-text mb-0">${question.question}</p>
+                                    
+                                    ${hasWarning && question.feedbackMessage ? `
+                                        <div class="feedback-section">
+                                            <div class="feedback-label">
+                                                <i class="fas fa-lightbulb me-1"></i>Improvement Suggestion:
+                                            </div>
+                                            <div class="feedback-text">${question.feedbackMessage}</div>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <div class="answer-section mt-3" style="display: none;">
+                                        <hr>
+                                        <h6 class="text-muted">Answer Guide:</h6>
+                                        <p class="answer-text mb-0">${question.answer}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                });
+                
+                questionsHtml += `
+                    <div class="text-center mt-4">
+                        <button class="btn btn-outline-primary" id="generateMoreQuestions">
+                            <i class="fas fa-plus me-2"></i>Generate 5 More Questions
+                        </button>
+                    </div>
+                `;
+                
+                $('#questionsContainer').html(questionsHtml);
+            }
+            
+            function toggleAnswer(questionIndex) {
+                const $questionItem = $(`.question-item[data-index="${questionIndex}"]`);
+                const $answerSection = $questionItem.find('.answer-section');
+                const $toggleBtn = $questionItem.find('.toggle-answer');
+                
+                if ($answerSection.is(':visible')) {
+                    $answerSection.slideUp();
+                    $toggleBtn.html('<i class="fas fa-eye me-1"></i>Show Answer');
+                } else {
+                    $answerSection.slideDown();
+                    $toggleBtn.html('<i class="fas fa-eye-slash me-1"></i>Hide Answer');
+                }
+            }
+            
+            function removeQuestion(questionIndex) {
+                if (confirm('Are you sure you want to remove this question?')) {
+                    const question = interviewQuestions[questionIndex];
+                    if (question && question.id) {
+                        deleteInterviewQuestion(question.id, questionIndex);
+                    } else {
+                        interviewQuestions.splice(questionIndex, 1);
+                        renderInterviewQuestions();
+                    }
+                }
+            }
+
+            async function deleteInterviewQuestion(questionId, questionIndex) {
+                try {
+                    const response = await fetch(`/InterviewQuestions/api/delete/${questionId}`, {
+                        method: 'DELETE',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        }
+                    });
+
+                    if (response.ok) {
+                        const result = await response.json();
+                        showSuccessMessage(result.message, 'interviewQuestionsMessages');
+                        await fetchExistingInterviewQuestions(false);
+                    } else {
+                        const errorData = await response.json();
+                        showErrorMessage(errorData.detail || 'An error occurred while deleting the question.', 'interviewQuestionsMessages');
+                    }
+                } catch (error) {
+                    console.error('Error deleting interview question:', error);
+                    showErrorMessage('An error occurred while deleting the question. Please try again.', 'interviewQuestionsMessages');
+                }
+            }
         });
+
+        function confirmDelete(jobApplicationId, jobTitle) {
+            if (confirm(`Are you sure you want to delete the job application for "${jobTitle}"? This action cannot be undone.`)) {
+                deleteJobApplication(jobApplicationId);
+            }
+        }
+
+        async function deleteJobApplication(jobApplicationId) {
+            try {
+                const response = await fetch(`/job-applications/api/delete/${jobApplicationId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                    }
+                });
+
+                if (response.ok) {
+                    const result = await response.json();
+                    alert(result.message);
+                    window.location.href = '/job-applications'; // Redirect to index page after deletion
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.detail || 'An error occurred while deleting the job application.');
+                }
+            } catch (error) {
+                console.error('Error deleting job application:', error);
+                alert('An error occurred while deleting the job application. Please try again.');
+            }
+        }
     </script>
 }
 

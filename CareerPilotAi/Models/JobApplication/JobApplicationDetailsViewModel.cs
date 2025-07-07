@@ -1,4 +1,4 @@
-using CareerPilotAi.Models.CustomValidationAttributes;
+using CareerPilotAi.Application.CustomValidationAttributes;
 using System.ComponentModel.DataAnnotations;
 
 namespace CareerPilotAi.Models.JobApplication

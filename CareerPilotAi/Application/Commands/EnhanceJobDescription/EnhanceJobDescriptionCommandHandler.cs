@@ -1,6 +1,6 @@
 using CareerPilotAi.Application.Commands.Abstractions;
+using CareerPilotAi.Application.Services;
 using CareerPilotAi.Infrastructure.OpenRouter;
-using CareerPilotAi.Services;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -43,12 +43,13 @@ public class EnhanceJobDescriptionCommandHandler : ICommandHandler<EnhanceJobDes
 
         if (enhancedText.IsProvidedDataValid == false || string.IsNullOrWhiteSpace(enhancedText.Content))
         {
-            _logger.LogError("Invalid job description text provided: {jobDescriptionText}", command.JobDescriptionText);
+            _logger.LogError("It's unpossible to enhance the jobDescription. Invalid job description text provided: {jobDescriptionText}", command.JobDescriptionText);
             return new EnhanceJobDescriptionResponse(false, string.Empty, new ProblemDetails()
             {
                 Type = HttpStatusCode.BadRequest.ToString(),
-                Title = "Invalid Job Description Text",
-                Detail = "Job description text is required.",
+                Title = "Invalid Job Description Text. It's unpossible to enhance it.",
+                Detail = "The text entereed for the job description is either too short or lacks of job description informations. " +
+                "It's unpossible to enhance it. Please provide more informations about job offer.",
                 Status = (int)HttpStatusCode.BadRequest,
                 Instance = _httpContextAccessor?.HttpContext?.Request.Path.ToString()
             });

@@ -1,8 +1,8 @@
 using CareerPilotAi.Infrastructure;
-using CareerPilotAi.Services;
 using Microsoft.AspNetCore.Mvc;
 using CareerPilotAi.Prompts;
 using CareerPilotAi.Application.Commands;
+using CareerPilotAi.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;

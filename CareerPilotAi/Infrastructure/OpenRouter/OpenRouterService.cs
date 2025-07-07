@@ -1,5 +1,6 @@
 ﻿using CareerPilotAi.Prompts;
 using CareerPilotAi.Prompts.EnhanceJobDescription;
+using CareerPilotAi.Prompts.GenerateInterviewQuestions;
 using CareerPilotAi.Prompts.PersonalDataPdfScrape;
 using System.Text.Json;
 
@@ -8,13 +9,13 @@ namespace CareerPilotAi.Infrastructure.OpenRouter;
 public class OpenRouterService
 {
     private readonly IHttpClientFactory _httpClientFactory;
-    private readonly OpenRouterLlmModelProvider _llmModelProvider;
+    private readonly OpenRouterFeatureSettingsProvider _openRouterFeatureSettings;
     private readonly PromptsProvider _promptsProvider;
 
-    public OpenRouterService(IHttpClientFactory httpClientFactory, OpenRouterLlmModelProvider llmModelProvider, PromptsProvider promptsProvider)
+    public OpenRouterService(IHttpClientFactory httpClientFactory, OpenRouterFeatureSettingsProvider openRouterFeatureSettings, PromptsProvider promptsProvider)
     {
         _httpClientFactory = httpClientFactory;
-        _llmModelProvider = llmModelProvider;
+        _openRouterFeatureSettings = openRouterFeatureSettings;
         _promptsProvider = promptsProvider;
     }
 
@@ -31,9 +32,11 @@ public class OpenRouterService
     public async Task<PersonalDataPdfScrapeResponseModel> ScrapePersonalInformationPdf(string fileName, string base64String, CancellationToken cancellationToken)
     {
         var prompt = _promptsProvider.GetPrompt(new PersonalDataPdfScrapePrompt());
+        var settings = _openRouterFeatureSettings.Get(OpenRouterFeatureSettingsProvider.PersonalDetailsPdfUpload);
         var request = new
         {
-            model = _llmModelProvider.GetModel(OpenRouterLlmModelProvider.PersonalDetailsPdfUploadModel),
+            model = settings.Model,
+            temperature = settings.Temperature,
             stream = false,
             response_format = new
             {
@@ -71,7 +74,11 @@ public class OpenRouterService
             }
         };
 
-        var response = await SendOpenRouterRequestAsync(JsonSerializer.Serialize(request), cancellationToken);
+        var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
+        });
+        var response = await SendOpenRouterRequestAsync(requestJson, cancellationToken);
         var messageContent = response?.Choices.FirstOrDefault()?.Message?.Content ?? throw new InvalidOperationException($"No content found in the response from OpenRouter. Action: {nameof(ScrapePersonalInformationPdf)}");
         return JsonSerializer.Deserialize<PersonalDataPdfScrapeResponseModel>(messageContent) ?? throw new InvalidOperationException($"Failed to deserialize response content to {nameof(PersonalDataPdfScrapeResponseModel)}. Action: {nameof(ScrapePersonalInformationPdf)}");
     }
@@ -84,9 +91,11 @@ public class OpenRouterService
         }
 
         var prompt = _promptsProvider.GetPrompt(new EnhanceJobDescriptionPrompt());
+        var settings = _openRouterFeatureSettings.Get(OpenRouterFeatureSettingsProvider.EnhanceJobDescription);
         var request = new
         {
-            model = _llmModelProvider.GetModel(OpenRouterLlmModelProvider.EnhanceJobDescriptionModel),
+            model = settings.Model,
+            temperature = settings.Temperature,
             stream = false,
             response_format = new
             {
@@ -107,8 +116,74 @@ public class OpenRouterService
             }
         };
 
-        var response = await SendOpenRouterRequestAsync(JsonSerializer.Serialize(request), cancellationToken);
+        var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
+        });
+        var response = await SendOpenRouterRequestAsync(requestJson, cancellationToken);
         var messageContent = response?.Choices.FirstOrDefault()?.Message?.Content ?? throw new InvalidOperationException($"No content found in the response from OpenRouter. Action: {nameof(EnhanceJobDescriptionAsync)}");
         return JsonSerializer.Deserialize<EnhanceJobDescriptionResponseModel>(messageContent) ?? throw new InvalidOperationException($"Failed to deserialize response content to {nameof(EnhanceJobDescriptionResponseModel)}. Action: {nameof(EnhanceJobDescriptionAsync)}");
+    }
+
+    public async Task<GenerateInterviewQuestionsPromptOutputModel> GenerateInterviewQuestionsAsync(GenerateInterviewQuestionsPromptInputModel inputModel, CancellationToken cancellationToken)
+    {
+        #region Validate Input
+        if (inputModel == null)
+        {
+            throw new ArgumentNullException(nameof(inputModel), "Input model cannot be null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(inputModel.CompanyName))
+        {
+            throw new ArgumentException("Company name cannot be null or empty.", nameof(inputModel.CompanyName));
+        }
+
+        if (string.IsNullOrWhiteSpace(inputModel.JobDescription))
+        {
+            throw new ArgumentException("Job description cannot be null or empty.", nameof(inputModel.JobDescription));
+        }
+
+        if (string.IsNullOrWhiteSpace(inputModel.JobRole))
+        {
+            throw new ArgumentException("Job role cannot be null or empty.", nameof(inputModel.JobRole));
+        }
+        #endregion
+
+
+        var prompt = _promptsProvider.GetPrompt(new GenerateInterviewQuestionsPrompt());
+        var settings = _openRouterFeatureSettings.Get(OpenRouterFeatureSettingsProvider.GenerateInterviewQuestions);
+
+        var userInputMessage = JsonSerializer.Serialize(inputModel);
+        var request = new
+        {
+            model = settings.Model,
+            temperature = settings.Temperature,
+            stream = false,
+            response_format = new
+            {
+                type = "json_object"
+            },
+            messages = new[]
+            {
+                new
+                {
+                    role = "system",
+                    content = prompt
+                },
+                new
+                {
+                    role = "user",
+                    content = userInputMessage
+                }
+            }
+        };
+
+        var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
+        });
+        var response = await SendOpenRouterRequestAsync(requestJson, cancellationToken);
+        var messageContent = response?.Choices.FirstOrDefault()?.Message?.Content ?? throw new InvalidOperationException($"No content found in the response from OpenRouter. Action: {nameof(GenerateInterviewQuestionsAsync)}");
+        return JsonSerializer.Deserialize<GenerateInterviewQuestionsPromptOutputModel>(messageContent) ?? throw new InvalidOperationException($"Failed to deserialize response content to {nameof(GenerateInterviewQuestionsPromptOutputModel)}. Action: {nameof(GenerateInterviewQuestionsAsync)}");
     }
 }

@@ -1,5 +1,5 @@
 using System.ComponentModel.DataAnnotations;
-using CareerPilotAi.Models.CustomValidationAttributes;
+using CareerPilotAi.Application.CustomValidationAttributes;
 
 namespace CareerPilotAi.Models.JobApplication
 {
@@ -64,7 +64,7 @@ namespace CareerPilotAi.Models.JobApplication
         public string Label { get; set; } = "";
         
         [StringLength(50, ErrorMessage = "Level cannot exceed 50 characters")]
-        [CustomValidationAttributes.AllowedValues("Junior", "Regular", "Expert", ErrorMessage = "Skill level must be Junior, Regular, or Expert.")]
+        [Application.CustomValidationAttributes.AllowedValues("Junior", "Regular", "Expert", ErrorMessage = "Skill level must be Junior, Regular, or Expert.")]
         public string? Level { get; set; }
     }
 
@@ -155,7 +155,7 @@ namespace CareerPilotAi.Models.JobApplication
         
         [Required(ErrorMessage = "Proficiency level is required")]
         [StringLength(50, ErrorMessage = "Proficiency cannot exceed 50 characters")]
-        [CustomValidationAttributes.AllowedValues("Native", "Fluent", "Advanced", "Intermediate", "Basic", ErrorMessage = "Language proficiency must be Native, Fluent, Advanced, Intermediate, or Basic.")]
+        [Application.CustomValidationAttributes.AllowedValues("Native", "Fluent", "Advanced", "Intermediate", "Basic", ErrorMessage = "Language proficiency must be Native, Fluent, Advanced, Intermediate, or Basic.")]
         public string Proficiency { get; set; } = "";
     }
 

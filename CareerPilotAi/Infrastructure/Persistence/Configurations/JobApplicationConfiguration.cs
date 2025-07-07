@@ -21,7 +21,10 @@ internal class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplica
 
         builder.Property(x => x.JobDescription)
             .IsRequired(true);
-            
+
+        builder.Property(x => x.CreatedAt)
+            .IsRequired(true);
+
         // Configure relationship with IdentityUser
         builder.HasOne(x => x.User)
             .WithMany()
