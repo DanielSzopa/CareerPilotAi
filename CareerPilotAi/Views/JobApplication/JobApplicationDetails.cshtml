@@ -159,9 +159,12 @@
                     <div class="card mt-3">
                         <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
-                                <h5 class="card-title mb-0">Potential Interview Questions</h5>
+                                <div>
+                                    <h5 class="card-title mb-1">Interview Questions</h5>
+                                    <p class="text-muted mb-0 small">Get personalized interview questions generated from your preparation content. Enhance your preparation content above with specific role details, skills, and requirements for the most relevant questions.</p>
+                                </div>
                                 <button class="btn btn-primary" id="generateQuestions">
-                                    <i class="fas fa-magic me-2"></i>Generate Questions
+                                    <i class="fas fa-magic me-2"></i>Generate
                                 </button>
                             </div>
                             <div id="questionsContainer">
@@ -277,6 +280,12 @@
     .question-item .dropdown-item.text-danger:hover {
         background-color: #f8d7da;
         color: #721c24 !important;
+    }
+
+    button#generateQuestions{
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
 </style>
 
