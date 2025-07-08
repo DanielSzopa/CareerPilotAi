@@ -85,11 +85,79 @@
 
                 <!-- Interview Questions Tab -->
                 <div class="tab-pane fade" id="interview-questions" role="tabpanel">
+                    <!-- Interview Preparation Content Section -->
                     <div class="card mt-3">
                         <div class="card-body">
                             <!-- Tab-specific message container -->
                             <div id="interviewQuestionsMessages"></div>
                             
+                            <!-- Collapsible Header -->
+                            <div class="d-flex justify-content-between align-items-center mb-3 collapse-header" data-bs-toggle="collapse" data-bs-target="#interviewPrepContent" aria-expanded="true" aria-controls="interviewPrepContent" style="cursor: pointer;">
+                                <div>
+                                    <label class="form-label fw-bold mb-1">Interview Preparation Content</label>
+                                    <p class="text-muted small mb-0">
+                                        Customize the content used for generating interview questions. You can edit this separately from your job description to focus on specific areas you want to prepare for.
+                                    </p>
+                                </div>
+                                <button type="button" class="btn btn-link p-0 text-decoration-none" aria-label="Toggle Interview Preparation Content">
+                                    <i class="fas fa-chevron-down chevron-toggle" id="interviewPrepChevron"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Collapsible Content -->
+                            <div class="collapse show" id="interviewPrepContent">
+                            
+                            <!-- Display Mode -->
+                            <div id="interviewPrepDisplay" class="job-description-display">
+                                <div class="text-muted text-center py-4">
+                                    <i class="fas fa-edit fa-2x mb-2"></i>
+                                    <p class="mb-0">No interview preparation content added yet. Click "Edit" to add content or copy from job description.</p>
+                                </div>
+                            </div>
+                            
+                            <!-- Edit Mode -->
+                            <div id="interviewPrepEdit" style="display: none;">
+                                <textarea id="interviewPrepTextArea" class="form-control" rows="12" placeholder="Add content that will be used to generate interview questions..."></textarea>
+                                <div class="mt-2">
+                                    <div class="text-muted">Word count: <span id="interviewPrepWordCount">0</span> / 5,000</div>
+                                </div>
+                                <div id="interviewPrepWordLimitError" class="text-danger mt-1" style="display: none;">
+                                    Text exceeds the maximum limit of 5,000 words. Please shorten your text to continue.
+                                </div>
+                            </div>
+                            
+                            <!-- Action Buttons -->
+                            <div class="mt-3">
+                                <div id="interviewPrepEditActions">
+                                    <button type="button" class="btn btn-outline-primary me-2" id="editInterviewPrepBtn">
+                                        <i class="fas fa-edit me-2"></i>Edit
+                                    </button>
+                                    <button type="button" class="btn btn-outline-secondary" id="extractKeyPointsBtn">
+                                        <i class="fas fa-magic me-2"></i>Extract Key Points from Job Description
+                                    </button>
+                                    <div class="form-text mt-2 mb-0">
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            AI will analyze your job description from previous tab and create a focused summary highlighting the most important areas to prepare for interviews.
+                                        </small>
+                                    </div>
+                                </div>
+                                <div id="interviewPrepSaveActions" style="display: none;">
+                                    <button type="button" class="btn btn-success me-2" id="saveInterviewPrepBtn">
+                                        <i class="fas fa-save me-2"></i>Save
+                                    </button>
+                                    <button type="button" class="btn btn-secondary" id="cancelInterviewPrepBtn">
+                                        <i class="fas fa-times me-2"></i>Cancel
+                                    </button>
+                                </div>
+                            </div>
+                            </div> <!-- Close collapsible content -->
+                        </div>
+                    </div>
+                    
+                    <!-- Interview Questions Generation Section -->
+                    <div class="card mt-3">
+                        <div class="card-body">
                             <div class="d-flex justify-content-between align-items-center mb-3">
                                 <h5 class="card-title mb-0">Potential Interview Questions</h5>
                                 <button class="btn btn-primary" id="generateQuestions">
@@ -99,7 +167,7 @@
                             <div id="questionsContainer">
                                 <div class="text-muted text-center py-5">
                                     <i class="fas fa-question-circle fa-3x mb-3"></i>
-                                    <p>Click "Generate Questions" to create interview questions based on your job details.</p>
+                                    <p>Click "Generate Questions" to create interview questions based on your interview preparation content.</p>
                                 </div>
                             </div>
                         </div>
@@ -123,6 +191,26 @@
     
     .tab-content {
         min-height: 500px;
+    }
+    
+    /* Interview preparation display max height */
+    #interviewPrepDisplay {
+        max-height: 400px;
+        overflow-y: auto;
+    }
+    
+    /* Chevron animation for collapse/expand */
+    .chevron-toggle {
+        transition: transform 0.3s ease-in-out;
+        color: #6c757d;
+    }
+    
+    .chevron-toggle.rotated {
+        transform: rotate(180deg);
+    }
+    
+    .collapse-header:hover .chevron-toggle {
+        color: #495057;
     }
     
     /* Tab-specific message containers styling */
@@ -201,7 +289,9 @@
             // ===========================================
             
             let originalJobDescription = @Html.Raw(Json.Serialize(Model.JobDescription));
+            let originalInterviewPrepContent = '';
             let wordCounter;
+            let interviewPrepWordCounter;
             let interviewQuestions = [];
             let questionsLoaded = false;
             
@@ -342,6 +432,19 @@
             TabManager.init();
             
             // ===========================================
+            // COLLAPSE/EXPAND FUNCTIONALITY
+            // ===========================================
+            
+            // Handle Interview Preparation Content collapse/expand
+            $('#interviewPrepContent').on('show.bs.collapse', function () {
+                $('#interviewPrepChevron').removeClass('rotated');
+            });
+            
+            $('#interviewPrepContent').on('hide.bs.collapse', function () {
+                $('#interviewPrepChevron').addClass('rotated');
+            });
+            
+            // ===========================================
             // EXISTING FUNCTIONALITY
             // ===========================================
             
@@ -354,6 +457,18 @@
                     warningThreshold: 4000,
                     submitButtonSelector: '#saveJobDescriptionBtn',
                     errorMessageSelector: '#wordLimitError'
+                });
+            }
+            
+            // Initialize interview prep word counter when entering edit mode
+            function initializeInterviewPrepWordCounter() {
+                interviewPrepWordCounter = new WordCounter({
+                    textAreaSelector: '#interviewPrepTextArea',
+                    wordCountSelector: '#interviewPrepWordCount',
+                    maxWords: 5000,
+                    warningThreshold: 4000,
+                    submitButtonSelector: '#saveInterviewPrepBtn',
+                    errorMessageSelector: '#interviewPrepWordLimitError'
                 });
             }
             
@@ -447,6 +562,163 @@
                     $button.prop('disabled', false);
                     $button.html('<i class="fas fa-save me-2"></i>Save');
                 });
+            });
+            
+            // ===========================================
+            // INTERVIEW PREPARATION CONTENT FUNCTIONALITY
+            // ===========================================
+            
+            // Edit interview prep button click
+            $('#editInterviewPrepBtn').on('click', function() {
+                $('#interviewPrepDisplay').hide();
+                $('#interviewPrepEdit').show();
+                $('#interviewPrepEditActions').hide();
+                $('#interviewPrepSaveActions').show();
+                
+                // Initialize word counter
+                initializeInterviewPrepWordCounter();
+                
+                // Focus on textarea
+                $('#interviewPrepTextArea').focus();
+            });
+            
+            // Cancel interview prep edit button click
+            $('#cancelInterviewPrepBtn').on('click', function() {
+                // Reset textarea to original value
+                $('#interviewPrepTextArea').val(originalInterviewPrepContent);
+                
+                // Switch back to display mode
+                $('#interviewPrepDisplay').show();
+                $('#interviewPrepEdit').hide();
+                $('#interviewPrepEditActions').show();
+                $('#interviewPrepSaveActions').hide();
+            });
+            
+            // Extract key points from job description button click
+            $('#extractKeyPointsBtn').on('click', function() {
+                const $button = $(this);
+                
+                // Check if job description exists
+                if (!originalJobDescription || originalJobDescription.trim() === '') {
+                    showTabMessage(
+                        'No job description found. Please add a job description in the Job Details tab first.',
+                        'warning',
+                        'interviewQuestionsMessages'
+                    );
+                    return;
+                }
+                
+                // Show loading state
+                $button.prop('disabled', true);
+                $button.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Extracting Key Points...');
+                
+                // TODO: Future implementation - Make API call to extract key points
+                // For now, simulate AI processing with a timeout
+                setTimeout(() => {
+                    // Simulate AI-generated focused content (placeholder)
+                    const extractedContent = generatePlaceholderExtractedContent(originalJobDescription);
+                    
+                    // Set the extracted content to the textarea
+                    $('#interviewPrepTextArea').val(extractedContent);
+                    
+                    // Switch to edit mode to show the generated content
+                    $('#interviewPrepDisplay').hide();
+                    $('#interviewPrepEdit').show();
+                    $('#interviewPrepEditActions').hide();
+                    $('#interviewPrepSaveActions').show();
+                    
+                    // Initialize word counter if not already initialized
+                    if (!interviewPrepWordCounter) {
+                        initializeInterviewPrepWordCounter();
+                    }
+                    
+                    // Focus on textarea
+                    $('#interviewPrepTextArea').focus();
+                    
+                    // Show success message
+                    showTabMessage(
+                        'AI has successfully extracted key points from your job description. Review and edit the content as needed.',
+                        'success',
+                        'interviewQuestionsMessages'
+                    );
+                    
+                    // Reset button state
+                    $button.prop('disabled', false);
+                    $button.html('<i class="fas fa-magic me-2"></i>Extract Key Points from Job Description');
+                }, 2000); // Simulate 2 second AI processing time
+            });
+            
+            // Function to generate placeholder extracted content (will be replaced with actual AI call)
+            function generatePlaceholderExtractedContent(jobDescription) {
+                return `**KEY INTERVIEW PREPARATION AREAS** (AI-Generated Summary)
+
+**Technical Skills & Technologies:**
+• [AI will extract mentioned technologies, programming languages, frameworks]
+• [Key technical requirements and tools]
+• [Methodologies and processes mentioned]
+
+**Required Experience & Qualifications:**
+• [Years of experience requirements]
+• [Educational background needed]
+• [Certifications or specific qualifications]
+
+**Core Responsibilities:**
+• [Main job functions and duties]
+• [Key performance expectations]
+• [Project types and scope]
+
+**Soft Skills & Competencies:**
+• [Leadership and communication requirements]
+• [Team collaboration aspects]
+• [Problem-solving and analytical skills]
+
+**Company & Role Specific:**
+• [Industry knowledge requirements]
+• [Company culture indicators]
+• [Growth and development opportunities]
+
+---
+Note: This is a placeholder. The actual implementation will use AI to analyze your job description and extract the most relevant points for interview preparation.
+
+Original Job Description Length: ${jobDescription.split(' ').length} words`;
+            }
+            
+            // Save interview prep button click
+            $('#saveInterviewPrepBtn').on('click', function() {
+                const $button = $(this);
+                const newInterviewPrepContent = $('#interviewPrepTextArea').val().trim();
+                
+                // Validate word count
+                if (interviewPrepWordCounter && !interviewPrepWordCounter.validateWordCount().isValid) {
+                    return;
+                }
+                
+                // Allow empty content for interview prep
+                if (!newInterviewPrepContent) {
+                    originalInterviewPrepContent = '';
+                    $('#interviewPrepDisplay').html(`
+                        <div class="text-muted text-center py-4">
+                            <i class="fas fa-edit fa-2x mb-2"></i>
+                            <p class="mb-0">No interview preparation content added yet. Click "Edit" to add content or copy from job description.</p>
+                        </div>
+                    `);
+                } else {
+                    // Update the display with new content and original variable
+                    originalInterviewPrepContent = newInterviewPrepContent;
+                    $('#interviewPrepDisplay').html(newInterviewPrepContent.replace(/\n/g, '<br>'));
+                }
+                
+                // Switch back to display mode
+                $('#interviewPrepDisplay').show();
+                $('#interviewPrepEdit').hide();
+                $('#interviewPrepEditActions').show();
+                $('#interviewPrepSaveActions').hide();
+                
+                // Show success message
+                showSuccessMessage('Interview preparation content saved successfully!', 'interviewQuestionsMessages');
+                
+                // Note: Future implementation will save to backend
+                // For now, just update the UI
             });
             
             function showSuccessMessage(message, containerId = 'jobDetailsMessages') {
@@ -612,6 +884,18 @@
                 const $generateBtn = $('#generateQuestions');
                 const $generateMoreBtn = $('#generateMoreQuestions');
                 const activeBtn = $generateBtn.is(':visible') ? $generateBtn : $generateMoreBtn;
+                
+                // Check if there's interview preparation content
+                const interviewPrepContent = originalInterviewPrepContent || $('#interviewPrepTextArea').val();
+                
+                if (!interviewPrepContent || interviewPrepContent.trim() === '') {
+                    showTabMessage(
+                        'No interview preparation content found. Please add content above or use "Extract Key Points from Job Description" to generate focused content for better interview questions.',
+                        'warning',
+                        'interviewQuestionsMessages'
+                    );
+                    return;
+                }
                 
                 // Show loading state
                 activeBtn.prop('disabled', true);
