@@ -12,6 +12,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using SaveInterviewPreparationContentRequest = CareerPilotAi.Models.InterviewQuestions.SaveInterviewPreparationContentRequest;
 
 [Authorize]
 [Route("[controller]")]
@@ -210,12 +211,12 @@ public class InterviewQuestionsController : Controller
     {
         try
         {
-            if (string.IsNullOrWhiteSpace(request?.PreparationContent))
+            if (!ModelState.IsValid)
             {
                 return Problem(
                     type: HttpStatusCode.BadRequest.ToString(),
-                    title: "Invalid Request",
-                    detail: "Preparation content cannot be empty.",
+                    title: "Validation Failed",
+                    detail: string.Join("; ", ModelState.Values.SelectMany(v => v.Errors).Select(e => e.ErrorMessage)),
                     statusCode: (int)HttpStatusCode.BadRequest,
                     instance: HttpContext.Request.Path.ToString()
                 );
@@ -250,9 +251,4 @@ public class InterviewQuestionsController : Controller
             );
         }
     }
-}
-
-public class SaveInterviewPreparationContentRequest
-{
-    public string PreparationContent { get; set; } = string.Empty;
 }
