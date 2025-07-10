@@ -1,0 +1,3 @@
+namespace CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
+
+public record PrepareInterviewPreparationContentPromptInputModel(string JobDescription);

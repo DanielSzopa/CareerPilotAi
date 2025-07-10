@@ -29,20 +29,17 @@ public class DeleteInterviewQuestionCommandHandler : ICommandHandler<DeleteInter
             
             // Find the interview question
             var interviewQuestion = await _applicationDbContext.InterviewQuestions
+                .Include(iq => iq.InterviewQuestionsSection)
+                .ThenInclude(iq => iq.JobApplication)
                 .FirstOrDefaultAsync(iq => iq.Id == command.InterviewQuestionId, cancellationToken);
 
-            if (interviewQuestion is null)
+            if (interviewQuestion is null || interviewQuestion.InterviewQuestionsSection is null || interviewQuestion.InterviewQuestionsSection.JobApplication is null)
             {
                 _logger.LogError("Interview question not found for deletion: {interviewQuestionId}, {userId}", command.InterviewQuestionId, userId);
                 return new DeleteInterviewQuestionResponse(false, "Interview question not found.");
             }
 
-            // Verify the job application belongs to the current user
-            var jobApplicationExists = await _applicationDbContext.JobApplications
-                .AsNoTracking()
-                .AnyAsync(j => j.JobApplicationId == interviewQuestion.JobApplicationId && j.UserId == userId, cancellationToken);
-
-            if (!jobApplicationExists)
+            if (interviewQuestion.InterviewQuestionsSection.JobApplication.UserId != userId)
             {
                 _logger.LogError("User {userId} attempted to delete interview question {interviewQuestionId} that doesn't belong to them", userId, command.InterviewQuestionId);
                 return new DeleteInterviewQuestionResponse(false, "Interview question not found or you don't have permission to delete it.");

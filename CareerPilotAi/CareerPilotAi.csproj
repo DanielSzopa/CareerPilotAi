@@ -31,6 +31,9 @@
     <None Update="Prompts\GenerateInterviewQuestions\GenerateInterviewQuestionsPrompt.md">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+        <None Update="Prompts\PrepareInterviewPreparationContent\PrepareInterviewPreparationContentPrompt.md">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
 
 </Project>

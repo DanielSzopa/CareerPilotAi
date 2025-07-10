@@ -1,0 +1,6 @@
+using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
+using Microsoft.AspNetCore.Mvc;
+
+namespace CareerPilotAi.Application.Commands.PrepareInterviewPreparationContent;
+
+public record PrepareInterviewPreparationContentResponse(bool IsSuccess, PrepareInterviewPreparationContentPromptOutputModel? OutputModel, ProblemDetails? ProblemDetails);

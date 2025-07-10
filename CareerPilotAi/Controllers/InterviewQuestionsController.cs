@@ -3,6 +3,8 @@ namespace CareerPilotAi.Controllers;
 using CareerPilotAi.Application.Commands.Dispatcher;
 using CareerPilotAi.Application.Commands.GenerateInterviewQuestions;
 using CareerPilotAi.Application.Commands.DeleteInterviewQuestion;
+using CareerPilotAi.Application.Commands.PrepareInterviewPreparationContent;
+using CareerPilotAi.Application.Commands.SaveInterviewPreparationContent;
 using CareerPilotAi.Application.Services;
 using CareerPilotAi.Infrastructure.Persistence;
 using CareerPilotAi.Models.JobApplication;
@@ -86,26 +88,31 @@ public class InterviewQuestionsController : Controller
                 );
             }
 
-            var interviewQuestions = await _applicationDbContext.InterviewQuestions
+            var interviewQuestions = await _applicationDbContext.InterviewQuestionsSections
+                .Include(iqs => iqs.Questions)
                 .AsNoTracking()
                 .Where(iq => iq.JobApplicationId == jobApplicationId)
-                .Select(iq => new InterviewQuestionViewModel
-                {
-                    Id = iq.Id,
-                    Question = iq.Question,
-                    Answer = iq.Answer,
-                    Status = iq.Status,
-                    FeedbackMessage = iq.FeedbackMessage
-                })
-                .ToListAsync(cancellationToken);
+                .SingleOrDefaultAsync();
+                
+            if (interviewQuestions == null)
+                return Ok(new InterviewQuestionsSectionViewModel());
 
-            var viewModel = new InterviewQuestionsViewModel
+            var viewModel = new InterviewQuestionsSectionViewModel
             {
-                InterviewQuestions = interviewQuestions
+                Id = interviewQuestions.Id,
+                PreparationContent = interviewQuestions.PreparationContent,
+                FeedbackMessage = interviewQuestions.InterviewQuestionsFeedbackMessage,
+                Status = interviewQuestions.Status,
+                InterviewQuestions = interviewQuestions.Questions.Any() ?
+                interviewQuestions.Questions.Select(q => new InterviewQuestionViewModel
+                {
+                    Id = q.Id,
+                    Question = q.Question,
+                    Answer = q.Answer,
+                    Guide = q.Guide
+                }).ToList() 
+                : new List<InterviewQuestionViewModel>()
             };
-
-            _logger.LogInformation("Fetched {QuestionsCount} interview questions for JobApplicationId: {jobApplicationId} and UserId: {userId}", 
-                interviewQuestions.Count, jobApplicationId, userId);
 
             return Ok(viewModel);
         }
@@ -156,4 +163,96 @@ public class InterviewQuestionsController : Controller
             );
         }
     }
+
+    [HttpPost("api/prepare-content/{jobApplicationId:guid}")]
+    public async Task<IActionResult> PrepareInterviewPreparationContent(Guid jobApplicationId, CancellationToken cancellationToken)
+    {
+        try
+        {
+            var response = await _commandDispatcher
+                .DispatchAsync<PrepareInterviewPreparationContentCommand, PrepareInterviewPreparationContentResponse>(
+                    new PrepareInterviewPreparationContentCommand(jobApplicationId), cancellationToken);
+
+            if (response.IsSuccess)
+            {
+                return Ok(new 
+                { 
+                    success = true, 
+                    preparationContent = response.OutputModel?.PreparedContentDescriptionOutput,
+                    feedbackMessage = response.OutputModel?.OutputFeedbackMessage,
+                    status = response.OutputModel?.OutputStatus
+                });
+            }
+
+            return Problem(
+                type: response.ProblemDetails?.Type,
+                title: response.ProblemDetails?.Title,
+                detail: response.ProblemDetails?.Detail,
+                statusCode: response.ProblemDetails?.Status,
+                instance: response.ProblemDetails?.Instance
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while preparing interview preparation content for job application {JobApplicationId}", jobApplicationId);
+            return Problem(
+                type: HttpStatusCode.InternalServerError.ToString(),
+                title: "Internal server error",
+                detail: "Something went wrong while preparing interview content. Please try again later.",
+                statusCode: (int)HttpStatusCode.InternalServerError,
+                instance: HttpContext.Request.Path.ToString()
+            );
+        }
+    }
+
+    [HttpPost("api/save-preparation-content/{jobApplicationId:guid}")]
+    public async Task<IActionResult> SaveInterviewPreparationContent(Guid jobApplicationId, [FromBody] SaveInterviewPreparationContentRequest request, CancellationToken cancellationToken)
+    {
+        try
+        {
+            if (string.IsNullOrWhiteSpace(request?.PreparationContent))
+            {
+                return Problem(
+                    type: HttpStatusCode.BadRequest.ToString(),
+                    title: "Invalid Request",
+                    detail: "Preparation content cannot be empty.",
+                    statusCode: (int)HttpStatusCode.BadRequest,
+                    instance: HttpContext.Request.Path.ToString()
+                );
+            }
+
+            var response = await _commandDispatcher
+                .DispatchAsync<SaveInterviewPreparationContentCommand, SaveInterviewPreparationContentResponse>(
+                    new SaveInterviewPreparationContentCommand(jobApplicationId, request.PreparationContent), cancellationToken);
+
+            if (response.IsSuccess)
+            {
+                return Ok(new { success = true, message = "Interview preparation content saved successfully." });
+            }
+
+            return Problem(
+                type: response.ProblemDetails?.Type,
+                title: response.ProblemDetails?.Title,
+                detail: response.ProblemDetails?.Detail,
+                statusCode: response.ProblemDetails?.Status,
+                instance: response.ProblemDetails?.Instance
+            );
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while saving interview preparation content for job application {JobApplicationId}", jobApplicationId);
+            return Problem(
+                type: HttpStatusCode.InternalServerError.ToString(),
+                title: "Internal server error",
+                detail: "Something went wrong while saving interview preparation content. Please try again later.",
+                statusCode: (int)HttpStatusCode.InternalServerError,
+                instance: HttpContext.Request.Path.ToString()
+            );
+        }
+    }
+}
+
+public class SaveInterviewPreparationContentRequest
+{
+    public string PreparationContent { get; set; } = string.Empty;
 }

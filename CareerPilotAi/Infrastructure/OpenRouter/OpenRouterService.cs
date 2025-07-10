@@ -2,6 +2,7 @@
 using CareerPilotAi.Prompts.EnhanceJobDescription;
 using CareerPilotAi.Prompts.GenerateInterviewQuestions;
 using CareerPilotAi.Prompts.PersonalDataPdfScrape;
+using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
 using System.Text.Json;
 
 namespace CareerPilotAi.Infrastructure.OpenRouter;
@@ -185,5 +186,56 @@ public class OpenRouterService
         var response = await SendOpenRouterRequestAsync(requestJson, cancellationToken);
         var messageContent = response?.Choices.FirstOrDefault()?.Message?.Content ?? throw new InvalidOperationException($"No content found in the response from OpenRouter. Action: {nameof(GenerateInterviewQuestionsAsync)}");
         return JsonSerializer.Deserialize<GenerateInterviewQuestionsPromptOutputModel>(messageContent) ?? throw new InvalidOperationException($"Failed to deserialize response content to {nameof(GenerateInterviewQuestionsPromptOutputModel)}. Action: {nameof(GenerateInterviewQuestionsAsync)}");
+    }
+
+    public async Task<PrepareInterviewPreparationContentPromptOutputModel> PrepareInterviewPreparationContentAsync(PrepareInterviewPreparationContentPromptInputModel inputModel, CancellationToken cancellationToken)
+    {
+        #region Validate Input
+        if (inputModel == null)
+        {
+            throw new ArgumentNullException(nameof(inputModel), "Input model cannot be null.");
+        }
+
+        if (string.IsNullOrWhiteSpace(inputModel.JobDescription))
+        {
+            throw new ArgumentException("Job description cannot be null or empty.", nameof(inputModel.JobDescription));
+        }
+        #endregion
+
+        var prompt = _promptsProvider.GetPrompt(new PrepareInterviewPreparationContentPrompt());
+        var settings = _openRouterFeatureSettings.Get(OpenRouterFeatureSettingsProvider.PrepareInterviewPreparationContent);
+
+        var userInputMessage = JsonSerializer.Serialize(inputModel);
+        var request = new
+        {
+            model = settings.Model,
+            temperature = settings.Temperature,
+            stream = false,
+            response_format = new
+            {
+                type = "json_object"
+            },
+            messages = new[]
+            {
+                new
+                {
+                    role = "system",
+                    content = prompt
+                },
+                new
+                {
+                    role = "user",
+                    content = userInputMessage
+                }
+            }
+        };
+
+        var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions
+        {
+            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
+        });
+        var response = await SendOpenRouterRequestAsync(requestJson, cancellationToken);
+        var messageContent = response?.Choices.FirstOrDefault()?.Message?.Content ?? throw new InvalidOperationException($"No content found in the response from OpenRouter. Action: {nameof(PrepareInterviewPreparationContentAsync)}");
+        return JsonSerializer.Deserialize<PrepareInterviewPreparationContentPromptOutputModel>(messageContent) ?? throw new InvalidOperationException($"Failed to deserialize response content to {nameof(PrepareInterviewPreparationContentPromptOutputModel)}. Action: {nameof(PrepareInterviewPreparationContentAsync)}");
     }
 }
