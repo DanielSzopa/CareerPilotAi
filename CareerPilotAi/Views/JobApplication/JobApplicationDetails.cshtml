@@ -182,14 +182,34 @@
                                         <span class="badge bg-secondary ms-2" id="questionsCounter">0/30</span>
                                     </h5>
                                     <p class="text-muted mb-0 small">Get personalized interview questions generated from your preparation content. Enhance your preparation content above with specific role details, skills, and requirements for the most relevant questions.</p>
+                                    <div id="remainingSlotsInfo" class="text-info small mt-1" style="display: none;">
+                                        <i class="fas fa-info-circle me-1"></i>
+                                        <span id="remainingSlotsText"></span>
+                                    </div>
                                     <div id="questionsLimitMessage" class="text-warning small mt-1" style="display: none;">
                                         <i class="fas fa-exclamation-triangle me-1"></i>
                                         You've reached the maximum limit of 30 interview questions.
                                     </div>
                                 </div>
-                                <button class="btn btn-primary" id="generateQuestions">
-                                    <i class="fas fa-magic me-2"></i>Generate
-                                </button>
+                                <div class="d-flex align-items-center gap-3">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <label for="questionsCount" class="form-label mb-0 small text-muted">Questions:</label>
+                                        <input type="number" 
+                                               id="questionsCount" 
+                                               class="form-control form-control-sm" 
+                                               style="width: 70px;" 
+                                               min="1" 
+                                               max="10" 
+                                               value="5" 
+                                               title="Number of questions to generate (1-10 per batch, max 30 total)"
+                                               data-bs-toggle="tooltip" 
+                                               data-bs-placement="top" 
+                                               data-bs-title="Number of questions to generate (1-10 per batch, max 30 total)">
+                                    </div>
+                                    <button class="btn btn-primary" id="generateQuestions">
+                                        <i class="fas fa-magic me-2"></i>Generate
+                                    </button>
+                                </div>
                             </div>
                             <!-- Message container specifically for Interview Questions Generation -->
                             <div id="interviewQuestionsGenerationMessages"></div>
@@ -342,6 +362,21 @@
         opacity: 0.6;
         cursor: not-allowed;
     }
+    
+    /* Questions count input styling */
+    #questionsCount {
+        text-align: center;
+    }
+    
+    #questionsCount::-webkit-outer-spin-button,
+    #questionsCount::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    
+    #questionsCount[type=number] {
+        -moz-appearance: textfield;
+    }
 </style>
 
 @section Scripts {
@@ -359,6 +394,7 @@
             let interviewQuestions = [];
             let questionsLoaded = false;
             const MAX_QUESTIONS = 30;
+            const MAX_QUESTIONS_PER_BATCH = 10;
             
             // ===========================================
             // TAB MANAGEMENT SYSTEM (Query Parameter-based)
@@ -501,6 +537,57 @@
             
             // Initialize questions counter on page load
             updateQuestionsCounter();
+            
+            // Initialize Bootstrap tooltips
+            if (typeof bootstrap !== 'undefined') {
+                var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+                var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                    return new bootstrap.Tooltip(tooltipTriggerEl);
+                });
+            }
+            
+            // Add input validation for questions count
+            $('#questionsCount').on('input change', function() {
+                validateQuestionsCountInput();
+            });
+            
+            // Validate questions count input
+            function validateQuestionsCountInput() {
+                const $input = $('#questionsCount');
+                const count = interviewQuestions.length;
+                const remainingSlots = MAX_QUESTIONS - count;
+                const maxAllowed = Math.min(MAX_QUESTIONS_PER_BATCH, remainingSlots);
+                const inputValue = parseInt($input.val()) || 1;
+                
+                // Clear any existing validation classes
+                $input.removeClass('is-invalid is-valid');
+                
+                if (inputValue < 1) {
+                    $input.val(1);
+                } else if (inputValue > maxAllowed) {
+                    $input.addClass('is-invalid');
+                    $input.val(maxAllowed);
+                    
+                    // Show validation message
+                    if (remainingSlots < MAX_QUESTIONS_PER_BATCH) {
+                        showTabMessage(
+                            `You can only generate ${remainingSlots} more question${remainingSlots === 1 ? '' : 's'} to reach the maximum limit of ${MAX_QUESTIONS}.`,
+                            'warning',
+                            'interviewQuestionsGenerationMessages',
+                            true
+                        );
+                    } else {
+                        showTabMessage(
+                            `Maximum ${MAX_QUESTIONS_PER_BATCH} questions can be generated per batch.`,
+                            'warning', 
+                            'interviewQuestionsGenerationMessages',
+                            true
+                        );
+                    }
+                } else {
+                    $input.addClass('is-valid');
+                }
+            }
             
             // ===========================================
             // COLLAPSE/EXPAND FUNCTIONALITY
@@ -1039,11 +1126,35 @@
                 const count = interviewQuestions.length;
                 const $counter = $('#questionsCounter');
                 const $limitMessage = $('#questionsLimitMessage');
+                const $remainingSlotsInfo = $('#remainingSlotsInfo');
+                const $remainingSlotsText = $('#remainingSlotsText');
                 const $generateBtn = $('#generateQuestions');
                 const $generateMoreBtn = $('#generateMoreQuestions');
+                const $questionsCountInput = $('#questionsCount');
                 
                 // Update counter display
                 $counter.text(`${count}/${MAX_QUESTIONS}`);
+                
+                // Calculate remaining slots
+                const remainingSlots = MAX_QUESTIONS - count;
+                
+                // Update remaining slots info
+                if (remainingSlots > 0 && remainingSlots <= 10) {
+                    $remainingSlotsText.text(`${remainingSlots} slot${remainingSlots === 1 ? '' : 's'} remaining`);
+                    $remainingSlotsInfo.show();
+                } else {
+                    $remainingSlotsInfo.hide();
+                }
+                
+                // Update input field constraints
+                const maxAllowed = Math.min(MAX_QUESTIONS_PER_BATCH, remainingSlots);
+                $questionsCountInput.attr('max', maxAllowed);
+                
+                // Validate current input value
+                const currentInputValue = parseInt($questionsCountInput.val()) || 1;
+                if (currentInputValue > maxAllowed) {
+                    $questionsCountInput.val(maxAllowed);
+                }
                 
                 // Update counter color based on count
                 $counter.removeClass('bg-secondary bg-warning bg-danger');
@@ -1062,6 +1173,7 @@
                 const hasReachedLimit = count >= MAX_QUESTIONS;
                 $generateBtn.prop('disabled', hasReachedLimit);
                 $generateMoreBtn.prop('disabled', hasReachedLimit);
+                $questionsCountInput.prop('disabled', hasReachedLimit);
                 
                 if (hasReachedLimit) {
                     $generateBtn.html('<i class="fas fa-magic me-2"></i>Generate (Limit Reached)');
@@ -1086,6 +1198,15 @@
             
             // Generate more questions button click
             $(document).on('click', '#generateMoreQuestions', function() {
+                // Set a reasonable default for "Generate More" if the current value is too high
+                const currentValue = parseInt($('#questionsCount').val()) || 5;
+                const remainingSlots = MAX_QUESTIONS - interviewQuestions.length;
+                const maxAllowed = Math.min(MAX_QUESTIONS_PER_BATCH, remainingSlots);
+                
+                if (currentValue > maxAllowed) {
+                    $('#questionsCount').val(Math.min(5, maxAllowed));
+                }
+                
                 generateInterviewQuestions();
             });
             
@@ -1180,6 +1301,38 @@
                 const $generateMoreBtn = $('#generateMoreQuestions');
                 const activeBtn = $generateBtn.is(':visible') ? $generateBtn : $generateMoreBtn;
                 
+                // Get and validate the requested number of questions
+                const requestedCount = parseInt($('#questionsCount').val()) || 5;
+                const currentCount = interviewQuestions.length;
+                const remainingSlots = MAX_QUESTIONS - currentCount;
+                const maxAllowed = Math.min(MAX_QUESTIONS_PER_BATCH, remainingSlots);
+                
+                // Validate the requested count
+                if (requestedCount > maxAllowed) {
+                    if (remainingSlots === 0) {
+                        showTabMessage(
+                            `You've reached the maximum limit of ${MAX_QUESTIONS} interview questions. Please remove some questions if you want to generate new ones.`,
+                            'warning',
+                            'interviewQuestionsGenerationMessages'
+                        );
+                    } else if (remainingSlots < MAX_QUESTIONS_PER_BATCH) {
+                        showTabMessage(
+                            `You can only generate ${remainingSlots} more question${remainingSlots === 1 ? '' : 's'} to reach the maximum limit of ${MAX_QUESTIONS}. Please adjust the number and try again.`,
+                            'warning',
+                            'interviewQuestionsGenerationMessages'
+                        );
+                        $('#questionsCount').val(remainingSlots);
+                    } else {
+                        showTabMessage(
+                            `Maximum ${MAX_QUESTIONS_PER_BATCH} questions can be generated per batch. Please adjust the number and try again.`,
+                            'warning',
+                            'interviewQuestionsGenerationMessages'
+                        );
+                        $('#questionsCount').val(MAX_QUESTIONS_PER_BATCH);
+                    }
+                    return;
+                }
+                
                 // Check if we've reached the maximum questions limit
                 if (!canGenerateMoreQuestions()) {
                     showTabMessage(
@@ -1211,10 +1364,14 @@
                 
                 try {
                     const response = await fetch(`/InterviewQuestions/api/generate/@Model.JobApplicationId`, {
-                        method: 'GET',
+                        method: 'POST',
                         headers: {
-                            'Content-Type': 'application/json'
-                        }
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
+                        },
+                        body: JSON.stringify({
+                            questionsCount: requestedCount
+                        })
                     });
                     
                     if (!response.ok) {
@@ -1237,7 +1394,18 @@
                     
                     if (outputStatus === 'Success') {
                         const questionsCount = newInterviewQuestions ? newInterviewQuestions.length : 0;
-                        showTabMessage(outputFeedbackMessage || `Successfully generated ${questionsCount} interview questions.`, 'success', 'interviewQuestionsGenerationMessages', true);
+                        
+                        // Show message about requested vs generated
+                        let successMessage = outputFeedbackMessage;
+                        if (!successMessage) {
+                            if (questionsCount === requestedCount) {
+                                successMessage = `Successfully generated ${questionsCount} interview question${questionsCount === 1 ? '' : 's'}.`;
+                            } else {
+                                successMessage = `Successfully generated ${questionsCount} interview question${questionsCount === 1 ? '' : 's'} (requested ${requestedCount}).`;
+                            }
+                        }
+                        
+                        showTabMessage(successMessage, 'success', 'interviewQuestionsGenerationMessages', true);
                         
                         // Process and display the new questions directly from the API response
                         if (newInterviewQuestions && newInterviewQuestions.length > 0) {

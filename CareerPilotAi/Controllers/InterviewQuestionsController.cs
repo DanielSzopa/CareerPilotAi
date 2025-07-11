@@ -8,6 +8,7 @@ using CareerPilotAi.Application.Commands.SaveInterviewPreparationContent;
 using CareerPilotAi.Application.Services;
 using CareerPilotAi.Infrastructure.Persistence;
 using CareerPilotAi.Models.JobApplication;
+using CareerPilotAi.Models.InterviewQuestions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -32,11 +33,22 @@ public class InterviewQuestionsController : Controller
         _userService = userService;
     }
 
-    [HttpGet("api/generate/{jobApplicationId:guid}")]
-    public async Task<IActionResult> GenerateInterviewQuestions(Guid jobApplicationId, CancellationToken cancellationToken)
+    [HttpPost("api/generate/{jobApplicationId:guid}")]
+    public async Task<IActionResult> GenerateInterviewQuestions(Guid jobApplicationId, [FromBody] GenerateInterviewQuestionsRequest request, CancellationToken cancellationToken)
     {
         try
         {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState);
+            }
+
+            // Note: For now, we're not passing the questionsCount to the command
+            // This parameter will be handled in the business logic layer in a future update
+            // The frontend validation ensures the count is within acceptable limits (1-10 per batch, max 30 total)
+            _logger.LogInformation("Generating interview questions for JobApplicationId: {JobApplicationId}, RequestedCount: {RequestedCount}", 
+                jobApplicationId, request.QuestionsCount);
+            
             var response = await _commandDispatcher
                 .DispatchAsync<GenerateInterviewQuestionsCommand, GenerateInterviewQuestionsResponse>(new GenerateInterviewQuestionsCommand(jobApplicationId), cancellationToken);
             if (response.IsSuccess)
