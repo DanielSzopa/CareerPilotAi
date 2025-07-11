@@ -8,6 +8,7 @@
 - improve logs
 - optimise db queries, add indexes
 - create dashboard
+- Delete czasem nie działa => zmieniłem interview preparation content, a później usunelem inerview questions
 
 -------------------------------------- 
 - Explain architecture of CareerPilotAi
