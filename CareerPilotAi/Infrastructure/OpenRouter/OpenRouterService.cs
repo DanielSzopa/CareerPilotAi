@@ -139,9 +139,9 @@ public class OpenRouterService
             throw new ArgumentException("Company name cannot be null or empty.", nameof(inputModel.CompanyName));
         }
 
-        if (string.IsNullOrWhiteSpace(inputModel.JobDescription))
+        if (string.IsNullOrWhiteSpace(inputModel.InterviewQuestionsPreparation))
         {
-            throw new ArgumentException("Job description cannot be null or empty.", nameof(inputModel.JobDescription));
+            throw new ArgumentException("Interview questions preparation cannot be null or empty.", nameof(inputModel.InterviewQuestionsPreparation));
         }
 
         if (string.IsNullOrWhiteSpace(inputModel.JobRole))

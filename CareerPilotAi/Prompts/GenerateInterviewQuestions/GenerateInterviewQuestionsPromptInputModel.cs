@@ -1,3 +1,3 @@
 namespace CareerPilotAi.Prompts.GenerateInterviewQuestions;
 
-public record GenerateInterviewQuestionsPromptInputModel(string CompanyName, string JobDescription, string JobRole);
+public record GenerateInterviewQuestionsPromptInputModel(string CompanyName, string JobRole, string InterviewQuestionsPreparation);

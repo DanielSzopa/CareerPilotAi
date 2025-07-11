@@ -4,15 +4,13 @@
     "InterviewQuestions": [
         {
             "Question": "Can you describe your experience with the specific technologies mentioned in the job description?",
-            "Answer": "This question assesses the candidate's familiarity with the tools and technologies relevant to the position.",
-            "Status": "Warning",
-            "FeedbackMessage": "The job description does not provide enough detail about the specific technologies used in the role."
+            "Guide": "This question assesses the candidate's familiarity with the tools and technologies relevant to the position.",
+            "Answer": "I have extensive experience with JavaScript, React, Node.js, and AWS. In my previous role, I developed several full-stack applications using these technologies, focusing on building responsive user interfaces with React and implementing server-side logic with Node.js. I also utilized AWS for deploying applications and managing cloud resources."
         },
         {
             "Question": "How do you prioritize tasks when working on multiple projects simultaneously?",
-            "Answer": "This question evaluates the candidate's ability to manage their time effectively and handle competing priorities.",
-            "Status": "Success",
-            "FeedbackMessage": ""
+            "Guide": "This question assesses the candidate's familiarity with the tools and technologies relevant to the position.",
+            "Answer": "I use a systematic approach to prioritize tasks by first assessing deadlines and project impact. I create a priority matrix considering urgency and importance, communicate with stakeholders about timelines, and use project management tools to track progress. I also build in buffer time for unexpected issues and regularly reassess priorities as project requirements evolve."
         }
     ]
 }

@@ -32,83 +32,90 @@ public class GenerateInterviewQuestionsCommandHandler : ICommandHandler<Generate
 
     public async Task<GenerateInterviewQuestionsResponse> HandleAsync(GenerateInterviewQuestionsCommand command, CancellationToken cancellationToken)
     {
-        // var userId = _userService.GetUserIdOrThrowException();
-        // var jobApplicationDbModel = await _dbContext.JobApplications
-        //     .Include(x => x.InterviewQuestions)
-        //     .Where(x => x.JobApplicationId == command.JobApplicationId && x.UserId == userId)
-        //     .FirstOrDefaultAsync();
+        var userId = _userService.GetUserIdOrThrowException();
+        var interviewQuestionsSection = await _dbContext.InterviewQuestionsSections
+            .Include(x => x.JobApplication)
+            .Include(x => x.Questions)
+            .Where(x => x.JobApplicationId == command.JobApplicationId && x.JobApplication.UserId == userId)
+            .SingleOrDefaultAsync();
 
-        // if (jobApplicationDbModel is null)
-        // {
-        //     _logger.LogError("Job application with ID {JobApplicationId} not found for user {UserId}.", command.JobApplicationId, userId);
-        //     return new GenerateInterviewQuestionsResponse(false, null, new ProblemDetails
-        //     {
-        //         Type = HttpStatusCode.NotFound.ToString(),
-        //         Title = "Job Application Not Found",
-        //         Detail = "The specified job application could not be found.",
-        //         Status = (int)HttpStatusCode.NotFound,
-        //         Instance = _httpContextAccessor?.HttpContext?.Request.Path.ToString()
-        //     });
-        // }
+        if (interviewQuestionsSection is null || interviewQuestionsSection.JobApplication is null)
+        {
+            _logger.LogError("Interview questions section for job application ID {JobApplicationId} not found for user {UserId}.", command.JobApplicationId, userId);
+            return new GenerateInterviewQuestionsResponse(false, null, new ProblemDetails
+            {
+                Type = HttpStatusCode.NotFound.ToString(),
+                Title = "Interview Questions Section Not Found",
+                Detail = "The specified interview questions section could not be found.",
+                Status = (int)HttpStatusCode.NotFound,
+                Instance = _httpContextAccessor?.HttpContext?.Request.Path.ToString()
+            });
+        }
 
-        // var interviewQuestions = new InterviewQuestions(jobApplicationDbModel.JobApplicationId,
-        //     jobApplicationDbModel.Title, jobApplicationDbModel.Company, jobApplicationDbModel.JobDescription);
+        var interviewQuestions = new InterviewQuestions(interviewQuestionsSection.JobApplicationId,
+            interviewQuestionsSection.JobApplication.Title, interviewQuestionsSection.JobApplication.Company, interviewQuestionsSection.PreparationContent);
 
-        // foreach (var question in jobApplicationDbModel.InterviewQuestions)
-        // {
-        //     interviewQuestions.AddQuestion(new SingleInterviewQuestion(question.Id, question.Question, question.Answer, question.Status, question.FeedbackMessage));
-        // }
+        foreach (var question in interviewQuestionsSection.Questions)
+        {
+            interviewQuestions.AddQuestion(new SingleInterviewQuestion(question.Id, question.Question, question.Answer, question.Guide));
+        }
 
-        // if(interviewQuestions.ShouldGenerateFirstInterviewQuestions())
-        // {
-        //     var firstQuestionsResult = await _openRouterService
-        //         .GenerateInterviewQuestionsAsync(new GenerateInterviewQuestionsPromptInputModel(interviewQuestions.CompanyName, interviewQuestions.JobDescription, interviewQuestions.JobRole), cancellationToken);
+        if(interviewQuestions.ShouldGenerateFirstInterviewQuestions())
+        {
+            var firstQuestionsResult = await _openRouterService
+                .GenerateInterviewQuestionsAsync(new GenerateInterviewQuestionsPromptInputModel(interviewQuestions.CompanyName, interviewQuestions.JobRole, interviewQuestions.InterviewPreparationContent), cancellationToken);
 
-        //     if (firstQuestionsResult is null)
-        //     {
-        //         _logger.LogError("No initial interview questions generated for job application ID {JobApplicationId}.", command.JobApplicationId);
-        //         return new GenerateInterviewQuestionsResponse(false, null, new ProblemDetails
-        //         {
-        //             Type = HttpStatusCode.BadRequest.ToString(),
-        //             Title = "No Questions Generated",
-        //             Detail = "No initial interview questions could be generated for the provided job application.",
-        //             Status = (int)HttpStatusCode.BadRequest,
-        //             Instance = _httpContextAccessor?.HttpContext?.Request.Path.ToString()
-        //         });
-        //     }
+            if (firstQuestionsResult is null)
+            {
+                _logger.LogError("No initial interview questions generated for job application ID {JobApplicationId}.", command.JobApplicationId);
+                return new GenerateInterviewQuestionsResponse(false, null, new ProblemDetails
+                {
+                    Type = HttpStatusCode.BadRequest.ToString(),
+                    Title = "No Questions Generated",
+                    Detail = "No initial interview questions could be generated for the provided job application.",
+                    Status = (int)HttpStatusCode.BadRequest,
+                    Instance = _httpContextAccessor?.HttpContext?.Request.Path.ToString()
+                });
+            }
 
-        //     if (firstQuestionsResult.OutputStatus.ToLower() != "success")
-        //     {
-        //         _logger.LogError("LLM wasn't able to generate initial interview questions for job application ID {JobApplicationId}: {FeedbackMessage}", command.JobApplicationId, firstQuestionsResult.OutputFeedbackMessage);
-        //         return new GenerateInterviewQuestionsResponse(true, firstQuestionsResult, null);
-        //     }
+            if (firstQuestionsResult.OutputStatus.ToLower() != "success")
+            {
+                _logger.LogError("LLM wasn't able to generate initial interview questions for job application ID {JobApplicationId}: {FeedbackMessage}", command.JobApplicationId, firstQuestionsResult.OutputFeedbackMessage);
+            }
 
-        //     _dbContext.InterviewQuestions.AddRange(firstQuestionsResult.InterviewQuestions.Select(q => new InterviewQuestionDataModel
-        //     {
-        //         JobApplicationId = jobApplicationDbModel.JobApplicationId,
-        //         Question = q.Question,
-        //         Answer = q.Answer,
-        //         Status = q.Status,
-        //         FeedbackMessage = q.FeedbackMessage
-        //     }));
+            interviewQuestionsSection.InterviewQuestionsFeedbackMessage = firstQuestionsResult.OutputFeedbackMessage;
+            interviewQuestionsSection.Status = firstQuestionsResult.OutputStatus;
 
-        //     await _dbContext.SaveChangesAsync(cancellationToken);
+            if (firstQuestionsResult.InterviewQuestions is not null && firstQuestionsResult.InterviewQuestions.Any())
+            {
+                foreach (var firstQuestion in firstQuestionsResult.InterviewQuestions)
+                {
+                    interviewQuestionsSection.Questions.Add(new InterviewQuestionDataModel
+                    {
+                        InterviewQuestionsSectionId = interviewQuestionsSection.Id,
+                        Question = firstQuestion.Question,
+                        Answer = firstQuestion.Answer,
+                        Guide = firstQuestion.Guide
+                    });
+                }
+            }
 
-        //     return new GenerateInterviewQuestionsResponse(true, firstQuestionsResult, null);
-        // }
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            return new GenerateInterviewQuestionsResponse(true, firstQuestionsResult, null);
+        }
 
-        // if (!interviewQuestions.CanGenerateMoreInterviewQuestions())
-        // {
-        //     _logger.LogError("Cannot generate more interview questions for job application ID {JobApplicationId}. Maximum limit {limit} reached.", interviewQuestions.JobApplicationId, interviewQuestions._maxQuestions);
-        //     return new GenerateInterviewQuestionsResponse(false, null, new ProblemDetails
-        //     {
-        //         Type = HttpStatusCode.BadRequest.ToString(),
-        //         Title = "Maximum Questions Reached",
-        //         Detail = "You have reached the maximum number of interview questions for this job application.",
-        //         Status = (int)HttpStatusCode.BadRequest,
-        //         Instance = _httpContextAccessor?.HttpContext?.Request.Path.ToString()
-        //     });
-        // }
+        if (!interviewQuestions.CanGenerateMoreInterviewQuestions())
+        {
+            _logger.LogError("Cannot generate more interview questions for job application ID {JobApplicationId}. Maximum limit {limit} reached.", interviewQuestions.JobApplicationId, interviewQuestions._maxQuestions);
+            return new GenerateInterviewQuestionsResponse(false, null, new ProblemDetails
+            {
+                Type = HttpStatusCode.BadRequest.ToString(),
+                Title = "Maximum Questions Reached",
+                Detail = "You have reached the maximum number of interview questions for this job application.",
+                Status = (int)HttpStatusCode.BadRequest,
+                Instance = _httpContextAccessor?.HttpContext?.Request.Path.ToString()
+            });
+        }
 
         throw new NotImplementedException();
     }

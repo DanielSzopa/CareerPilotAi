@@ -5,10 +5,9 @@ internal class SingleInterviewQuestion
     internal Guid Id { get; set; }
     internal string Question { get; set; }
     internal string Answer { get; set; }
-    internal string? Status { get; set; }
-    internal string? FeedbackMessage { get; set; } 
+    internal string Guide { get; set; }
 
-    internal SingleInterviewQuestion(Guid id, string question, string answer, string status, string? feedbackMessage)
+    internal SingleInterviewQuestion(Guid id, string question, string answer, string guide)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("Id cannot be empty.", nameof(id));
@@ -18,14 +17,13 @@ internal class SingleInterviewQuestion
 
         if (string.IsNullOrWhiteSpace(answer))
             throw new ArgumentException("Answer cannot be empty.", nameof(answer));
-        
-        if (string.IsNullOrWhiteSpace(status))
-            throw new ArgumentException("Status cannot be empty.", nameof(status));
-        
+
+        if (string.IsNullOrWhiteSpace(guide))
+            throw new ArgumentException("Guide cannot be empty.", nameof(guide));
+
         Id = id;
         Question = question;
         Answer = answer;
-        Status = status;
-        FeedbackMessage = feedbackMessage;
+        Guide = guide;
     }
 }
