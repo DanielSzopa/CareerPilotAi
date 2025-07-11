@@ -12,3 +12,4 @@
 - Logging, how to write logs
 - Adding information to styling: one lines if statements, one line namespaces
 - Create command handler architecture description
+- https://localhost:5000/job-applications/details/edf24d1c-bafc-4f99-b43a-2ef760feb87e enhance button doesn't work correctly

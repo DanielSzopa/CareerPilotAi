@@ -17,7 +17,7 @@ internal class InterviewQuestionsSectionConfiguration : IEntityTypeConfiguration
             .IsRequired(false);
 
         builder.Property(x => x.Status)
-            .IsRequired();
+            .IsRequired(false);
 
         // Configure relationship with JobApplicationDataModel
         builder.HasOne(x => x.JobApplication)

@@ -69,7 +69,7 @@ public class PrepareInterviewPreparationContentCommandHandler : ICommandHandler<
         {
             // Call OpenRouter service to generate preparation content
             var preparationContentResult = await _openRouterService
-                .PrepareInterviewPreparationContentAsync(new PrepareInterviewPreparationContentPromptInputModel(jobApplication.JobDescription), cancellationToken);
+                .PrepareInterviewPreparationContentAsync(new PrepareInterviewPreparationContentPromptInputModel(jobApplication.JobDescription, jobApplication.Title), cancellationToken);
 
             if (preparationContentResult is null)
             {

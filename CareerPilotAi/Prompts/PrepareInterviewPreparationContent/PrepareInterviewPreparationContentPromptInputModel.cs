@@ -1,3 +1,3 @@
 namespace CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
 
-public record PrepareInterviewPreparationContentPromptInputModel(string JobDescription);
+public record PrepareInterviewPreparationContentPromptInputModel(string JobDescription, string JobRole);

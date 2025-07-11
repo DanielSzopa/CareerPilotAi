@@ -62,8 +62,6 @@ public class SaveInterviewPreparationContentCommandHandler : ICommandHandler<Sav
                     Id = Guid.NewGuid(),
                     JobApplicationId = command.JobApplicationId,
                     PreparationContent = command.PreparationContent,
-                    InterviewQuestionsFeedbackMessage = "Content saved by user",
-                    Status = "Success"
                 };
                 _dbContext.InterviewQuestionsSections.Add(interviewSection);
             }
@@ -71,8 +69,6 @@ public class SaveInterviewPreparationContentCommandHandler : ICommandHandler<Sav
             {
                 // Update existing interview questions section
                 interviewSection.PreparationContent = command.PreparationContent;
-                interviewSection.InterviewQuestionsFeedbackMessage = "Content updated by user";
-                interviewSection.Status = "Success";
             }
 
             await _dbContext.SaveChangesAsync(cancellationToken);
