@@ -19,6 +19,9 @@ internal class InterviewQuestionConfiguration : IEntityTypeConfiguration<Intervi
         builder.Property(x => x.Guide)
             .IsRequired();
 
+        builder.Property(x => x.IsActive)
+            .HasDefaultValue(true);
+
         // Configure relationship with InterviewQuestionsSectionDataModel
         builder.HasOne(x => x.InterviewQuestionsSection)
             .WithMany(x => x.Questions)

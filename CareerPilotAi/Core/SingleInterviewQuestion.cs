@@ -1,13 +1,14 @@
 namespace CareerPilotAi.Core;
 
-internal class SingleInterviewQuestion
+public class SingleInterviewQuestion
 {
-    internal Guid Id { get; set; }
-    internal string Question { get; set; }
-    internal string Answer { get; set; }
-    internal string Guide { get; set; }
+    public Guid Id { get; set; }
+    public string Question { get; set; }
+    public string Answer { get; set; }
+    public string Guide { get; set; }
+    public bool IsActive { get; set; }
 
-    internal SingleInterviewQuestion(Guid id, string question, string answer, string guide)
+    public SingleInterviewQuestion(Guid id, string question, string answer, string guide, bool isActive)
     {
         if (id == Guid.Empty)
             throw new ArgumentException("Id cannot be empty.", nameof(id));
@@ -25,5 +26,6 @@ internal class SingleInterviewQuestion
         Question = question;
         Answer = answer;
         Guide = guide;
+        IsActive = isActive;
     }
 }

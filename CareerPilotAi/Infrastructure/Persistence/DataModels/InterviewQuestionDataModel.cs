@@ -6,6 +6,7 @@ internal class InterviewQuestionDataModel
     internal string Question { get; set; }
     internal string Answer { get; set; }
     internal string Guide { get; set; }
+    internal bool IsActive { get; set; }
     internal Guid InterviewQuestionsSectionId { get; set; }
     internal InterviewQuestionsSectionDataModel InterviewQuestionsSection { get; set; }
 }

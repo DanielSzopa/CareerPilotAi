@@ -1,0 +1,38 @@
+{
+    "CompanyName": "ConnectSphere Solutions",
+    "JobRole": "Customer Service Representative",
+    "InterviewQuestionsPreparation": "The candidate is applying for a Customer Service Representative role. Please generate questions that assess the following areas:\n\n**Core Competencies:**\n- **Communication:** Clarity in verbal and written communication, active listening skills.\n- **Problem-Solving:** Ability to understand customer issues, identify root causes, and find effective solutions.\n- **Empathy and Patience:** Skill in handling frustrated or difficult customers with a calm and understanding demeanor.\n- **De-escalation:** Techniques for managing conflict and turning negative experiences into positive ones.\n\n**Skills & Experience:**\n- **Product Knowledge:** Ability to quickly learn and explain product features and troubleshoot common issues.\n- **Time Management:** Experience prioritizing tasks, managing ticket queues, and meeting service level agreements (SLAs).\n- **Tool Proficiency:** Familiarity with CRM software (e.g., Zendesk, Salesforce) and helpdesk ticketing systems.\n- **Positive Attitude:** Maintaining a professional and helpful attitude even in challenging situations.",
+    "numberOfQuestionsToGenerate": 10,
+    "Questions": [
+        {
+            "Question": "Describe a time you had to deal with a very angry or upset customer. How did you handle the situation, and what was the outcome?",
+            "Answer": "A customer was very frustrated because their software subscription had been renewed accidentally. I actively listened to their concerns without interrupting, empathized with their frustration, and apologized for the inconvenience. I assured them I would resolve it. I checked our system, confirmed the error, and immediately processed a full refund. I also offered them a one-month free credit for the trouble. The customer calmed down, thanked me for the quick resolution, and remained a customer.",
+            "Guide": "This question assesses the candidate's empathy, de-escalation skills, and problem-solving abilities in a high-pressure situation. It shows if they can maintain professionalism and find a positive resolution.",
+            "IsActive": false
+        },
+        {
+            "Question": "Imagine you have a long queue of support tickets, an urgent email from your manager, and a live chat request from a high-value client all at once. How would you prioritize these tasks?",
+            "Answer": "I would first quickly assess the urgency and impact of each task. The live chat from a high-value client would be my top priority because it's a real-time interaction with a key account. I'd acknowledge the chat immediately. Next, I would quickly read my manager's email to see if it requires immediate action. If not, I would then turn my attention to the ticket queue, prioritizing the oldest or most critical tickets first, while keeping my manager informed of my workload if necessary.",
+            "Guide": "This question evaluates the candidate's time management, prioritization skills, and ability to perform under pressure. It reveals their thought process for managing competing demands in a fast-paced environment.",
+            "IsActive": false
+        },
+        {
+            "Question": "How do you handle a situation where a customer asks a question you don't know the answer to?",
+            "Answer": "I would be honest with the customer and tell them that I don't have the answer right away, but I will find out for them. I would say something like, 'That's a great question. I need to consult with a specialist to get you the most accurate information. Can I place you on a brief hold, or would you prefer I call you back?' This approach builds trust by being transparent and shows my commitment to finding the correct solution rather than guessing.",
+            "Guide": "This question assesses honesty, resourcefulness, and commitment to customer satisfaction. It shows whether the candidate is comfortable admitting they don't know something and their process for finding accurate information.",
+            "IsActive": true
+        },
+        {
+            "Question": "What does good customer service mean to you?",
+            "Answer": "To me, good customer service means making the customer feel heard, understood, and valued. It's about efficiently and accurately solving their problem while maintaining a positive and empathetic attitude. It's not just about closing a ticket; it's about leaving the customer with a positive impression of the company, which builds loyalty and trust.",
+            "Guide": "This is a foundational question that reveals the candidate's core philosophy on customer service. It helps determine if their values align with the company's service standards and culture.",
+            "IsActive": true
+        },
+        {
+            "Question": "Tell me about your experience with CRM or helpdesk software.",
+            "Answer": "In my previous role, I used Zendesk daily to manage customer tickets, track communication history, and collaborate with other team members. I'm proficient in creating and updating tickets, using macros for common responses to improve efficiency, and generating basic reports to track my performance metrics like response time and customer satisfaction scores.",
+            "Guide": "This question assesses the candidate's technical proficiency with essential customer service tools. It helps gauge how quickly they can onboard and become a productive member of the team.",
+            "IsActive": true
+        }
+    ]
+}

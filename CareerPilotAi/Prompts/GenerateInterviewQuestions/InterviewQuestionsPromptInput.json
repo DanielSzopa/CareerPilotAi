@@ -1,5 +1,38 @@
 {
-    "JobDescription:": "We are looking for a software engineer with experience in full-stack development. The ideal candidate should have a strong understanding of both front-end and back-end technologies, including HTML, CSS, JavaScript, and server-side languages such as Python or Node.js. Experience with databases and cloud services is also preferred.",
-    "JobRole": "Software Engineer",
-    "CompanyName": "Tech Innovators Inc."
+    "CompanyName": "Tech Innovators Inc.",
+    "JobRole": "Senior .NET Developer",
+    "InterviewQuestionsPreparation": "The candidate is applying for a Senior .NET Developer role. Please generate questions that assess the following areas:\n\n**Technical Skills:**\n- **C# and .NET Core:** Advanced C# features, asynchronous programming (async/await), LINQ, and dependency injection.\n- **ASP.NET Core:** Building and securing RESTful APIs, middleware, and performance optimization.\n- **Database:** Strong SQL skills, experience with Entity Framework Core, and database design principles.\n- **Software Architecture:** SOLID principles, design patterns (e.g., Repository, Singleton, Factory), and experience with microservices or distributed systems.\n- **Cloud:** Experience with a major cloud provider, preferably Azure (e.g., App Services, Azure Functions, Azure SQL).\n- **Testing:** Unit testing (xUnit/NUnit), mocking frameworks (Moq), and integration testing.\n\n**Soft Skills & Experience:**\n- **Problem-Solving:** Ability to troubleshoot complex issues and design robust solutions.\n- **Leadership and Mentoring:** Experience guiding junior developers and leading technical discussions.\n- **Communication:** Ability to explain complex technical concepts to non-technical stakeholders.\n- **Agile/Scrum:** Experience working in an agile development environment.",
+    "numberOfQuestionsToGenerate": 5,
+    "Questions": [
+        {
+            "Question": "Can you explain the difference between `async/await` and using the `Task` Parallel Library directly? Describe a scenario where you would prefer one over the other.",
+            "Answer": "`async/await` is syntactic sugar over the Task Parallel Library (TPL) that simplifies writing asynchronous code, making it look more like synchronous code. It helps manage state machines and exception handling automatically. I'd use `async/await` for I/O-bound operations like web requests or database calls in an ASP.NET Core application to free up the request thread. I might use the TPL directly with `Task.Run` for CPU-bound work that I want to offload to a background thread to keep the UI responsive, or for more complex parallel processing scenarios where I need fine-grained control over task creation and management.",
+            "Guide": "This question assesses the candidate's deep understanding of asynchronous programming in C#, their ability to reason about concurrency and performance, and their practical experience in applying these concepts.",
+            "IsActive": true
+        },
+        {
+            "Question": "Describe the SOLID principles. Can you provide a practical example from a past project where applying one of these principles improved the design of your application?",
+            "Answer": "SOLID stands for Single Responsibility, Open/Closed, Liskov Substitution, Interface Segregation, and Dependency Inversion. In a recent project, we had a large service class that handled user authentication, profile updates, and sending notifications. It was violating the Single Responsibility Principle. We refactored it by splitting it into three separate services: `AuthenticationService`, `UserProfileService`, and `NotificationService`. This made the code easier to understand, test, and maintain. For example, we could now test the authentication logic without needing to set up notification dependencies.",
+            "Guide": "This question evaluates the candidate's knowledge of fundamental software design principles, which are crucial for building maintainable, scalable, and robust applications. It also tests their ability to connect theory to practice.",
+            "IsActive": true
+        },
+        {
+            "Question": "Imagine you are tasked with designing a new RESTful API from scratch. What are the key considerations you would take into account for security?",
+            "Answer": "For security, I would first implement HTTPS to encrypt all traffic. Authentication would be handled using a standard like OAuth 2.0 or OpenID Connect with JWTs. For authorization, I would use role-based or policy-based access control to restrict access to endpoints based on user permissions. I would also implement measures to prevent common vulnerabilities like SQL Injection by using parameterized queries with an ORM like EF Core, and Cross-Site Scripting (XSS) by properly encoding output. Input validation would be enforced on all incoming data. Finally, I'd add rate limiting to prevent abuse.",
+            "Guide": "This question assesses the candidate's understanding of API security best practices, a critical skill for any web developer. It checks for knowledge of authentication, authorization, and common vulnerability prevention.",
+            "IsActive": false
+        },
+        {
+            "Question": "Tell me about a time you had to mentor a junior developer. What was the situation, what was your approach, and what was the outcome?",
+            "Answer": "In my previous role, a junior developer was struggling with understanding dependency injection in our ASP.NET Core project. My approach was to first have a one-on-one session to explain the core concepts (like IoC container, service lifetimes) using simple analogies. Then, we pair-programmed on a small feature, where I let them drive while I guided them on how to register services and inject them into controllers. The outcome was positive; they grasped the concept and became more confident and independent in their work, and it also improved the overall quality of their contributions to the codebase.",
+            "Guide": "This question evaluates the candidate's soft skills, specifically their leadership, mentoring, and communication abilities. It provides insight into their capacity to be a team player and contribute to the growth of others.",
+            "IsActive": false
+        },
+        {
+            "Question": "How would you approach troubleshooting a performance bottleneck in a production web application?",
+            "Answer": "My first step would be to gather data. I'd use application performance monitoring (APM) tools like Azure Application Insights or Datadog to identify slow requests, high memory usage, or CPU spikes. I'd analyze database query performance, looking for slow queries to optimize with better indexing or by rewriting the query. I would also use profiling tools to analyze the .NET code itself to find inefficient algorithms or memory leaks. Once the bottleneck is identified, I'd develop a fix, test it thoroughly in a staging environment, and then deploy it to production while monitoring the impact.",
+            "Guide": "This question assesses the candidate's problem-solving skills and their systematic approach to debugging and optimization. It shows their experience with performance monitoring tools and their ability to work under pressure.",
+            "IsActive": true
+        }
+    ]
 }

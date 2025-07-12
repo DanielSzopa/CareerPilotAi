@@ -1,6 +1,6 @@
-using CareerPilotAi.Prompts.GenerateInterviewQuestions;
+using CareerPilotAi.Models.JobApplication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareerPilotAi.Application.Commands.GenerateInterviewQuestions;
 
-public record GenerateInterviewQuestionsResponse(bool IsSuccess, GenerateInterviewQuestionsPromptOutputModel outputModel, ProblemDetails? ProblemDetails);
+public record GenerateInterviewQuestionsResponse(bool IsSuccess, InterviewQuestionsSectionViewModel InterviewQuestionsSection, ProblemDetails? ProblemDetails);

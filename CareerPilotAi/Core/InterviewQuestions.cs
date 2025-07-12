@@ -38,18 +38,8 @@ internal class InterviewQuestions
         Questions.Add(question);
     }
 
-    internal bool CanGenerateMoreInterviewQuestions()
+    internal List<SingleInterviewQuestion> GetActiveQuestions()
     {
-        if (Questions.Count >= _maxQuestions)
-        {
-            return false;
-        }
-
-        return true;
-    }
-
-    internal bool ShouldGenerateFirstInterviewQuestions()
-    {
-        return Questions.Count == 0;
+        return Questions.Where(q => q.IsActive == true).ToList();
     }
 }

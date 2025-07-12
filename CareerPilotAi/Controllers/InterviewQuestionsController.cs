@@ -50,10 +50,10 @@ public class InterviewQuestionsController : Controller
                 jobApplicationId, request.QuestionsCount);
             
             var response = await _commandDispatcher
-                .DispatchAsync<GenerateInterviewQuestionsCommand, GenerateInterviewQuestionsResponse>(new GenerateInterviewQuestionsCommand(jobApplicationId), cancellationToken);
+                .DispatchAsync<GenerateInterviewQuestionsCommand, GenerateInterviewQuestionsResponse>(new GenerateInterviewQuestionsCommand(jobApplicationId, request.QuestionsCount), cancellationToken);
             if (response.IsSuccess)
             {
-                return Ok(response.outputModel);
+                return Ok(response.InterviewQuestionsSection);
             }
 
             return Problem(
@@ -117,7 +117,9 @@ public class InterviewQuestionsController : Controller
                 FeedbackMessage = interviewQuestions.InterviewQuestionsFeedbackMessage,
                 Status = interviewQuestions.Status,
                 InterviewQuestions = interviewQuestions.Questions.Any() ?
-                interviewQuestions.Questions.Select(q => new InterviewQuestionViewModel
+                interviewQuestions.Questions
+                .Where(q => q.IsActive)
+                .Select(q => new InterviewQuestionViewModel
                 {
                     Id = q.Id,
                     Question = q.Question,

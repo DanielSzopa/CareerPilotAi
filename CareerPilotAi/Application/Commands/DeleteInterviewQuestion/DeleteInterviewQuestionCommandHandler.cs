@@ -45,7 +45,7 @@ public class DeleteInterviewQuestionCommandHandler : ICommandHandler<DeleteInter
                 return new DeleteInterviewQuestionResponse(false, "Interview question not found or you don't have permission to delete it.");
             }
 
-            _applicationDbContext.InterviewQuestions.Remove(interviewQuestion);
+            interviewQuestion.IsActive = false; // Soft delete
             await _applicationDbContext.SaveChangesAsync(cancellationToken);
 
             _logger.LogInformation("Interview question deleted successfully: {interviewQuestionId} for UserId: {userId}", command.InterviewQuestionId, userId);

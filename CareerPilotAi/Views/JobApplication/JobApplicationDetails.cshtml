@@ -1381,69 +1381,50 @@
                     
                     const data = await response.json();
                     
-                    // Handle OutputStatus and OutputFeedbackMessage from GenerateInterviewQuestionsPromptOutputModel
-                    // Handle both camelCase and PascalCase to be safe (depends on serialization settings)
-                    const outputStatus = data.outputStatus || data.OutputStatus;
-                    const outputFeedbackMessage = data.outputFeedbackMessage || data.OutputFeedbackMessage;
-                    const newInterviewQuestions = data.interviewQuestions || data.InterviewQuestions;
+                    // Handle InterviewQuestionsSectionViewModel response structure
+                    // Handle both camelCase and PascalCase property names (depends on serialization settings)
+                    const status = data.status || data.Status;
+                    const feedbackMessage = data.feedbackMessage || data.FeedbackMessage;
+                    const newInterviewQuestions = data.interviewQuestions || data.InterviewQuestions || [];
                     
-                    if (outputStatus === 'Error') {
-                        showTabMessage(outputFeedbackMessage || 'Unable to generate interview questions.', 'error', 'interviewQuestionsGenerationMessages');
+                    if (status === 'Error') {
+                        showTabMessage(feedbackMessage || 'Unable to generate interview questions.', 'error', 'interviewQuestionsGenerationMessages');
                         return;
                     }
                     
-                    if (outputStatus === 'Success') {
-                        const questionsCount = newInterviewQuestions ? newInterviewQuestions.length : 0;
-                        
-                        // Show message about requested vs generated
-                        let successMessage = outputFeedbackMessage;
-                        if (!successMessage) {
-                            if (questionsCount === requestedCount) {
-                                successMessage = `Successfully generated ${questionsCount} interview question${questionsCount === 1 ? '' : 's'}.`;
-                            } else {
-                                successMessage = `Successfully generated ${questionsCount} interview question${questionsCount === 1 ? '' : 's'} (requested ${requestedCount}).`;
-                            }
-                        }
-                        
-                        showTabMessage(successMessage, 'success', 'interviewQuestionsGenerationMessages', true);
-                        
-                        // Process and display the new questions directly from the API response
-                        if (newInterviewQuestions && newInterviewQuestions.length > 0) {
-                            // Check if adding new questions would exceed the limit
-                            let questionsToAdd = newInterviewQuestions;
-                            const currentCount = interviewQuestions.length;
-                            const availableSlots = MAX_QUESTIONS - currentCount;
-                            
-                            if (questionsToAdd.length > availableSlots) {
-                                questionsToAdd = questionsToAdd.slice(0, availableSlots);
-                                showTabMessage(
-                                    `Generated ${questionsToAdd.length} questions (limited to maximum of ${MAX_QUESTIONS}). ${newInterviewQuestions.length - questionsToAdd.length} questions were not added due to the limit.`,
-                                    'warning',
-                                    'interviewQuestionsGenerationMessages',
-                                    true
-                                );
-                            }
-                            
-                            // If we're generating more questions, add to existing array
-                            if (activeBtn.attr('id') === 'generateMoreQuestions') {
-                                interviewQuestions = [...interviewQuestions, ...questionsToAdd];
-                            } else {
-                                // If it's initial generation, replace the array
-                                interviewQuestions = questionsToAdd;
-                            }
-                            
-                            renderInterviewQuestions();
-                            updateQuestionsCounter(); // Update counter after adding questions
+                    const questionsCount = newInterviewQuestions.length;
+                    
+                    // Show message about requested vs generated
+                    let successMessage = feedbackMessage;
+                    if (!successMessage) {
+                        if (questionsCount === requestedCount) {
+                            successMessage = `Successfully generated ${questionsCount} interview question${questionsCount === 1 ? '' : 's'}.`;
                         } else {
-                            // No questions returned
-                            $('#questionsContainer').html(`
-                                <div class="text-muted text-center py-5">
-                                    <i class="fas fa-question-circle fa-3x mb-3"></i>
-                                    <p>No questions were generated. Please improve your interview preparation content and try again.</p>
-                                </div>
-                            `);
-                            updateQuestionsCounter(); // Still update counter
+                            successMessage = `Successfully generated ${questionsCount} interview question${questionsCount === 1 ? '' : 's'} (requested ${requestedCount}).`;
                         }
+                    }
+                    
+                    showTabMessage(successMessage, 'success', 'interviewQuestionsGenerationMessages', true);
+                    
+                    // Process and display the questions from the API response
+                    // The API returns the complete list of all interview questions for this job application
+                    if (newInterviewQuestions && newInterviewQuestions.length > 0) {
+                        // Simply replace the entire questions array with the API response
+                        // The API handles persistence and returns the complete, up-to-date list
+                        interviewQuestions = newInterviewQuestions;
+                        
+                        renderInterviewQuestions();
+                        updateQuestionsCounter(); // Update counter after setting questions
+                    } else {
+                        // No questions returned - clear the array and show empty state
+                        interviewQuestions = [];
+                        $('#questionsContainer').html(`
+                            <div class="text-muted text-center py-5">
+                                <i class="fas fa-question-circle fa-3x mb-3"></i>
+                                <p>No questions were generated. Please improve your interview preparation content and try again.</p>
+                            </div>
+                        `);
+                        updateQuestionsCounter(); // Still update counter
                     }
                     
                 } catch (error) {
@@ -1573,9 +1554,12 @@
                 if (confirm('Are you sure you want to remove this question?')) {
                     const question = interviewQuestions[questionIndex];
                     
+                    // Handle both camelCase and PascalCase property names from API response
+                    const questionId = question && (question.id || question.Id);
+                    
                     // If the question has an ID, it means it's saved in the database and we need to delete it via API
-                    if (question && question.id) {
-                        deleteInterviewQuestion(question.id, questionIndex);
+                    if (questionId) {
+                        deleteInterviewQuestion(questionId, questionIndex);
                     } else {
                         // If no ID, it's a newly generated question that hasn't been saved yet, just remove from array
                         interviewQuestions.splice(questionIndex, 1);
