@@ -14,7 +14,7 @@ class InterviewQuestionsManager {
         this.interviewPrepWordCounter = null;
         this.interviewQuestions = [];
         this.questionsLoaded = false;
-        this.MAX_QUESTIONS = 30;
+        this.MAX_QUESTIONS = 20;
         this.MAX_QUESTIONS_PER_BATCH = 10;
         
         // Deletion flag to prevent multiple simultaneous deletions

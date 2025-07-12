@@ -45,7 +45,6 @@ public class InterviewQuestionsController : Controller
 
             // Note: For now, we're not passing the questionsCount to the command
             // This parameter will be handled in the business logic layer in a future update
-            // The frontend validation ensures the count is within acceptable limits (1-10 per batch, max 30 total)
             _logger.LogInformation("Generating interview questions for JobApplicationId: {JobApplicationId}, RequestedCount: {RequestedCount}", 
                 jobApplicationId, request.QuestionsCount);
             

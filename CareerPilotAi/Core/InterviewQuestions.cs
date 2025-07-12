@@ -4,7 +4,7 @@ namespace CareerPilotAi.Core;
 
 internal class InterviewQuestions
 {
-    internal readonly int _maxQuestions = 30;
+    internal readonly int _maxQuestions = 20;
 
     internal Guid JobApplicationId { get; private set; }
     internal string JobRole { get; set; } = string.Empty;
