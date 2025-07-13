@@ -319,7 +319,7 @@ class InterviewQuestionsManager {
         } finally {
             // Reset button state
             $button.prop('disabled', false);
-            $button.html('<i class="fas fa-magic me-2"></i>Extract Key Points from Job Description');
+            $button.html('<i class="fas fa-wand-magic-sparkles me-2"></i>Extract Key Points from Job Description');
         }
     }
 
@@ -419,11 +419,11 @@ class InterviewQuestionsManager {
         
         // Update button text based on question count and limit status
         if (hasReachedLimit) {
-            $generateBtn.html('<i class="fas fa-magic me-2"></i>Generate (Limit Reached)');
+            $generateBtn.html('Generate (Limit Reached)');
         } else if (count > 0) {
-            $generateBtn.html('<i class="fas fa-magic me-2"></i>Generate More');
+            $generateBtn.html('Generate More');
         } else {
-            $generateBtn.html('<i class="fas fa-magic me-2"></i>Generate');
+            $generateBtn.html('Generate');
         }
     }
 
@@ -667,9 +667,9 @@ class InterviewQuestionsManager {
             // Reset button state, but respect the counter limits
             activeBtn.prop('disabled', false);
             if (activeBtn.attr('id') === 'generateQuestions') {
-                activeBtn.html('<i class="fas fa-magic me-2"></i>Generate');
+                activeBtn.html('Generate');
             } else {
-                activeBtn.html('<i class="fas fa-plus me-2"></i>Generate More Questions');
+                activeBtn.html('Generate More Questions');
             }
             
             // Update counter to ensure buttons are in correct state

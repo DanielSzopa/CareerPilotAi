@@ -113,7 +113,6 @@ public class InterviewQuestionsController : Controller
             {
                 Id = interviewQuestions.Id,
                 PreparationContent = interviewQuestions.PreparationContent,
-                FeedbackMessage = interviewQuestions.InterviewQuestionsFeedbackMessage,
                 Status = interviewQuestions.Status,
                 InterviewQuestions = interviewQuestions.Questions.Any() ?
                 interviewQuestions.Questions
@@ -127,6 +126,10 @@ public class InterviewQuestionsController : Controller
                 }).ToList() 
                 : new List<InterviewQuestionViewModel>()
             };
+
+            bool statusIsErrorAndAnyInterviewQuestionsExist = interviewQuestions.Status?.ToLower() == "error" && interviewQuestions.Questions.Any(q => q.IsActive);
+            if (statusIsErrorAndAnyInterviewQuestionsExist)
+                viewModel.FeedbackMessage = interviewQuestions.InterviewQuestionsFeedbackMessage;
 
             return Ok(viewModel);
         }
