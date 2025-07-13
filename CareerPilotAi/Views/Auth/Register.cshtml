@@ -4,38 +4,191 @@
     ViewData["Title"] = "Register";
 }
 
-<div class="row justify-content-center">
-    <div class="col-md-6">
-        <h2>@ViewData["Title"]</h2>
-        <form asp-action="Register" method="post">
-            <div asp-validation-summary="All" class="text-danger"></div>
-            <div class="form-group mb-3">
-                <label asp-for="Email"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
+<div class="login-container">
+    <div class="container-fluid">
+        <div class="row justify-content-center align-items-center">
+            <div class="col-12 col-sm-9 col-md-7 col-lg-5 col-xl-4">
+                <div class="login-card">
+                    <div class="text-center mb-4">
+                        <h4 class="login-title">Sign up</h4>
+                        <p class="login-subtitle">Join CareerPilotAi to pilot your career</p>
+                    </div>
+
+                    <form asp-action="Register" method="post">
+                        <div asp-validation-summary="All" class="text-danger mb-3"></div>
+                        
+                        <div class="form-group mb-3">
+                            <input asp-for="Email" class="form-control login-input" placeholder="Email address" />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <div class="password-field">
+                                <input asp-for="Password" class="form-control login-input" placeholder="Password" />
+                                <button type="button" class="password-toggle" onclick="togglePassword('password')">
+                                    <i class="fas fa-eye" id="passwordToggleIcon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <div class="password-field">
+                                <input asp-for="ConfirmPassword" class="form-control login-input" placeholder="Confirm password" />
+                                <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword')">
+                                    <i class="fas fa-eye" id="confirmPasswordToggleIcon"></i>
+                                </button>
+                            </div>
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                        
+                        <div class="form-group mb-3">
+                            <button type="submit" class="btn btn-primary login-btn w-100">Continue</button>
+                        </div>
+                        
+                        <div class="text-center">
+                            <p class="register-link">
+                                Already have an account? <a asp-action="Login">Log in</a>
+                            </p>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-group mb-3">
-                <label asp-for="Password"></label>
-                <input asp-for="Password" class="form-control" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <label asp-for="ConfirmPassword"></label>
-                <input asp-for="ConfirmPassword" class="form-control" />
-                <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
-            </div>
-            <div class="form-group mb-3">
-                <button type="submit" class="btn btn-primary">Register</button>
-            </div>
-            <div class="form-group mb-3">
-                <p>
-                    <a asp-action="Login">Already have an account? Log in</a>
-                </p>
-            </div>
-        </form>
+        </div>
     </div>
 </div>
 
+<style>
+.login-container {
+    margin-top: 50px;
+}
+.login-card {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+    padding: 3rem 2rem;
+    margin: 1rem;
+}
+
+.login-title {
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.login-subtitle {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.login-input {
+    padding: 12px 16px;
+    border: 2px solid #e9ecef;
+    border-radius: 8px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background-color: #f8f9fa;
+}
+
+.login-input:focus {
+    border-color: #4a90e2;
+    box-shadow: 0 0 0 0.2rem rgba(74, 144, 226, 0.15);
+    background-color: white;
+}
+
+.password-field {
+    position: relative;
+}
+
+.password-toggle {
+    position: absolute;
+    right: 12px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #6c757d;
+    cursor: pointer;
+    padding: 4px;
+    transition: color 0.3s ease;
+}
+
+.password-toggle:hover {
+    color: #4a90e2;
+}
+
+.login-btn {
+    background: #4a90e2;
+    border: none;
+    padding: 12px;
+    border-radius: 8px;
+    font-weight: 500;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+.login-btn:hover {
+    background: #357abd;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
+}
+
+.register-link {
+    color: #7f8c8d;
+    font-size: 0.9rem;
+    margin-bottom: 0;
+}
+
+.register-link a {
+    color: #4a90e2;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.register-link a:hover {
+    color: #357abd;
+    text-decoration: underline;
+}
+
+@@media (max-width: 576px) {
+    .login-card {
+        padding: 2rem 1.5rem;
+        margin: 0.5rem;
+    }
+    
+    .login-title {
+        font-size: 1.4rem;
+    }
+}
+</style>
+
+<script>
+function togglePassword(fieldType) {
+    let passwordInput, toggleIcon;
+    
+    if (fieldType === 'password') {
+        passwordInput = document.getElementById('@Html.IdFor(m => m.Password)');
+        toggleIcon = document.getElementById('passwordToggleIcon');
+    } else if (fieldType === 'confirmPassword') {
+        passwordInput = document.getElementById('@Html.IdFor(m => m.ConfirmPassword)');
+        toggleIcon = document.getElementById('confirmPasswordToggleIcon');
+    }
+    
+    if (passwordInput && toggleIcon) {
+        if (passwordInput.type === 'password') {
+            passwordInput.type = 'text';
+            toggleIcon.classList.remove('fa-eye');
+            toggleIcon.classList.add('fa-eye-slash');
+        } else {
+            passwordInput.type = 'password';
+            toggleIcon.classList.remove('fa-eye-slash');
+            toggleIcon.classList.add('fa-eye');
+        }
+    }
+}
+</script>
+
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
-} 
+}

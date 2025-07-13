@@ -69,8 +69,10 @@ namespace CareerPilotAi.Controllers
                     _logger.LogInformation("User logged in.");
                     return RedirectToLocal(model?.ReturnUrl);
                 }
-                
-                ModelState.AddModelError(string.Empty, "Invalid login attempt.");
+
+                _logger.LogError("Invalid login attempt for user {Email}.", model.Email);
+
+                ModelState.AddModelError(string.Empty, "Login failed. Please check your email and password.");
             }
             
             return View(model);

@@ -9,6 +9,9 @@
 - optimise db queries, add indexes
 - create dashboard
 - Delete czasem nie działa => zmieniłem interview preparation content, a później usunelem inerview questions
+Register allow bad emails test@gmailcom
+Add Register verification email
+RedirectUrl should be also pass to register url, if user had that in login page
 
 -------------------------------------- 
 - Explain architecture of CareerPilotAi
