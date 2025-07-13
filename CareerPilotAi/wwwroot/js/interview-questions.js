@@ -67,8 +67,6 @@ class InterviewQuestionsManager {
         $('#questionsCount').on('input.interviewQuestions change.interviewQuestions', () => this.validateQuestionsCountInput());
         $('#generateQuestions').on('click.interviewQuestions', () => this.generateInterviewQuestions());
         
-        // Use more specific delegation target and namespace
-        $('#questionsContainer').on('click.interviewQuestions', '#generateMoreQuestions', () => this.generateMoreQuestions());
         $('#questionsContainer').on('click.interviewQuestions', '.remove-question', (e) => this.removeQuestion(e));
         $('#questionsContainer').on('click.interviewQuestions', '.toggle-answer', (e) => this.toggleAnswer(e));
     }
@@ -375,7 +373,6 @@ class InterviewQuestionsManager {
         const $remainingSlotsInfo = $('#remainingSlotsInfo');
         const $remainingSlotsText = $('#remainingSlotsText');
         const $generateBtn = $('#generateQuestions');
-        const $generateMoreBtn = $('#generateMoreQuestions');
         const $questionsCountInput = $('#questionsCount');
         
         // Update counter display
@@ -407,7 +404,7 @@ class InterviewQuestionsManager {
         if (count >= this.MAX_QUESTIONS) {
             $counter.addClass('bg-danger');
             $limitMessage.show();
-        } else if (count >= this.MAX_QUESTIONS * 0.8) { // 80% of limit (24 questions)
+        } else if (count >= this.MAX_QUESTIONS * 0.8) { // 80% of limit (16 questions)
             $counter.addClass('bg-warning');
             $limitMessage.hide();
         } else {
@@ -418,15 +415,15 @@ class InterviewQuestionsManager {
         // Disable/enable generate buttons based on limit
         const hasReachedLimit = count >= this.MAX_QUESTIONS;
         $generateBtn.prop('disabled', hasReachedLimit);
-        $generateMoreBtn.prop('disabled', hasReachedLimit);
         $questionsCountInput.prop('disabled', hasReachedLimit);
         
+        // Update button text based on question count and limit status
         if (hasReachedLimit) {
             $generateBtn.html('<i class="fas fa-magic me-2"></i>Generate (Limit Reached)');
-            $generateMoreBtn.html('<i class="fas fa-plus me-2"></i>Generate More (Limit Reached)');
+        } else if (count > 0) {
+            $generateBtn.html('<i class="fas fa-magic me-2"></i>Generate More');
         } else {
             $generateBtn.html('<i class="fas fa-magic me-2"></i>Generate');
-            $generateMoreBtn.html('<i class="fas fa-plus me-2"></i>Generate More');
         }
     }
 
@@ -752,26 +749,7 @@ class InterviewQuestionsManager {
             `;
         });
         
-        // Only show "Generate More" button if under the limit
-        if (this.interviewQuestions.length < this.MAX_QUESTIONS) {
-            questionsHtml += `
-                <div class="text-center mt-4">
-                    <button class="btn btn-outline-primary" id="generateMoreQuestions">
-                        <i class="fas fa-plus me-2"></i>Generate More Questions
-                    </button>
-                </div>
-            `;
-        } else {
-            questionsHtml += `
-                <div class="text-center mt-4">
-                    <p class="text-muted mb-0">
-                        <i class="fas fa-info-circle me-2"></i>
-                        You've reached the maximum limit of ${this.MAX_QUESTIONS} interview questions.
-                    </p>
-                </div>
-            `;
-        }
-        
+        // Remove the 'Generate More' button and limit message at the bottom
         $('#questionsContainer').html(questionsHtml);
     }
 
