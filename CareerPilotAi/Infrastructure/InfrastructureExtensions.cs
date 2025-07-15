@@ -1,3 +1,4 @@
+using CareerPilotAi.Infrastructure.Email;
 using CareerPilotAi.Infrastructure.Identity;
 using CareerPilotAi.Infrastructure.OpenRouter;
 using CareerPilotAi.Infrastructure.Persistence;
@@ -15,6 +16,7 @@ public static class InfrastructureExtensions
         .AddIdentityExtensions()
         .AddOpenRouterHttpClient(configuration)
         .RegisterOpenRouterAppSettings(configuration)
+        .AddEmailServices(configuration)
         .AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),
