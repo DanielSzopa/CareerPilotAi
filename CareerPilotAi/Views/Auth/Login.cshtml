@@ -17,6 +17,13 @@
                     <form asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl" method="post">
                         <div asp-validation-summary="All" class="text-danger mb-3"></div>
                         
+                        @if (!string.IsNullOrEmpty(Model?.Message))
+                        {
+                            <div class="alert alert-info" role="alert">
+                                @Model.Message
+                            </div>
+                        }
+                        
                         <div class="form-group mb-3">
                             <input asp-for="Email" class="form-control login-input" placeholder="Email address" />
                             <span asp-validation-for="Email" class="text-danger"></span>
@@ -48,6 +55,11 @@
                         <div class="text-center">
                             <p class="register-link">
                                 Don't have an account? <a asp-action="Register">Sign up</a>
+                            </p>
+                            <p class="resend-confirmation-link">
+                                <small>
+                                    Email not confirmed? <a asp-action="ResendConfirmation">Resend confirmation email</a>
+                                </small>
                             </p>
                         </div>
                     </form>

@@ -1,0 +1,33 @@
+@{
+    ViewData["Title"] = "Registration Confirmation";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-body text-center">
+                <i class="fas fa-envelope fa-3x text-primary mb-4"></i>
+                <h2 class="card-title">Check Your Email</h2>
+                @if (!string.IsNullOrEmpty(ViewData["Message"]?.ToString()))
+                {
+                    <div class="alert alert-info" role="alert">
+                        @ViewData["Message"]
+                    </div>
+                }
+                <p class="card-text">
+                    We've sent a confirmation email to your email address. 
+                    Please check your email and click on the confirmation link to complete your registration.
+                </p>
+                <p class="text-muted">
+                    <small>
+                        Don't see the email? Check your spam folder or 
+                        <a href="@Url.Action("ResendConfirmation", "Auth")">resend confirmation email</a>.
+                    </small>
+                </p>
+                <a href="@Url.Action("Login", "Auth")" class="btn btn-primary">
+                    Return to Login
+                </a>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,41 @@
+@model CareerPilotAi.Models.Authentication.ResendConfirmationViewModel
+@{
+    ViewData["Title"] = "Resend Email Confirmation";
+}
+
+<div class="row">
+    <div class="col-md-6 offset-md-3">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title text-center mb-4">Resend Email Confirmation</h2>
+                <p class="text-muted text-center mb-4">
+                    Enter your email address to resend the confirmation email.
+                </p>
+                
+                <form asp-action="ResendConfirmation" method="post">
+                    <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+                    
+                    <div class="form-group mb-3">
+                        <label asp-for="Email" class="form-label"></label>
+                        <input asp-for="Email" class="form-control" placeholder="Enter your email address" />
+                        <span asp-validation-for="Email" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="d-grid gap-2">
+                        <button type="submit" class="btn btn-primary">Resend Confirmation Email</button>
+                    </div>
+                </form>
+                
+                <div class="text-center mt-3">
+                    <a href="@Url.Action("Login", "Auth")" class="text-decoration-none">
+                        Back to Login
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
