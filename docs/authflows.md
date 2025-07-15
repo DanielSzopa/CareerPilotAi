@@ -340,7 +340,7 @@ Allows confirmed users to authenticate and access the application.
 - Returns `Login.cshtml` view
 - Shows form with Email, Password, RememberMe fields
 - If `isAlreadyRegisteredAndConfirmed=true`, shows message about confirmed account
-- Includes links to registration, forgot password, and resend confirmation
+- Includes links to registration and forgot password
 
 ---
 
