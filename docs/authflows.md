@@ -370,19 +370,20 @@ Allows confirmed users to authenticate and access the application.
 
 ---
 
-#### Scenario 2.2: Login with Unconfirmed Email
+#### Scenario 2.2: Login with Unconfirmed Email (Valid Password)
 
-**User Action:** User tries to log in with valid credentials but unconfirmed email
+**User Action:** User tries to log in with correct credentials but unconfirmed email
 **Preconditions:**
-- Valid email and password
+- Valid email and correct password
 - User exists but email not confirmed
 
 **System Process:**
 1. Validates model state
 2. `PasswordSignInAsync()` returns `IsNotAllowed`
-3. Finds user and checks confirmation status
-4. Confirms email is not verified
-5. Redirects to confirmation page
+3. Finds user by email (user exists)
+4. Validates password is correct using `CheckPasswordAsync()`
+5. Confirms email is not verified using `IsEmailConfirmedAsync()`
+6. Redirects to confirmation page
 
 **User Experience:**
 - Redirected to `/auth/register-confirmation?isAlreadyRegisteredButNotConfirmed=true`
@@ -393,14 +394,59 @@ Allows confirmed users to authenticate and access the application.
 
 ---
 
-#### Scenario 2.3: Invalid Credentials
+#### Scenario 2.3: Login with Non-existent User
 
-**User Action:** User submits incorrect email or password
-**Preconditions:** Invalid email/password combination
+**User Action:** User tries to log in with email that doesn't exist in system
+**Preconditions:** Email doesn't exist in database
 
 **System Process:**
 1. Validates model state
-2. `PasswordSignInAsync()` fails
+2. `PasswordSignInAsync()` returns `IsNotAllowed`
+3. Attempts to find user by email (user is null)
+4. Adds generic error to model state
+5. Returns to login form
+
+**User Experience:**
+- Stays on login page
+- Sees error: "Login failed. Please check your email and password."
+- Form retains email but clears password
+
+**Logging:** `"Login attempt with non-existent user: {Email}"`
+
+---
+
+#### Scenario 2.4: Login with Unconfirmed Email and Invalid Password
+
+**User Action:** User tries to log in with unconfirmed email and incorrect password
+**Preconditions:**
+- Email exists in system but not confirmed
+- Password is incorrect
+
+**System Process:**
+1. Validates model state
+2. `PasswordSignInAsync()` returns `IsNotAllowed`
+3. Finds user by email (user exists)
+4. Validates password using `CheckPasswordAsync()` (password is incorrect)
+5. Adds generic error to model state
+6. Returns to login form
+
+**User Experience:**
+- Stays on login page
+- Sees error: "Login failed. Please check your email and password."
+- Form retains email but clears password
+
+**Logging:** `"Login attempt with unconfirmed email and invalid password: {Email}, {UserId}"`
+
+---
+
+#### Scenario 2.5: Invalid Credentials (General)
+
+**User Action:** User submits incorrect email or password (for confirmed accounts)
+**Preconditions:** Invalid email/password combination for confirmed accounts
+
+**System Process:**
+1. Validates model state
+2. `PasswordSignInAsync()` fails (not IsNotAllowed)
 3. Adds generic error to model state
 4. Returns to login form
 
@@ -413,7 +459,7 @@ Allows confirmed users to authenticate and access the application.
 
 ---
 
-#### Scenario 2.4: Model Validation Failure
+#### Scenario 2.6: Model Validation Failure
 
 **User Action:** User submits form with invalid data (missing email, etc.)
 **Preconditions:** Form data fails model validation
@@ -475,225 +521,3 @@ Allows authenticated users to sign out of the application.
 - Error level for system failures
 
 ---
-
-## User Experience Analysis & Improvement Recommendations
-
-After analyzing the current authentication workflows, several user experience issues have been identified that could cause confusion, frustration, or security concerns. This section outlines critical improvements needed.
-
-### Critical UX Issues
-
-#### 1. **Broken User Journey for Existing Unconfirmed Users**
-
-**Problem:** When a user tries to register with an email that already exists but is unconfirmed, they're redirected to the confirmation page without any way to actually get a new confirmation email.
-
-**Current Flow:**
-- User tries to register with existing unconfirmed email
-- Redirected to `/auth/register-confirmation?isAlreadyRegisteredButNotConfirmed=true`
-- Page shows message about existing unconfirmed account
-- **NO ACTION AVAILABLE** - User can't resend confirmation from this page
-
-**Impact:** User is stuck and cannot proceed with their registration or login.
-
-**Solution Needed:** Add a "Resend Confirmation Email" button/link on the RegisterConfirmation page when `isAlreadyRegisteredButNotConfirmed=true`.
-
----
-
-#### 2. **Inconsistent Navigation Paths**
-
-**Problem:** Users lose access to resend confirmation functionality in certain scenarios.
-
-**Issues:**
-- Login page no longer has "resend confirmation" link (recently removed)
-- RegisterConfirmation page doesn't provide resend option for existing unconfirmed users
-- Users must manually navigate to `/auth/resend-confirmation`
-
-**Impact:** Users may not know how to resend confirmation emails when needed.
-
-**Solution Needed:** Consistent access to resend functionality from relevant pages.
-
----
-
-#### 3. **Poor Error Recovery Experience**
-
-**Problem:** When email sending fails during registration, user account is created but they have no obvious way to recover.
-
-**Current Scenario:**
-- User registers successfully
-- Email sending fails 
-- User sees generic error: "Sign up failed, something happened on our end"
-- User account exists in database but user doesn't know this
-- User might try to register again, leading to "existing unconfirmed" scenario
-
-**Impact:** User confusion and potential multiple failed attempts.
-
-**Solution Needed:** Better error messaging and recovery path when email sending fails.
-
----
-
-#### 4. **Confusing Password Reset Flow**
-
-**Problem:** The password reset implementation is incomplete and confusing.
-
-**Issues:**
-- ForgotPassword doesn't actually send emails (commented as "example")
-- Users are redirected directly to ResetPassword without proper token validation
-- No proper security token flow implemented
-- Reset process bypasses email confirmation requirement
-
-**Impact:** Insecure and confusing password reset experience.
-
-**Solution Needed:** Implement proper password reset flow with email tokens.
-
----
-
-#### 5. **Missing User Feedback and Guidance**
-
-**Problem:** Users don't receive adequate feedback about their actions and next steps.
-
-**Missing Elements:**
-- No loading states during email sending
-- No clear indication of what to do if email doesn't arrive
-- No guidance about checking spam folders
-- No time estimates for email delivery
-- No way to check if email was sent successfully
-
-**Impact:** Users may think the system is broken or not working.
-
----
-
-#### 6. **Security vs Usability Trade-offs**
-
-**Problem:** Some security measures create poor user experience without clear security benefits.
-
-**Issues:**
-- Generic error messages for non-existent users (good security, poor UX)
-- No indication whether email sending was successful
-- Users can't tell if their email exists in the system
-
-**Consideration:** Balance between security and user experience needs review.
-
----
-
-### Recommended Improvements
-
-#### High Priority Fixes
-
-1. **Fix Broken Registration Flow for Existing Unconfirmed Users**
-   ```html
-   <!-- Add to RegisterConfirmation.cshtml when isAlreadyRegisteredButNotConfirmed=true -->
-   <div class="text-center mt-3">
-       <a href="@Url.Action("ResendConfirmation", "Auth")" class="btn btn-outline-primary">
-           Resend Confirmation Email
-       </a>
-   </div>
-   ```
-
-2. **Improve Email Sending Error Handling**
-   - Provide specific error messaging when email fails
-   - Offer immediate resend option
-   - Guide users to resend confirmation page
-
-3. **Add Consistent Navigation**
-   - Restore "resend confirmation" link on relevant pages
-   - Add breadcrumb navigation
-   - Provide clear "back" links
-
-#### Medium Priority Improvements
-
-4. **Enhance User Feedback**
-   - Add loading spinners during email operations
-   - Show email sending confirmation messages
-   - Provide estimated delivery times
-   - Add spam folder guidance
-
-5. **Implement Proper Password Reset**
-   - Add real email sending for password reset
-   - Implement secure token validation
-   - Add token expiration handling
-
-6. **Improve Error Messages**
-   - More specific validation errors
-   - Better guidance for error recovery
-   - Contextual help text
-
-#### Low Priority Enhancements
-
-7. **Add User Convenience Features**
-   - Remember email addresses in forms
-   - Auto-focus on relevant form fields
-   - Better mobile experience
-   - Email format validation with better error messages
-
-8. **Implement Progressive Enhancement**
-   - Client-side validation for immediate feedback
-   - Real-time password strength indicators
-   - Email format validation as user types
-
----
-
-### Proposed New User Flows
-
-#### Improved Registration with Existing Unconfirmed Email
-
-1. User tries to register with existing unconfirmed email
-2. System detects existing unconfirmed account
-3. Redirect to RegisterConfirmation page with special message
-4. Page shows:
-   - Clear explanation of situation
-   - "Resend Confirmation Email" button
-   - Link to login page
-   - Option to use different email address
-
-#### Better Email Sending Error Recovery
-
-1. User registers successfully but email sending fails
-2. System shows specific error: "Account created but confirmation email failed to send"
-3. Provide immediate options:
-   - "Try sending email again" button
-   - "Use different email address" link
-   - "Contact support" link
-
-#### Enhanced Login Experience
-
-1. User attempts login with unconfirmed email
-2. Clear message: "Please confirm your email before logging in"
-3. Provide options:
-   - "Resend confirmation email" button (pre-filled with user's email)
-   - "Use different email" link
-   - Clear instructions about checking spam folder
-
----
-
-### Implementation Priority
-
-1. **Immediate (Critical UX Breaks):**
-   - Fix broken flow for existing unconfirmed users
-   - Add resend confirmation access from RegisterConfirmation page
-
-2. **Short Term (User Confusion):**
-   - Improve error messages and recovery paths
-   - Add consistent navigation
-   - Better email sending error handling
-
-3. **Medium Term (User Experience):**
-   - Implement proper password reset flow
-   - Add loading states and better feedback
-   - Enhance mobile experience
-
-4. **Long Term (Nice to Have):**
-   - Progressive enhancement features
-   - Advanced user convenience features
-   - Analytics and user behavior tracking
-
----
-
-### Testing Scenarios to Validate
-
-1. **User tries to register with existing unconfirmed email** - Should have clear path forward
-2. **Email sending fails during registration** - Should provide recovery options
-3. **User loses confirmation email** - Should easily find resend option
-4. **User tries to login before confirming** - Should have clear guidance
-5. **User clicks expired confirmation link** - Should provide helpful error and recovery
-6. **User forgets password** - Should have secure, working reset flow
-
-These improvements would significantly enhance the user experience and reduce confusion during the authentication process.

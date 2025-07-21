@@ -196,7 +196,21 @@ namespace CareerPilotAi.Controllers
                 if (result.IsNotAllowed)
                 {
                     var user = await _userManager.FindByEmailAsync(model.Email);
-                    if (user != null && !await _userManager.IsEmailConfirmedAsync(user))
+                    if (user is null)
+                    {
+                        _logger.LogWarning("Login attempt with non-existent user: {Email}", model.Email);
+                        ModelState.AddModelError(string.Empty, "Login failed. Please check your email and password.");
+                        return View(model);    
+                    }
+
+                    if (!await _userManager.CheckPasswordAsync(user, model.Password))
+                    {
+                        _logger.LogWarning("Login attempt with unconfirmed email and invalid password: {Email}, {UserId}", model.Email, user.Id);
+                        ModelState.AddModelError(string.Empty, "Login failed. Please check your email and password.");
+                        return View(model);
+                    }
+                    
+                    if (!await _userManager.IsEmailConfirmedAsync(user))
                     {
                         _logger.LogWarning("Login attempt with unconfirmed email: {Email}, {UserId}", model.Email, user.Id);
                         return RedirectToAction(nameof(RegisterConfirmation), new { isAlreadyRegisteredButNotConfirmed = true });
