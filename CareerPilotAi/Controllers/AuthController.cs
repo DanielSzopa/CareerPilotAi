@@ -229,7 +229,13 @@ namespace CareerPilotAi.Controllers
         {
             await _signInManager.SignOutAsync();
             _logger.LogInformation("User logged out.");
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction(nameof(LogoutConfirmation));
+        }
+
+        [HttpGet("logout")]
+        public IActionResult LogoutConfirmation()
+        {
+            return View();
         }
 
         [HttpGet("forgot-password")]

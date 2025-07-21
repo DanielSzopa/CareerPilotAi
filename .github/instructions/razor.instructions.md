@@ -151,6 +151,19 @@ async function apiCall(url, data) {
 - Use **CSS custom properties** for consistent colors: `#4a90e2` (primary blue), `#357abd` (hover blue)
 - Implement **hover effects** and **transitions** for interactive elements
 
+### CSS Media Queries in Razor
+- **IMPORTANT**: Use `@@media` instead of `@media` in CSS within Razor views
+- The `@` symbol has special meaning in Razor syntax, so it must be escaped
+- Example:
+  ```css
+  @@media (max-width: 768px) {
+      .job-application-card {
+          margin-bottom: 1rem;
+      }
+  }
+  ```
+- This prevents Razor compilation errors and ensures proper CSS rendering
+
 ### Responsive Design
 - Use **Bootstrap responsive utilities**
 - Test on mobile viewports with media queries when needed
