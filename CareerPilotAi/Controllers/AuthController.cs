@@ -178,7 +178,13 @@ namespace CareerPilotAi.Controllers
                 ? "You already have registered and confirmed account. Please log in or reset your password."
                 : string.Empty;
 
-            return View(new LoginViewModel { ReturnUrl = returnUrl, Message = message });
+            return View(new LoginViewModel 
+            { 
+                Email = string.Empty,
+                Password = string.Empty,
+                ReturnUrl = returnUrl, 
+                Message = message 
+            });
         }
 
         [HttpPost("login")]

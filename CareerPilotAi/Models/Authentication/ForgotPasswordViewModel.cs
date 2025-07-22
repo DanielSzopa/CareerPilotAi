@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using CareerPilotAi.Application.CustomValidationAttributes;
 
 namespace CareerPilotAi.Models.Authentication
 {
     public class ForgotPasswordViewModel
     {
-        [Required]
-        [EmailAddress]
-        public string Email { get; set; }
+        [EnhancedEmail]
+        public required string Email { get; set; }
     }
 } 

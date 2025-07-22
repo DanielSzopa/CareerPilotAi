@@ -1,4 +1,3 @@
-3. Is it time for Request/Response approach?
 4. Implement the OpenTelemetry
 5. Implement cache mechanisms
 6. add URL to JobApplicationDetailsViewModel
@@ -8,10 +7,6 @@
 - improve logs
 - optimise db queries, add indexes
 - create dashboard
-- Delete czasem nie działa => zmieniłem interview preparation content, a później usunelem inerview questions
-Register allow bad emails test@gmailcom
-Add Register verification email
-RedirectUrl should be also pass to register url, if user had that in login page
 
 -------------------------------------- 
 - Explain architecture of CareerPilotAi

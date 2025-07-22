@@ -1,4 +1,5 @@
 using System.ComponentModel.DataAnnotations;
+using CareerPilotAi.Application.CustomValidationAttributes;
 
 namespace CareerPilotAi.Infrastructure.Email;
 
@@ -7,8 +8,7 @@ public class SendGridAppSettings
     [Required]
     public string? ApiKey { get; set; }
 
-    [Required]
-    [EmailAddress]
+    [EnhancedEmail]
     public string? FromEmail { get; set; }
 
     [Required]

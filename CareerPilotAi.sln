@@ -14,6 +14,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 		ToDo.txt = ToDo.txt
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "tests", "tests", "{C35506EE-CC53-47AB-AB4F-B5B3C96D4179}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CareerPilotAi.UnitTests", "tests\CareerPilotAi.Tests\CareerPilotAi.UnitTests.csproj", "{D57F6D50-F9F2-4007-A3F9-83C0213C597F}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -24,9 +28,16 @@ Global
 		{B0E09B46-58F8-475B-A511-3CB0E919C877}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{B0E09B46-58F8-475B-A511-3CB0E919C877}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{B0E09B46-58F8-475B-A511-3CB0E919C877}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D57F6D50-F9F2-4007-A3F9-83C0213C597F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D57F6D50-F9F2-4007-A3F9-83C0213C597F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D57F6D50-F9F2-4007-A3F9-83C0213C597F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D57F6D50-F9F2-4007-A3F9-83C0213C597F}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{D57F6D50-F9F2-4007-A3F9-83C0213C597F} = {C35506EE-CC53-47AB-AB4F-B5B3C96D4179}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {4900A498-D37C-4BD2-85A2-8C59FB1F2F49}

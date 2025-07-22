@@ -1,11 +1,11 @@
 using System.ComponentModel.DataAnnotations;
+using CareerPilotAi.Application.CustomValidationAttributes;
 
 namespace CareerPilotAi.Models.Authentication;
 
 public class ResendConfirmationViewModel
 {
-    [Required]
-    [EmailAddress]
+    [EnhancedEmail]
     [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
 }
