@@ -5,10 +5,65 @@ This document provides detailed documentation of all authentication workflows in
 ## Table of Contents
 
 1. [Registration Workflow](#registration-workflow)
+   - 1.1. [GET /auth/register - Display Registration Form](#1-get-authregister---display-registration-form)
+   - 1.2. [POST /auth/register - Process Registration](#2-post-authregister---process-registration)
+     - 1.2.1. [Successful New User Registration](#scenario-21-successful-new-user-registration)
+     - 1.2.2. [Registration with Existing Confirmed Email](#scenario-22-registration-with-existing-confirmed-email)
+     - 1.2.3. [Registration with Existing Unconfirmed Email](#scenario-23-registration-with-existing-unconfirmed-email)
+     - 1.2.4. [Registration Failure - User Creation Error](#scenario-24-registration-failure---user-creation-error)
+     - 1.2.5. [Registration Failure - Email Sending Error](#scenario-25-registration-failure---email-sending-error)
+
 2. [Email Confirmation Workflow](#email-confirmation-workflow)
+   - 2.1. [GET /auth/confirm-email - Process Email Confirmation](#get-authconfirm-email---process-email-confirmation)
+     - 2.1.1. [Successful Email Confirmation](#scenario-1-successful-email-confirmation)
+     - 2.1.2. [Invalid Confirmation Parameters](#scenario-2-invalid-confirmation-parameters)
+     - 2.1.3. [Non-existent User Confirmation](#scenario-3-non-existent-user-confirmation)
+     - 2.1.4. [Invalid Token Confirmation](#scenario-4-invalid-token-confirmation)
+
 3. [Resend Confirmation Workflow](#resend-confirmation-workflow)
+   - 3.1. [GET /auth/resend-confirmation - Display Resend Form](#1-get-authresend-confirmation---display-resend-form)
+   - 3.2. [POST /auth/resend-confirmation - Process Resend Request](#2-post-authresend-confirmation---process-resend-request)
+     - 3.2.1. [Successful Resend for Unconfirmed User](#scenario-21-successful-resend-for-unconfirmed-user)
+     - 3.2.2. [Resend for Non-existent User](#scenario-22-resend-for-non-existent-user)
+     - 3.2.3. [Resend for Already Confirmed User](#scenario-23-resend-for-already-confirmed-user)
+     - 3.2.4. [Resend Email Sending Failure](#scenario-24-resend-email-sending-failure)
+
 4. [Login Workflow](#login-workflow)
+   - 4.1. [GET /auth/login - Display Login Form](#1-get-authlogin---display-login-form)
+   - 4.2. [POST /auth/login - Process Login](#2-post-authlogin---process-login)
+     - 4.2.1. [Successful Login](#scenario-21-successful-login)
+     - 4.2.2. [Login with Unconfirmed Email (Valid Password)](#scenario-22-login-with-unconfirmed-email-valid-password)
+     - 4.2.3. [Login with Non-existent User](#scenario-23-login-with-non-existent-user)
+     - 4.2.4. [Login with Unconfirmed Email and Invalid Password](#scenario-24-login-with-unconfirmed-email-and-invalid-password)
+     - 4.2.5. [Invalid Credentials (General)](#scenario-25-invalid-credentials-general)
+     - 4.2.6. [Model Validation Failure](#scenario-26-model-validation-failure)
+
 5. [Logout Workflow](#logout-workflow)
+   - 5.1. [POST /auth/logout - Process Logout](#post-authlogout---process-logout)
+
+6. [Forgot/Reset Password Workflow](#forgotreset-password-workflow)
+   - 6.1. [GET /auth/forgot-password - Display Forgot Password Form](#1-get-authforgot-password---display-forgot-password-form)
+   - 6.2. [POST /auth/forgot-password - Process Forgot Password Request](#2-post-authforgot-password---process-forgot-password-request)
+     - 6.2.1. [Successful Password Reset Request for Confirmed User](#scenario-21-successful-password-reset-request-for-confirmed-user)
+     - 6.2.2. [Password Reset Request for Non-existent User](#scenario-22-password-reset-request-for-non-existent-user)
+     - 6.2.3. [Password Reset Request for Unconfirmed User](#scenario-23-password-reset-request-for-unconfirmed-user)
+     - 6.2.4. [Password Reset Email Sending Failure](#scenario-24-password-reset-email-sending-failure)
+   - 6.3. [GET /auth/forgot-password-confirmation - Display Confirmation Page](#3-get-authforgot-password-confirmation---display-confirmation-page)
+   - 6.4. [GET /auth/reset-password - Display Reset Password Form](#4-get-authreset-password---display-reset-password-form)
+     - 6.4.1. [Valid Reset Link Access](#scenario-41-valid-reset-link-access)
+     - 6.4.2. [Invalid Reset Link Parameters](#scenario-42-invalid-reset-link-parameters)
+     - 6.4.3. [Reset Link with Non-existent User](#scenario-43-reset-link-with-non-existent-user)
+   - 6.5. [POST /auth/reset-password - Process Password Reset](#5-post-authreset-password---process-password-reset)
+     - 6.5.1. [Successful Password Reset](#scenario-51-successful-password-reset)
+     - 6.5.2. [Password Reset with Invalid/Expired Token](#scenario-52-password-reset-with-invalidexpired-token)
+     - 6.5.3. [Password Reset with Non-existent User](#scenario-53-password-reset-with-non-existent-user)
+     - 6.5.4. [Password Reset Failure - Password Requirements](#scenario-54-password-reset-failure---password-requirements)
+   - 6.6. [GET /auth/reset-password-confirmation - Display Success Page](#6-get-authreset-password-confirmation---display-success-page)
+
+7. [Error Handling and Security Notes](#error-handling-and-security-notes)
+   - 7.1. [General Error Handling](#general-error-handling)
+   - 7.2. [Security Considerations](#security-considerations)
+   - 7.3. [Logging Strategy](#logging-strategy)
 
 ---
 
@@ -501,6 +556,279 @@ Allows authenticated users to sign out of the application.
 
 ---
 
+## Forgot/Reset Password Workflow
+
+### Overview
+Allows users to reset their passwords via email when they've forgotten them. This is a secure two-step process involving email verification.
+
+### 1. GET /auth/forgot-password - Display Forgot Password Form
+
+**User Action:** User navigates to forgot password page (typically from login page)
+**System Response:**
+- Returns `ForgotPassword.cshtml` view
+- Shows form with Email field
+- Includes link back to login
+
+---
+
+### 2. POST /auth/forgot-password - Process Forgot Password Request
+
+#### Scenario 2.1: Successful Password Reset Request for Confirmed User
+
+**User Action:** User submits valid email for confirmed account
+**Preconditions:**
+- Valid email format
+- User exists in system
+- User email IS confirmed
+
+**System Process:**
+1. Validates model state
+2. Finds user by email
+3. Checks if email is confirmed (`IsEmailConfirmedAsync`)
+4. Generates password reset token (`GeneratePasswordResetTokenAsync`)
+5. Creates reset link with userId and token
+6. Sends password reset email via `EmailService`
+7. Redirects to confirmation page
+
+**User Experience:**
+- Redirected to `/auth/forgot-password-confirmation`
+- Sees message about checking email for reset instructions
+- Email sent with password reset link
+
+**Logging:** `"Password reset email sent to user: {Email}, {UserId}"`
+
+---
+
+#### Scenario 2.2: Password Reset Request for Non-existent User
+
+**User Action:** User submits email that doesn't exist in system
+**Preconditions:** Email format valid but no user with that email
+
+**System Process:**
+1. Validates model state
+2. Attempts to find user by email (user is null)
+3. Logs warning but doesn't reveal user doesn't exist
+4. Redirects to confirmation page (for security)
+
+**User Experience:**
+- Redirected to `/auth/forgot-password-confirmation`
+- Sees standard confirmation message (no indication user doesn't exist)
+- No email sent
+
+**Logging:** `"Password reset attempted for non-existent user: {Email}"`
+
+---
+
+#### Scenario 2.3: Password Reset Request for Unconfirmed User
+
+**User Action:** User submits email for account that exists but isn't confirmed
+**Preconditions:**
+- User exists in system
+- User email is NOT confirmed
+
+**System Process:**
+1. Validates model state
+2. Finds user by email
+3. Checks confirmation status - not confirmed
+4. Logs warning
+5. Redirects to confirmation page (for security)
+
+**User Experience:**
+- Redirected to `/auth/forgot-password-confirmation`
+- Sees standard confirmation message
+- No password reset email sent
+
+**Logging:** `"Password reset attempted for unconfirmed user: {Email}"`
+
+---
+
+#### Scenario 2.4: Password Reset Email Sending Failure
+
+**User Action:** User submits valid reset request but email fails to send
+**Preconditions:** Valid confirmed user, but email service throws exception
+
+**System Process:**
+1. Finds user and validates confirmed
+2. Generates reset token successfully
+3. Email service throws exception
+4. Catches exception and logs error
+5. Still redirects to confirmation page (for security)
+
+**User Experience:**
+- Redirected to `/auth/forgot-password-confirmation`
+- Sees standard confirmation message
+- No email actually sent due to service failure
+
+**Logging:** `"Failed to send password reset email to user: {Email}, {UserId}"`
+
+---
+
+### 3. GET /auth/forgot-password-confirmation - Display Confirmation Page
+
+**User Action:** User is redirected here after submitting forgot password form
+**System Response:**
+- Returns `ForgotPasswordConfirmation.cshtml` view
+- Shows message about checking email
+- Includes link to return to login
+
+---
+
+### 4. GET /auth/reset-password - Display Reset Password Form
+
+#### Scenario 4.1: Valid Reset Link Access
+
+**User Action:** User clicks reset link from email
+**URL Parameters:** `userId` and `token`
+**Preconditions:**
+- Valid userId and token in URL
+- User exists in system
+
+**System Process:**
+1. Validates userId and token are provided
+2. Finds user by userId
+3. Returns reset password form
+
+**User Experience:**
+- Sees `ResetPassword.cshtml` with password fields
+- Form includes hidden fields for userId and token
+- Password toggle functionality available
+
+---
+
+#### Scenario 4.2: Invalid Reset Link Parameters
+
+**User Action:** User clicks malformed reset link or missing parameters
+**Preconditions:** Missing or empty `userId` or `token` parameters
+
+**System Process:**
+1. Validates parameters
+2. Logs warning about missing parameters
+3. Redirects to error page
+
+**User Experience:**
+- Redirected to `/Home/Error`
+- Sees generic error page
+
+**Logging:** `"Password reset attempted with missing userId or token"`
+
+---
+
+#### Scenario 4.3: Reset Link with Non-existent User
+
+**User Action:** User clicks reset link with invalid userId
+**Preconditions:** Valid format parameters but userId doesn't exist
+
+**System Process:**
+1. Attempts to find user by userId
+2. User not found
+3. Logs warning
+4. Redirects to error page
+
+**User Experience:**
+- Redirected to `/Home/Error`
+- Sees generic error page
+
+**Logging:** `"Password reset attempted for non-existent user: {UserId}"`
+
+---
+
+### 5. POST /auth/reset-password - Process Password Reset
+
+#### Scenario 5.1: Successful Password Reset
+
+**User Action:** User submits valid new password
+**Preconditions:**
+- Valid password format (meets requirements)
+- Passwords match
+- Valid userId and token
+- Token not expired
+
+**System Process:**
+1. Validates model state
+2. Finds user by userId
+3. Verifies reset token using `VerifyUserTokenAsync`
+4. Resets password using `ResetPasswordAsync`
+5. Redirects to success page
+
+**User Experience:**
+- Redirected to `/auth/reset-password-confirmation`
+- Sees success message
+- Can now log in with new password
+
+**Logging:** `"Password reset successful for user: {Email}, {UserId}"`
+
+---
+
+#### Scenario 5.2: Password Reset with Invalid/Expired Token
+
+**User Action:** User submits form with expired or invalid token
+**Preconditions:** Valid user but token verification fails
+
+**System Process:**
+1. Validates model state
+2. Finds user successfully
+3. Token verification fails (`VerifyUserTokenAsync` returns false)
+4. Adds error to model state
+5. Returns to reset form
+
+**User Experience:**
+- Stays on reset password page
+- Sees error: "Password reset link may have expired or is invalid. Please try again or request a new one."
+
+**Logging:** `"Password reset token verification failed for user: {Email}, {UserId}, {RequestUserId}"`
+
+---
+
+#### Scenario 5.3: Password Reset with Non-existent User
+
+**User Action:** User submits form but userId doesn't exist
+**Preconditions:** Form submitted but user lookup fails
+
+**System Process:**
+1. Validates model state
+2. Attempts to find user by userId (user is null)
+3. Logs warning
+4. Adds error to model state
+5. Returns to reset form
+
+**User Experience:**
+- Stays on reset password page
+- Sees error: "Invalid password reset request."
+
+**Logging:** `"Password reset attempted for non-existent user: {UserId}"`
+
+---
+
+#### Scenario 5.4: Password Reset Failure - Password Requirements
+
+**User Action:** User submits form but password reset fails due to policy
+**Preconditions:** Valid token and user, but `ResetPasswordAsync` fails
+
+**System Process:**
+1. Validates model state and token successfully
+2. Password reset fails (password policy, etc.)
+3. Logs detailed error information
+4. Adds error to model state
+5. Returns to reset form
+
+**User Experience:**
+- Stays on reset password page
+- Sees error: "Password reset link may have expired or is invalid. Please try again or request a new one."
+
+**Logging:** `"Password reset failed for user {Email}: {Errors}"`
+
+---
+
+### 6. GET /auth/reset-password-confirmation - Display Success Page
+
+**User Action:** User is redirected here after successful password reset
+**System Response:**
+- Returns `ResetPasswordConfirmation.cshtml` view
+- Shows success message
+- Includes link to login page
+
+---
+
 ## Error Handling and Security Notes
 
 ### General Error Handling
@@ -511,8 +839,11 @@ Allows authenticated users to sign out of the application.
 ### Security Considerations
 - User existence not revealed in most error scenarios
 - Confirmation tokens are cryptographically secure
+- Password reset tokens are cryptographically secure and time-limited
 - Email addresses used as usernames for simplicity
 - Automatic signin after email confirmation for better UX
+- Password reset requests always show success message to prevent email enumeration
+- Reset tokens are verified before allowing password changes
 
 ### Logging Strategy
 - All authentication events logged with relevant identifiers
