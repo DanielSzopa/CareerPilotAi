@@ -2,6 +2,7 @@ using CareerPilotAi.Infrastructure.Email;
 using CareerPilotAi.Models.Authentication;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 
 namespace CareerPilotAi.Controllers
 {
@@ -80,8 +81,8 @@ namespace CareerPilotAi.Controllers
 
             foreach (var error in result.Errors)
             {
-                _logger.LogError("Error creating user {Email}: {Error}", model.Email, error.Description);
-                ModelState.AddModelError(string.Empty, "Sign up failed, something happened on our end. Please contact support.");
+                _logger.LogError("Error creating user {Email}: {ErrorCode}, {Error}", model.Email, error.Code, error.Description);
+                ModelState.AddModelError(string.Empty, error.Description);
             }
 
             return View(model);
@@ -240,6 +241,121 @@ namespace CareerPilotAi.Controllers
 
         [HttpGet("access-denied")]
         public IActionResult AccessDenied()
+        {
+            return View();
+        }
+
+        [HttpGet("forgot-password")]
+        public IActionResult ForgotPassword()
+        {
+            return View();
+        }
+
+        [HttpPost("forgot-password")]
+        public async Task<IActionResult> ForgotPassword(ForgotPasswordViewModel model, CancellationToken cancellationToken)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByEmailAsync(model.Email);
+
+            if (user == null)
+            {
+                _logger.LogWarning("Password reset attempted for non-existent user: {Email}", model.Email);
+                return RedirectToAction(nameof(ForgotPasswordConfirmation));
+            }
+
+            // Always redirect to confirmation page to prevent email enumeration attacks
+            if (await _userManager.IsEmailConfirmedAsync(user))
+            {
+                var resetToken = await _userManager.GeneratePasswordResetTokenAsync(user);
+                var resetLink = Url.Action(nameof(ResetPassword), "Auth",
+                    new { userId = user.Id, token = resetToken }, Request.Scheme);
+
+                try
+                {
+                    await _emailService.SendPasswordResetEmailAsync(model.Email, resetLink!, cancellationToken);
+                    _logger.LogInformation("Password reset email sent to user: {Email}, {UserId}", model.Email, user.Id);
+                }
+                catch (Exception ex)
+                {
+                    _logger.LogError(ex, "Failed to send password reset email to user: {Email}, {UserId}", model.Email, user.Id);
+                }
+            }
+            else
+            {
+                _logger.LogWarning("Password reset attempted for unconfirmed user: {Email}", model.Email);
+            }
+
+            return RedirectToAction(nameof(ForgotPasswordConfirmation));
+        }
+
+        [HttpGet("forgot-password-confirmation")]
+        public IActionResult ForgotPasswordConfirmation()
+        {
+            return View();
+        }
+
+        [HttpGet("reset-password")]
+        public async Task<IActionResult> ResetPassword(string? userId, string? token)
+        {
+            if (string.IsNullOrWhiteSpace(userId) || string.IsNullOrWhiteSpace(token))
+            {
+                _logger.LogWarning("Password reset attempted with missing userId or token");
+                return RedirectToAction("Error", "Home");
+            }
+
+            var user = await _userManager.FindByIdAsync(userId);
+            if (user == null)
+            {
+                _logger.LogWarning("Password reset attempted for non-existent user: {UserId}", userId);
+                return RedirectToAction("Error", "Home");
+            }
+
+            return View(new ResetPasswordViewModel { UserId = user.Id, Code = token });
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword(ResetPasswordViewModel model)
+        {
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            var user = await _userManager.FindByIdAsync(model.UserId);
+            if (user == null)
+            {
+                _logger.LogWarning("Password reset attempted for non-existent user: {UserId}", model.UserId);
+                ModelState.AddModelError(string.Empty, "Invalid password reset request.");
+                return View(model);
+            }
+
+            var tokenVerification = await _userManager.VerifyUserTokenAsync(user, TokenOptions.DefaultProvider, UserManager<IdentityUser>.ResetPasswordTokenPurpose, model.Code);
+            if(!tokenVerification)
+            {
+                _logger.LogWarning("Password reset token verification failed for user: {Email}, {UserId}, {RequestUserId}", user.Email, user.Id, model.UserId);
+                ModelState.AddModelError(string.Empty, "Password reset link may have expired or is invalid. Please try again or request a new one.");
+                return View(model);
+            }
+
+            var result = await _userManager.ResetPasswordAsync(user, model.Code, model.Password);
+            if (result.Succeeded)
+            {
+                _logger.LogInformation("Password reset successful for user: {Email}, {UserId}", user.Email, user.Id);
+                return RedirectToAction(nameof(ResetPasswordConfirmation));
+            }
+
+            ModelState.AddModelError(string.Empty, "Password reset link may have expired or is invalid. Please try again or request a new one.");
+            _logger.LogError("Password reset failed for user {Email}: {Errors}", user.Email, string.Join(", ", result.Errors.Select(e => $"{e.Code}: {e.Description}")));
+
+            return View(model);
+        }
+
+        [HttpGet("reset-password-confirmation")]
+        public IActionResult ResetPasswordConfirmation()
         {
             return View();
         }

@@ -40,6 +40,29 @@ public class EmailService
         }
     }
 
+    public async Task SendPasswordResetEmailAsync(string toEmail, string resetLink, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(toEmail))
+            throw new ArgumentNullException(nameof(toEmail), "Recipient email cannot be null or empty.");
+
+        if (string.IsNullOrWhiteSpace(resetLink))
+            throw new ArgumentNullException(nameof(resetLink), "Reset link cannot be null or empty.");
+
+        ValidateSendGridSettings();
+
+        var from = new EmailAddress(_sendgridOptions.Value.FromEmail, "CareerPilotAi");
+        var to = new EmailAddress(toEmail);
+        var emailMessage = MailHelper
+            .CreateSingleTemplateEmail(from, to, _sendgridOptions.Value.PasswordResetTemplateId, new { LINK = resetLink });
+
+        var response = await _sendGridClient.SendEmailAsync(emailMessage, cancellationToken);
+        if (!response.IsSuccessStatusCode)
+        {
+            var errorMessage = await response.Body.ReadAsStringAsync(cancellationToken);
+            throw new Exception($"Failed to send password reset email: {errorMessage}");
+        }
+    }
+
     private void ValidateSendGridSettings()
     {
         if (string.IsNullOrWhiteSpace(_sendgridOptions.Value.FromEmail))
@@ -50,6 +73,11 @@ public class EmailService
         if (string.IsNullOrWhiteSpace(_sendgridOptions.Value.RegistrationVerificationTemplateId))
         {
             throw new InvalidOperationException("RegistrationVerificationTemplateId is not configured in SendGrid settings.");
+        }
+
+        if (string.IsNullOrWhiteSpace(_sendgridOptions.Value.PasswordResetTemplateId))
+        {
+            throw new InvalidOperationException("PasswordResetTemplateId is not configured in SendGrid settings.");
         }
     }
 }

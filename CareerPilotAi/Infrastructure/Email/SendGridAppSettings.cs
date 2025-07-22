@@ -13,5 +13,8 @@ public class SendGridAppSettings
 
     [Required]
     public string? RegistrationVerificationTemplateId { get; set; }
+
+    [Required]
+    public string? PasswordResetTemplateId { get; set; }
 }
 
