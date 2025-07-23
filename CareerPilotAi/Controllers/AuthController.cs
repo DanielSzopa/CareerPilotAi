@@ -197,7 +197,14 @@ namespace CareerPilotAi.Controllers
                 if (result.Succeeded)
                 {
                     _logger.LogInformation("User logged in: {Email}", model.Email);
-                    return RedirectToLocal(model?.ReturnUrl);
+                    if (Url.IsLocalUrl(model.ReturnUrl))
+                    {
+                        return Redirect(model.ReturnUrl);
+                    }
+                    else
+                    {
+                        return RedirectToAction("Index", "JobApplication");
+                    }
                 }
 
                 if (result.IsNotAllowed)
@@ -364,18 +371,6 @@ namespace CareerPilotAi.Controllers
         public IActionResult ResetPasswordConfirmation()
         {
             return View();
-        }
-
-        private IActionResult RedirectToLocal(string? returnUrl)
-        {
-            if (Url.IsLocalUrl(returnUrl))
-            {
-                return Redirect(returnUrl);
-            }
-            else
-            {
-                return RedirectToAction("Index", "Home");
-            }
         }
         
         private async Task<string> GetRegistrationConfirmationLink(IdentityUser user)

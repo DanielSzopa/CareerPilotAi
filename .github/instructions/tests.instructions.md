@@ -1,5 +1,5 @@
 ---
-applyTo: 'tests/*.cs'
+applyTo: 'tests/**/*.cs'
 ---
 
 # Packages, frameworks and libraries
