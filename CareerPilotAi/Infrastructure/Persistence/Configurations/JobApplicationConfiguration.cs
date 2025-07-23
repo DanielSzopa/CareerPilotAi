@@ -1,3 +1,4 @@
+using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.Persistence.DataModels;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
@@ -24,6 +25,10 @@ internal class JobApplicationConfiguration : IEntityTypeConfiguration<JobApplica
 
         builder.Property(x => x.CreatedAt)
             .IsRequired(true);
+
+        builder.Property(x => x.Status)
+            .IsRequired()
+            .HasDefaultValue(ApplicationStatus.DefaultStatus);
 
         // Configure relationship with IdentityUser
         builder.HasOne(x => x.User)

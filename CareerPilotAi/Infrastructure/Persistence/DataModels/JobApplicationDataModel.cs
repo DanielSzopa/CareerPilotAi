@@ -11,6 +11,7 @@ internal class JobApplicationDataModel
     internal string Company { get; set; }
     internal string? Url { get; set; }
     internal string JobDescription { get; set; }
+    internal string Status { get; set; }
     internal DateTime CreatedAt { get; set; }
     internal ICollection<InterviewQuestionDataModel> InterviewQuestions { get; set; } = new List<InterviewQuestionDataModel>();
 }
