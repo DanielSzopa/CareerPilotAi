@@ -37,19 +37,35 @@ namespace CareerPilotAi.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = _userService.GetUserIdOrThrowException();
-            var jobApplicationsCards = await _applicationDbContext.JobApplications
+            var jobApplications = await _applicationDbContext.JobApplications
                 .AsNoTracking()
                 .Where(j => j.UserId == userId)
-                .Select(j => new JobApplicationCardViewModel
+                .ToListAsync();
+
+            if (jobApplications == null || !jobApplications.Any())
+                return View(new JobApplicationCardsViewModel() {Cards = new List<JobApplicationCardViewModel>()});
+
+            var vm = new JobApplicationCardsViewModel
+            {
+                Cards = jobApplications.Select(j => new JobApplicationCardViewModel
                 {
                     JobApplicationId = j.JobApplicationId,
                     Title = j.Title,
                     Company = j.Company,
-                    CardDate = new CardDate(j.CreatedAt)
-                })
-                .ToListAsync();
+                    CardDate = new CardDate(j.CreatedAt),
+                    Status = j.Status
+                }).ToList(),
+                TotalApplications = jobApplications.Count,
+                DraftStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.Draft.Status),
+                RejectedStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.Rejected.Status),
+                SubmittedStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.Submitted.Status),
+                InterviewScheduledStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.InterviewScheduled.Status),
+                WaitingForOfferStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.WaitingForOffer.Status),
+                ReceivedOfferStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.ReceivedOffer.Status),
+                NoContactStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.NoContact.Status)
+            };
 
-            return View(jobApplicationsCards);
+            return View(vm);
         }
 
         [HttpGet]

@@ -1,27 +1,115 @@
-@model List<CareerPilotAi.Models.JobApplication.JobApplicationCardViewModel>
+@model CareerPilotAi.Models.JobApplication.JobApplicationCardsViewModel
 
 @{
     ViewData["Title"] = "Job Applications";
+}
+
+@functions {
+    string GetStatusClass(string status)
+    {
+        return status switch
+        {
+            "Draft" => "status-draft",
+            "Rejected" => "status-rejected",
+            "Submitted" => "status-submitted",
+            "Interview Scheduled" => "status-interview-scheduled",
+            "Waiting for offer" => "status-waiting-for-offer",
+            "Received offer" => "status-received-offer",
+            "No contact" => "status-no-contact",
+            _ => "status-draft"
+        };
+    }
 }
 
 <div class="container-fluid py-4">
     <div class="row">
         <div class="col-12">
             <div class="d-flex justify-content-between align-items-center mb-4">
-                <h2 class="mb-0">Job Applications</h2>
+                <h2 class="mb-0">Your Job Applications</h2>
                 <a href="@Url.Action("CreateTheEntryJobApplication")" class="btn btn-primary">
                     <i class="fas fa-plus me-2"></i>Add New Application
                 </a>
             </div>
 
-            @if (Model != null && Model.Any())
+            @if (Model?.Cards != null && Model.Cards.Any())
             {
+                <!-- Status Summary Bar -->
+                <div class="status-summary-bar mb-4">
+                    <div class="row g-2">
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-all"></span>
+                                <span class="status-name">All</span>
+                                <span class="status-count">@Model.TotalApplications</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-draft"></span>
+                                <span class="status-name">Draft</span>
+                                <span class="status-count">@Model.DraftStatusQuantity</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-submitted"></span>
+                                <span class="status-name">Submitted</span>
+                                <span class="status-count">@Model.SubmittedStatusQuantity</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-interview-scheduled"></span>
+                                <span class="status-name">Interview Scheduled</span>
+                                <span class="status-count">@Model.InterviewScheduledStatusQuantity</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-received-offer"></span>
+                                <span class="status-name">Received Offer</span>
+                                <span class="status-count">@Model.ReceivedOfferStatusQuantity</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-waiting-for-offer"></span>
+                                <span class="status-name">Waiting for Offer</span>
+                                <span class="status-count">@Model.WaitingForOfferStatusQuantity</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-rejected"></span>
+                                <span class="status-name">Rejected</span>
+                                <span class="status-count">@Model.RejectedStatusQuantity</span>
+                            </div>
+                        </div>
+                        <div class="col-6 col-md-4 col-lg-3 col-xl">
+                            <div class="status-summary-item">
+                                <span class="status-dot status-no-contact"></span>
+                                <span class="status-name">No Contact</span>
+                                <span class="status-count">@Model.NoContactStatusQuantity</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="row g-3">
-                    @foreach (var jobApplication in Model)
+                    @foreach (var jobApplication in Model.Cards)
                     {
                         <div class="col-12 col-md-6 col-lg-4 col-xl-3">
                             <div class="card h-100 job-application-card">
-                                <div class="card-body d-flex flex-column">
+                                <div class="card-body d-flex flex-column position-relative">
+                                    <!-- Status Indicator in top-right corner -->
+                                    <div class="status-indicator">
+                                        @{
+                                            var statusClass = GetStatusClass(jobApplication.Status);
+                                        }
+                                        <span class="status-dot @statusClass"></span>
+                                        <span class="status-text">@jobApplication.Status</span>
+                                    </div>
+
                                     <div class="flex-grow-1">
                                         <h5 class="card-title mb-2 text-truncate" title="@jobApplication.Title">
                                             @jobApplication.Title
@@ -36,9 +124,7 @@
                                                 @jobApplication.CardDate?.Value
                                             </small>                                            <div class="d-flex gap-2">
                                                 <a href="@Url.Action("JobApplicationDetails", new { jobApplicationId = jobApplication.JobApplicationId })" 
-                                                   class="btn btn-primary btn-sm">
-                                                    View Details
-                                                </a>
+                                                   class="btn btn-primary btn-sm">Details</a>
                                                 <button type="button" 
                                                         class="btn btn-outline-danger btn-sm" 
                                                         onclick="confirmDelete('@jobApplication.JobApplicationId', '@jobApplication.Title')">
@@ -71,6 +157,102 @@
 </div>
 
 <style>
+    /* CSS Custom Properties for Status Colors */
+    :root {
+        --status-all-color: #007bff;
+        --status-draft-color: #007bff;
+        --status-rejected-color: #dc3545;
+        --status-submitted-color: #28a745;
+        --status-interview-scheduled-color: #28a745;
+        --status-waiting-for-offer-color: #28a745;
+        --status-received-offer-color: #28a745;
+        --status-no-contact-color: #dc3545;
+    }
+
+    /* Status Summary Bar Styles */
+    .status-summary-bar {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+    }
+
+    .status-summary-item {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem;
+        background: white;
+        border-radius: 6px;
+        border: 1px solid #e9ecef;
+        transition: all 0.2s ease-in-out;
+    }
+
+    .status-summary-item:hover {
+        border-color: #007bff;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .status-summary-item .status-name {
+        font-size: 0.875rem;
+        font-weight: 500;
+        color: #495057;
+        flex-grow: 1;
+    }
+
+    .status-summary-item .status-count {
+        font-size: 0.875rem;
+        font-weight: 600;
+        color: #212529;
+        background: #e9ecef;
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        min-width: 1.5rem;
+        text-align: center;
+    }
+
+    /* Status Dot Styles */
+    .status-dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        display: inline-block;
+        flex-shrink: 0;
+    }
+
+    .status-all { background-color: var(--status-all-color); }
+    .status-draft { background-color: var(--status-draft-color); }
+    .status-rejected { background-color: var(--status-rejected-color); }
+    .status-submitted { background-color: var(--status-submitted-color); }
+    .status-interview-scheduled { background-color: var(--status-interview-scheduled-color); }
+    .status-waiting-for-offer { background-color: var(--status-waiting-for-offer-color); }
+    .status-received-offer { background-color: var(--status-received-offer-color); }
+    .status-no-contact { background-color: var(--status-no-contact-color); }
+
+    /* Card Status Indicator Styles */
+    .status-indicator {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        display: flex;
+        align-items: center;
+        gap: 0.375rem;
+        background: rgba(255, 255, 255, 0.95);
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        border: 1px solid #e9ecef;
+        box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        z-index: 1;
+    }
+
+    .status-indicator .status-text {
+        font-size: 0.75rem;
+        font-weight: 500;
+        color: #495057;
+        white-space: nowrap;
+    }
+
+    /* Existing Card Styles */
     .job-application-card {
         border: 1px solid #e9ecef;
         border-radius: 8px;
@@ -111,9 +293,41 @@
     .job-application-card .card-body {
         padding: 1.25rem;
         min-height: 150px;
-    }    @@media (max-width: 576px) {
+    }
+
+    /* Responsive Design */
+    @@media (max-width: 576px) {
         .job-application-card .card-body {
             min-height: 120px;
+        }
+
+        .status-summary-item .status-name {
+            font-size: 0.75rem;
+        }
+
+        .status-summary-item .status-count {
+            font-size: 0.75rem;
+            min-width: 1.25rem;
+        }
+
+        .status-indicator {
+            top: 0.5rem;
+            right: 0.5rem;
+            padding: 0.2rem 0.4rem;
+        }
+
+        .status-indicator .status-text {
+            font-size: 0.7rem;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .status-summary-bar {
+            padding: 0.75rem;
+        }
+
+        .status-summary-item {
+            padding: 0.375rem;
         }
     }
 </style>

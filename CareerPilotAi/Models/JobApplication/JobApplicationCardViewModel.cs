@@ -1,18 +1,20 @@
 namespace CareerPilotAi.Models.JobApplication;
 
-internal class JobApplicationCardViewModel
+public class JobApplicationCardViewModel
 {
     public Guid JobApplicationId { get; set; }
     public string Title { get; set; }
     public string Company { get; set; }
     public CardDate CardDate { get; set; }
+
+    public string Status { get; set; }
 }
 
-internal class CardDate
+public class CardDate
 {
-    internal string Value { get; }
+    public string Value { get; }
 
-    internal CardDate(DateTime dateTime)
+    public CardDate(DateTime dateTime)
     {
         if(dateTime == default)
         {
