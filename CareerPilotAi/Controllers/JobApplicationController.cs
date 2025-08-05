@@ -3,6 +3,7 @@ using CareerPilotAi.Application.Commands.DeleteJobApplication;
 using CareerPilotAi.Application.Commands.Dispatcher;
 using CareerPilotAi.Application.Commands.EnhanceJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobDescription;
+using CareerPilotAi.Application.Commands.UpdateJobApplicationStatus;
 using CareerPilotAi.Application.Services;
 using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.Persistence;
@@ -147,7 +148,8 @@ namespace CareerPilotAi.Controllers
                 jobApplicationDataModel.Title,
                 jobApplicationDataModel.Company,
                 jobApplicationDataModel.JobDescription,
-                jobApplicationDataModel.Url
+                jobApplicationDataModel.Url,
+                new ApplicationStatus(jobApplicationDataModel.Status)
             );
 
             var viewModel = new JobApplicationDetailsViewModel
@@ -156,6 +158,7 @@ namespace CareerPilotAi.Controllers
                 CompanyName = jobApplication.Company,
                 JobTitle = jobApplication.Title,
                 JobDescription = jobApplication.JobDescription,
+                Status = jobApplication.ApplicationStatus.Status,
             };
 
             return View("JobApplicationDetails", viewModel);
@@ -249,6 +252,65 @@ namespace CareerPilotAi.Controllers
                     type: HttpStatusCode.InternalServerError.ToString(),
                     title: "Internal Server Error",
                     detail: "An error occurred while deleting the job application. Please try again.",
+                    statusCode: (int)HttpStatusCode.InternalServerError,
+                    instance: HttpContext.Request.Path.ToString()
+                );
+            }
+        }
+
+        [HttpPatch]
+        [Route("api/status/{jobApplicationId:guid}")]
+        public async Task<IActionResult> UpdateJobApplicationStatus(Guid jobApplicationId, [FromBody] UpdateJobApplicationStatusRequest request, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    _logger.LogError("Invalid model state for UpdateJobApplicationStatus request: {jobApplicationId}", jobApplicationId);
+                    return Problem(
+                        type: HttpStatusCode.BadRequest.ToString(),
+                        title: "Invalid Request",
+                        detail: "The request data is invalid. Please check the status field.",
+                        statusCode: (int)HttpStatusCode.BadRequest,
+                        instance: HttpContext.Request.Path.ToString()
+                    );
+                }
+
+                if (jobApplicationId == Guid.Empty)
+                {
+                    _logger.LogError("JobApplicationId cannot be empty during status update action");
+                    return Problem(
+                        type: HttpStatusCode.BadRequest.ToString(),
+                        title: "Invalid Job Application ID",
+                        detail: "The job application ID cannot be empty.",
+                        statusCode: (int)HttpStatusCode.BadRequest,
+                        instance: HttpContext.Request.Path.ToString()
+                    );
+                }
+
+                var response = await _commandDispatcher.DispatchAsync<UpdateJobApplicationStatusCommand, UpdateJobApplicationStatusResponse>(
+                    new UpdateJobApplicationStatusCommand(jobApplicationId, request.Status), cancellationToken);
+
+                if (!response.IsSuccess)
+                {
+                    return Problem(
+                        type: response.ProblemDetails?.Type ?? HttpStatusCode.InternalServerError.ToString(),
+                        title: response.ProblemDetails?.Title ?? "Error",
+                        detail: response.ProblemDetails?.Detail ?? "An error occurred while updating the application status.",
+                        statusCode: response.ProblemDetails?.Status ?? (int)HttpStatusCode.InternalServerError,
+                        instance: HttpContext.Request.Path.ToString()
+                    );
+                }
+
+                return Ok(new { success = true, message = "Application status updated successfully." });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating application status: {jobApplicationId}", jobApplicationId);
+                return Problem(
+                    type: HttpStatusCode.InternalServerError.ToString(),
+                    title: "Internal Server Error",
+                    detail: "An error occurred while updating the application status. Please try again.",
                     statusCode: (int)HttpStatusCode.InternalServerError,
                     instance: HttpContext.Request.Path.ToString()
                 );

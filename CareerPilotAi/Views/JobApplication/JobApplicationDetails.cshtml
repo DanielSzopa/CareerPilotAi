@@ -1,6 +1,24 @@
 @model CareerPilotAi.Models.JobApplication.JobApplicationDetailsViewModel
 @{
     ViewData["Title"] = Model.JobTitle + " - " + Model.CompanyName;
+    
+    // Helper function to get CSS class from status
+    string GetStatusCssClass(string status)
+    {
+        return status?.ToLowerInvariant() switch
+        {
+            "draft" => "status-draft",
+            "submitted" => "status-submitted",
+            "interview scheduled" => "status-interview-scheduled",
+            "waiting for offer" => "status-waiting-for-offer",
+            "received offer" => "status-received-offer",
+            "rejected" => "status-rejected",
+            "no contact" => "status-no-contact",
+            _ => "status-draft" // Default to draft if status is unknown
+        };
+    }
+    
+    var currentStatusCssClass = GetStatusCssClass(Model.Status);
 }
 
 <link href="~/css/interview-questions.css" rel="stylesheet" />
@@ -22,8 +40,8 @@
                                 id="statusDropdown" 
                                 data-bs-toggle="dropdown" 
                                 aria-expanded="false">
-                            <span class="status-dot status-draft"></span>
-                            <span class="status-text">Draft</span>
+                            <span class="status-dot @currentStatusCssClass"></span>
+                            <span class="status-text">@Model.Status</span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="statusDropdown">
                             <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="Draft" data-color-class="status-draft">
@@ -396,11 +414,34 @@
                 updateApplicationStatus('@Model.JobApplicationId', newStatus);
             });
             
-            // Placeholder function for updating application status
-            function updateApplicationStatus(jobApplicationId, newStatus) {
-                console.log(`Updating application ${jobApplicationId} to status: ${newStatus}`);
-                // TODO: Implement actual API call to update status in backend
-                // This will be implemented in a future backend task
+            // Function for updating application status
+            async function updateApplicationStatus(jobApplicationId, newStatus) {
+                try {
+                    const response = await fetch(`/job-applications/api/status/${jobApplicationId}`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
+                        },
+                        body: JSON.stringify({
+                            Status: newStatus
+                        })
+                    });
+
+                    if (!response.ok) {
+                        const errorData = await response.json();
+                        const errorMessage = errorData.detail || errorData.error || 'Failed to update application status. Please try again.';
+                        throw new Error(errorMessage);
+                    }
+
+                    const data = await response.json();
+                    showSuccessMessage(`Application status updated to "${newStatus}" successfully!`, 'jobDetailsMessages');
+                } catch (error) {
+                    console.error('Error updating application status:', error);
+                    showErrorMessage(error.message, 'jobDetailsMessages');
+                    // Revert the UI changes on error by reloading the page or restoring previous state
+                    location.reload();
+                }
             }
             
             // Initialize Interview Questions Manager

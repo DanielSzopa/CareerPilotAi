@@ -8,6 +8,7 @@ using CareerPilotAi.Application.Commands.GenerateInterviewQuestions;
 using CareerPilotAi.Application.Commands.PrepareInterviewPreparationContent;
 using CareerPilotAi.Application.Commands.SaveInterviewPreparationContent;
 using CareerPilotAi.Application.Commands.UpdateJobDescription;
+using CareerPilotAi.Application.Commands.UpdateJobApplicationStatus;
 
 namespace CareerPilotAi.Application.Commands;
 
@@ -19,6 +20,7 @@ internal static class CommandsExtensions
             .AddScoped<ICommandHandler<CreateJobApplicationCommand, Guid>, CreateJobApplicationCommandHandler>()
             .AddScoped<ICommandHandler<EnhanceJobDescriptionCommand, EnhanceJobDescriptionResponse>, EnhanceJobDescriptionCommandHandler>()
             .AddScoped<ICommandHandler<UpdateJobDescriptionCommand, UpdateJobDescriptionResponse>, UpdateJobDescriptionCommandHandler>()
+            .AddScoped<ICommandHandler<UpdateJobApplicationStatusCommand, UpdateJobApplicationStatusResponse>, UpdateJobApplicationStatusCommandHandler>()
             .AddScoped<ICommandHandler<DeleteJobApplicationCommand, DeleteJobApplicationResponse>, DeleteJobApplicationCommandHandler>()
             .AddScoped<ICommandHandler<DeleteInterviewQuestionCommand, DeleteInterviewQuestionResponse>, DeleteInterviewQuestionCommandHandler>()
             .AddScoped<ICommandHandler<GenerateInterviewQuestionsCommand, GenerateInterviewQuestionsResponse>, GenerateInterviewQuestionsCommandHandler>()

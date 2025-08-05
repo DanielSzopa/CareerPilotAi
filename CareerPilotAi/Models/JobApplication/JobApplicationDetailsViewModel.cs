@@ -17,5 +17,8 @@ namespace CareerPilotAi.Models.JobApplication
 
         [MaxWords(5000, ErrorMessage = "Job description cannot exceed 5000 words")]
         public string JobDescription { get; set; } = string.Empty;
+
+        [Required(ErrorMessage = "Status is required")]
+        public string Status { get; set; } = string.Empty;
     }
 }

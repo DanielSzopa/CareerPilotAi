@@ -12,8 +12,9 @@ internal class JobApplication
     internal string Title { get; private set; }
     internal string Company { get; private set; }
     internal string? URL { get; private set; }
+    internal ApplicationStatus ApplicationStatus { get; private set; }
 
-    internal JobApplication(Guid jobApplicationId, string userId, string title, string company, string text, string? url)
+    internal JobApplication(Guid jobApplicationId, string userId, string title, string company, string text, string? url, ApplicationStatus applicationStatus)
     {
         if (string.IsNullOrWhiteSpace(userId))
             throw new JobApplicationUserIdCannotBeEmptyException();
@@ -30,6 +31,9 @@ internal class JobApplication
         if (string.IsNullOrWhiteSpace(text))
             throw new EntryJobDetailsTextCannotBeEmptyException();
 
+        if (applicationStatus is null)
+            throw new Exception("Application status cannot be null.");
+
         if (!MaxTextWordsValidator.ValidateText(text, _maxWords))
             throw new EntryJobDetailsTextTooLongException(_maxWords);
 
@@ -42,6 +46,7 @@ internal class JobApplication
         Company = company;
         JobDescription = text;
         URL = url;
+        ApplicationStatus = applicationStatus;
     }
 
     internal void UpdateJobDescription(string jobDescriptionText)
@@ -53,6 +58,14 @@ internal class JobApplication
             throw new EntryJobDetailsTextTooLongException(_maxWords);
 
         JobDescription = jobDescriptionText;
+    }
+
+    internal void UpdateStatus(ApplicationStatus applicationStatus)
+    {
+        if (applicationStatus is null)
+            throw new ArgumentNullException(nameof(applicationStatus), "Application status cannot be null.");
+
+        ApplicationStatus = applicationStatus;
     }
 }
 

@@ -50,7 +50,8 @@ public class UpdateJobDescriptionCommandHandler : ICommandHandler<UpdateJobDescr
             jobApplicationDataModel.Title,
             jobApplicationDataModel.Company,
             jobApplicationDataModel.JobDescription,
-            jobApplicationDataModel.Url
+            jobApplicationDataModel.Url,
+            new ApplicationStatus(jobApplicationDataModel.Status)
         );
 
         jobApplication.UpdateJobDescription(command.JobDescription);

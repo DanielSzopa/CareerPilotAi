@@ -21,7 +21,7 @@ public class CreateJobApplicationCommandHandler : ICommandHandler<CreateJobAppli
     public async Task<Guid> HandleAsync(CreateJobApplicationCommand command, CancellationToken cancellationToken)
     {
         var vm = command.vm;
-        var jobApplication = new JobApplication(Guid.NewGuid(), _userService.GetUserIdOrThrowException(), vm.Title, vm.Company, vm.JobDescription, vm.URL);
+        var jobApplication = new JobApplication(Guid.NewGuid(), _userService.GetUserIdOrThrowException(), vm.Title, vm.Company, vm.JobDescription, vm.URL, ApplicationStatus.Draft);
 
         await _dbContext.JobApplications.AddAsync(new JobApplicationDataModel()
         {
