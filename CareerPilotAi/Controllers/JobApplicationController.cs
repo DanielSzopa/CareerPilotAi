@@ -24,28 +24,41 @@ namespace CareerPilotAi.Controllers
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly ILogger<JobApplicationController> _logger;
         private readonly ICommandDispatcher _commandDispatcher;
+        private readonly ITimeZoneService _timeZoneService;
 
         public JobApplicationController(IUserService userService, ApplicationDbContext applicationDbContext,
-            ILogger<JobApplicationController> logger, ICommandDispatcher commandDispatcher)
+            ILogger<JobApplicationController> logger, ICommandDispatcher commandDispatcher, ITimeZoneService timeZoneService)
         {
             _userService = userService;
             _applicationDbContext = applicationDbContext;
             _logger = logger;
             _commandDispatcher = commandDispatcher;
+            _timeZoneService = timeZoneService;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Index()
+        public IActionResult Index()
+        {
+            // Return empty view - data will be loaded via API
+            return View();
+        }
+
+        [HttpGet]
+        [Route("api/cards")]
+        public async Task<IActionResult> GetJobApplicationCards(CancellationToken cancellationToken)
         {
             var userId = _userService.GetUserIdOrThrowException();
             var jobApplications = await _applicationDbContext.JobApplications
                 .AsNoTracking()
                 .Where(j => j.UserId == userId)
-                .ToListAsync();
+                .ToListAsync(cancellationToken);
 
             if (jobApplications == null || !jobApplications.Any())
-                return View(new JobApplicationCardsViewModel() {Cards = new List<JobApplicationCardViewModel>()});
+                return Ok(new JobApplicationCardsViewModel() { Cards = new List<JobApplicationCardViewModel>() });
 
+            // Get user's timezone from header
+            var userTimeZone = _timeZoneService.GetTimeZoneInfoFromHeader();
+            
             var vm = new JobApplicationCardsViewModel
             {
                 Cards = jobApplications.Select(j => new JobApplicationCardViewModel
@@ -53,7 +66,7 @@ namespace CareerPilotAi.Controllers
                     JobApplicationId = j.JobApplicationId,
                     Title = j.Title,
                     Company = j.Company,
-                    CardDate = new CardDate(j.CreatedAt),
+                    CardDate = new CardDate(j.CreatedAt, userTimeZone),
                     Status = j.Status
                 }).ToList(),
                 TotalApplications = jobApplications.Count,
@@ -66,7 +79,7 @@ namespace CareerPilotAi.Controllers
                 NoContactStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.NoContact.Status)
             };
 
-            return View(vm);
+            return Ok(vm);
         }
 
         [HttpGet]

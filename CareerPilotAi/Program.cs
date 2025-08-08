@@ -12,7 +12,7 @@ services
     .AddHttpContextAccessor()
     .AddInfrastructure(builder.Configuration)
     .RegisterCommands()
-    .AddScoped<IUserService, UserService>();
+    .AddApplicationServices();
 
 services.AddControllersWithViews(options =>
 {
