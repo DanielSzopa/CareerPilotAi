@@ -17,11 +17,21 @@
 }
 else
 {
+    <style>
+        #sign-up-btn {
+            background-color: var(--main-blue);
+            color: white;
+        }
+        #sign-up-btn:hover {
+            background-color: var(--main-blue-hover);
+        }
+    </style>
+
     <li class="nav-item">
         <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Log in</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white bg-primary rounded" asp-controller="Auth" asp-action="Register">Sign up</a>
+        <a class="nav-link text-white bg rounded" id="sign-up-btn" asp-controller="Auth" asp-action="Register">Sign up</a>
     </li>
 }
 </ul> 
