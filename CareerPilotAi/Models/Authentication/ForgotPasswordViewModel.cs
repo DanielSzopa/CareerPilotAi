@@ -5,7 +5,9 @@ namespace CareerPilotAi.Models.Authentication
 {
     public class ForgotPasswordViewModel
     {
+        [Required]
         [EnhancedEmail]
+        [MaxLength(254)]
         public required string Email { get; set; }
     }
 } 

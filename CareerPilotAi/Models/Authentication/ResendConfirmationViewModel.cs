@@ -5,7 +5,8 @@ namespace CareerPilotAi.Models.Authentication;
 
 public class ResendConfirmationViewModel
 {
+    [Required]
     [EnhancedEmail]
-    [Display(Name = "Email")]
+    [MaxLength(254)]
     public string Email { get; set; } = string.Empty;
 }

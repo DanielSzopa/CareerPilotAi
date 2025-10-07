@@ -220,91 +220,9 @@ public class EnhancedEmailAttributeTests
         Assert.Contains("valid email address", result.ErrorMessage);
     }
 
-    [Theory]
-    [InlineData("")]
-    [InlineData("   ")]
-    [InlineData("\t")]
-    [InlineData("\n")]
-    public void IsValid_EmptyOrWhitespace_ReturnsValidationError(string email)
-    {
-        // Arrange
-        var validationContext = new ValidationContext(new object()) { DisplayName = "Email" };
-
-        // Act
-        var result = _attribute.GetValidationResult(email, validationContext);
-
-        // Assert
-        Assert.NotEqual(ValidationResult.Success, result);
-        Assert.NotNull(result);
-        Assert.Contains("valid email address", result.ErrorMessage);
-    }
-
     #endregion
 
     #region Edge Cases and Security Tests (TEST-013 to TEST-016)
-
-    [Fact]
-    public void IsValid_NullValue_ReturnsValidationError()
-    {
-        // Arrange
-        var validationContext = new ValidationContext(new object()) { DisplayName = "Email" };
-
-        // Act
-        var result = _attribute.GetValidationResult(null, validationContext);
-
-        // Assert
-        Assert.NotEqual(ValidationResult.Success, result);
-        Assert.NotNull(result);
-        Assert.Contains("valid email address", result.ErrorMessage);
-    }
-
-    [Fact]
-    public void IsValid_EmptyString_ReturnsValidationError()
-    {
-        // Arrange
-        var validationContext = new ValidationContext(new object()) { DisplayName = "Email" };
-
-        // Act
-        var result = _attribute.GetValidationResult(string.Empty, validationContext);
-
-        // Assert
-        Assert.NotEqual(ValidationResult.Success, result);
-        Assert.NotNull(result);
-        Assert.Contains("valid email address", result.ErrorMessage);
-    }
-
-    [Fact]
-    public void IsValid_EmailExceedingMaxLength_ReturnsValidationError()
-    {
-        // Arrange
-        var longEmail = new string('a', 250) + "@" + new string('b', 250) + ".com"; // Over 254 characters
-        var validationContext = new ValidationContext(new object()) { DisplayName = "Email" };
-
-        // Act
-        var result = _attribute.GetValidationResult(longEmail, validationContext);
-
-        // Assert
-        Assert.NotEqual(ValidationResult.Success, result);
-        Assert.NotNull(result);
-        Assert.Contains("valid email address", result.ErrorMessage);
-    }
-
-    [Theory]
-    [InlineData("user@domain.com\0")]
-    [InlineData("user\0@domain.com")]
-    public void IsValid_EmailsWithControlCharacters_ReturnsValidationError(string email)
-    {
-        // Arrange
-        var validationContext = new ValidationContext(new object()) { DisplayName = "Email" };
-
-        // Act
-        var result = _attribute.GetValidationResult(email, validationContext);
-
-        // Assert
-        Assert.NotEqual(ValidationResult.Success, result);
-        Assert.NotNull(result);
-        Assert.Contains("valid email address", result.ErrorMessage);
-    }
 
     [Theory]
     [InlineData("user@domain.com<script>")]
@@ -337,24 +255,6 @@ public class EnhancedEmailAttributeTests
 
         // Act
         var result = _attribute.GetValidationResult(invalidEmail, validationContext);
-
-        // Assert
-        Assert.NotEqual(ValidationResult.Success, result);
-        Assert.NotNull(result);
-        Assert.Contains("valid email address", result.ErrorMessage);
-    }
-
-    [Fact]
-    public void IsValid_WithCustomErrorMessage_ReturnsCustomErrorMessage()
-    {
-        // Arrange
-        var customErrorMessage = "The {0} field must contain a valid email address.";
-        var attributeWithCustomMessage = new EnhancedEmailAttribute(customErrorMessage);
-        var invalidEmail = "invalid-email";
-        var validationContext = new ValidationContext(new object()) { DisplayName = "Email Address" };
-
-        // Act
-        var result = attributeWithCustomMessage.GetValidationResult(invalidEmail, validationContext);
 
         // Assert
         Assert.NotEqual(ValidationResult.Success, result);

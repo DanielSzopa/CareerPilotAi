@@ -1,11 +1,13 @@
-using System.ComponentModel.DataAnnotations;
 using CareerPilotAi.Application.CustomValidationAttributes;
+using System.ComponentModel.DataAnnotations;
 
 namespace CareerPilotAi.Models.Authentication
 {
     public class LoginViewModel
     {
+        [Required]
         [EnhancedEmail]
+        [MaxLength(254)]
         public required string Email { get; set; }
 
         [Required]
