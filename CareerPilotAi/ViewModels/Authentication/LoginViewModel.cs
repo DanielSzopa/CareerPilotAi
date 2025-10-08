@@ -1,7 +1,7 @@
 using CareerPilotAi.Application.CustomValidationAttributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace CareerPilotAi.Models.Authentication
+namespace CareerPilotAi.ViewModels.Authentication
 {
     public class LoginViewModel
     {

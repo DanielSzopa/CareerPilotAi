@@ -4,7 +4,7 @@ using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.OpenRouter;
 using CareerPilotAi.Infrastructure.Persistence;
 using CareerPilotAi.Infrastructure.Persistence.DataModels;
-using CareerPilotAi.Models.JobApplication;
+using CareerPilotAi.ViewModels.JobApplication;
 using CareerPilotAi.Prompts.GenerateInterviewQuestions;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;

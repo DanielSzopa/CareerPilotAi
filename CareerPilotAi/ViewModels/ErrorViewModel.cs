@@ -1,4 +1,4 @@
-namespace CareerPilotAi.Models
+namespace CareerPilotAi.ViewModels
 {
     public class ErrorViewModel
     {

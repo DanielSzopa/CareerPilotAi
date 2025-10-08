@@ -1,4 +1,4 @@
-using CareerPilotAi.Models.JobApplication;
+using CareerPilotAi.ViewModels.JobApplication;
 using Xunit;
 
 namespace CareerPilotAi.Tests.Models.JobApplication;

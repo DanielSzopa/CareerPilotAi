@@ -1,4 +1,4 @@
-using CareerPilotAi.Models.JobApplication;
+using CareerPilotAi.ViewModels.JobApplication;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareerPilotAi.Application.Commands.GenerateInterviewQuestions;

@@ -1,7 +1,7 @@
 using CareerPilotAi.Application.CustomValidationAttributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace CareerPilotAi.Models.InterviewQuestions;
+namespace CareerPilotAi.ViewModels.InterviewQuestions;
 
 public class SaveInterviewPreparationContentRequest
 {

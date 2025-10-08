@@ -7,13 +7,13 @@ using CareerPilotAi.Application.Commands.PrepareInterviewPreparationContent;
 using CareerPilotAi.Application.Commands.SaveInterviewPreparationContent;
 using CareerPilotAi.Application.Services;
 using CareerPilotAi.Infrastructure.Persistence;
-using CareerPilotAi.Models.JobApplication;
-using CareerPilotAi.Models.InterviewQuestions;
+using CareerPilotAi.ViewModels.InterviewQuestions;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
-using SaveInterviewPreparationContentRequest = CareerPilotAi.Models.InterviewQuestions.SaveInterviewPreparationContentRequest;
+using SaveInterviewPreparationContentRequest = CareerPilotAi.ViewModels.InterviewQuestions.SaveInterviewPreparationContentRequest;
+using CareerPilotAi.ViewModels.JobApplication;
 
 [Authorize]
 [Route("[controller]")]

@@ -1,4 +1,4 @@
-namespace CareerPilotAi.Controllers
+namespace CareerPilotAi.ViewModels.JobApplication
 {
     public class EnhanceJobDescriptionRequest
     {

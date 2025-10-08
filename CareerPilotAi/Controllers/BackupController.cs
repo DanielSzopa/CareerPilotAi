@@ -2,7 +2,7 @@
 // using CareerPilotAi.Infrastructure.OpenRouter;
 // using CareerPilotAi.Infrastructure.Persistence;
 // using CareerPilotAi.Infrastructure.Persistence.DataModels;
-// using CareerPilotAi.Models.JobApplication;
+// using CareerPilotAi.ViewModels.JobApplication;
 // using CareerPilotAi.Services;
 // using Microsoft.AspNetCore.Authorization;
 // using Microsoft.AspNetCore.Mvc;

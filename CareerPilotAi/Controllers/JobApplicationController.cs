@@ -7,12 +7,13 @@ using CareerPilotAi.Application.Commands.UpdateJobApplicationStatus;
 using CareerPilotAi.Application.Services;
 using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.Persistence;
-using CareerPilotAi.Models;
-using CareerPilotAi.Models.JobApplication;
+using CareerPilotAi.ViewModels.JobApplication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
+using CareerPilotAi.ViewModels.JobApplication;
+using CareerPilotAi.ViewModels;
 
 namespace CareerPilotAi.Controllers
 {

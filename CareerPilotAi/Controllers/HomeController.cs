@@ -1,6 +1,6 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using CareerPilotAi.Models;
+using CareerPilotAi.ViewModels;
 
 namespace CareerPilotAi.Controllers;
 

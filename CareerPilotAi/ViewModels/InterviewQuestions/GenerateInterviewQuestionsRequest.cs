@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CareerPilotAi.Models.InterviewQuestions;
+namespace CareerPilotAi.ViewModels.InterviewQuestions;
 
 public class GenerateInterviewQuestionsRequest
 {

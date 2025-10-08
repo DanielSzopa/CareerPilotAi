@@ -1,5 +1,5 @@
 using CareerPilotAi.Application.Commands.Abstractions;
-using CareerPilotAi.Models.JobApplication;
+using CareerPilotAi.ViewModels.JobApplication;
 
 namespace CareerPilotAi.Application.Commands.CreateJobApplication;
 

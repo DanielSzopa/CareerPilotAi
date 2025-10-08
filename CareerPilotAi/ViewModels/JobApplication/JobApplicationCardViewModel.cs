@@ -1,6 +1,6 @@
 using CareerPilotAi.Application.Extensions;
 
-namespace CareerPilotAi.Models.JobApplication;
+namespace CareerPilotAi.ViewModels.JobApplication;
 
 public class JobApplicationCardViewModel
 {

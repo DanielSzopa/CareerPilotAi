@@ -1,4 +1,4 @@
-namespace CareerPilotAi.Models.JobApplication;
+namespace CareerPilotAi.ViewModels.JobApplication;
 
 public class JobApplicationCardsViewModel
 {

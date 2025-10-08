@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using CareerPilotAi.Application.CustomValidationAttributes;
 
-namespace CareerPilotAi.Models.Authentication
+namespace CareerPilotAi.ViewModels.Authentication
 {
     public class ForgotPasswordViewModel
     {

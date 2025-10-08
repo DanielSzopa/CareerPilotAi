@@ -1,7 +1,7 @@
 using CareerPilotAi.Application.CustomValidationAttributes;
 using System.ComponentModel.DataAnnotations;
 
-namespace CareerPilotAi.Models.JobApplication
+namespace CareerPilotAi.ViewModels.JobApplication
 {
     public class JobApplicationDetailsViewModel
     {

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace CareerPilotAi.Models.JobApplication;
+namespace CareerPilotAi.ViewModels.JobApplication;
 
 public class UpdateJobApplicationStatusRequest
 {
