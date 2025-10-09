@@ -1,0 +1,8 @@
+---
+globs: *.cshtml
+alwaysApply: false
+---
+
+# ASP .NET Core MVC Razor Views Rules
+
+- Use Bootstrap 5 for styling. If Bootstrap has the CSS properties you need, use them instead of defining new CSS.
