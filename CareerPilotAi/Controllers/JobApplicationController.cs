@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
-using CareerPilotAi.ViewModels.JobApplication;
 using CareerPilotAi.ViewModels;
 
 namespace CareerPilotAi.Controllers
@@ -25,16 +24,14 @@ namespace CareerPilotAi.Controllers
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly ILogger<JobApplicationController> _logger;
         private readonly ICommandDispatcher _commandDispatcher;
-        private readonly ITimeZoneService _timeZoneService;
 
         public JobApplicationController(IUserService userService, ApplicationDbContext applicationDbContext,
-            ILogger<JobApplicationController> logger, ICommandDispatcher commandDispatcher, ITimeZoneService timeZoneService)
+            ILogger<JobApplicationController> logger, ICommandDispatcher commandDispatcher)
         {
             _userService = userService;
             _applicationDbContext = applicationDbContext;
             _logger = logger;
             _commandDispatcher = commandDispatcher;
-            _timeZoneService = timeZoneService;
         }
 
         [HttpGet]
@@ -56,9 +53,6 @@ namespace CareerPilotAi.Controllers
 
             if (jobApplications == null || !jobApplications.Any())
                 return Ok(new JobApplicationCardsViewModel() { Cards = new List<JobApplicationCardViewModel>() });
-
-            // Get user's timezone from header
-            var userTimeZone = _timeZoneService.GetTimeZoneInfoFromHeader();
             
             var vm = new JobApplicationCardsViewModel
             {
@@ -67,7 +61,7 @@ namespace CareerPilotAi.Controllers
                     JobApplicationId = j.JobApplicationId,
                     Title = j.Title,
                     Company = j.Company,
-                    CardDate = new CardDate(j.CreatedAt, userTimeZone),
+                    CreatedAt = j.CreatedAt,
                     Status = j.Status
                 }).ToList(),
                 TotalApplications = jobApplications.Count,

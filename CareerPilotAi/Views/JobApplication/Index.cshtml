@@ -306,7 +306,6 @@
                 method: 'GET',
                 headers: {
                     'Content-Type': 'application/json',
-                    'x-timezone': getTimeZone(),
                     'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value || ''
                 }
             });
@@ -322,14 +321,6 @@
             console.error('Error loading job applications:', error);
             showEmptyState();
         }
-    }
-
-    function getTimeZone(){
-        if(Intl && Intl.DateTimeFormat){
-            return Intl.DateTimeFormat().resolvedOptions().timeZone
-        }
-
-        return 'Europe/Warsaw';
     }
 
     function updateStatusCounts(data) {
