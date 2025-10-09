@@ -1,6 +1,5 @@
 using CareerPilotAi.Prompts.EnhanceJobDescription;
 using CareerPilotAi.Prompts.GenerateInterviewQuestions;
-using CareerPilotAi.Prompts.PersonalDataPdfScrape;
 using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
 
 namespace CareerPilotAi.Prompts;
@@ -11,7 +10,6 @@ public static class PromptsExtensions
     {
         var prompts = new List<PromptBase>
         {
-            new PersonalDataPdfScrapePrompt(),
             new EnhanceJobDescriptionPrompt(),
             new GenerateInterviewQuestionsPrompt(),
             new PrepareInterviewPreparationContentPrompt()

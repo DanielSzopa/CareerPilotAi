@@ -1,7 +1,6 @@
 ﻿using CareerPilotAi.Prompts;
 using CareerPilotAi.Prompts.EnhanceJobDescription;
 using CareerPilotAi.Prompts.GenerateInterviewQuestions;
-using CareerPilotAi.Prompts.PersonalDataPdfScrape;
 using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
 using System.Text.Json;
 
@@ -28,60 +27,6 @@ public class OpenRouterService
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<OpenRouterCommonResponse>(cancellationToken) ?? throw new InvalidOperationException("Failed to deserialize response from OpenRouter.");
-    }
-
-    public async Task<PersonalDataPdfScrapeResponseModel> ScrapePersonalInformationPdf(string fileName, string base64String, CancellationToken cancellationToken)
-    {
-        var prompt = _promptsProvider.GetPrompt(new PersonalDataPdfScrapePrompt());
-        var settings = _openRouterFeatureSettings.Get(OpenRouterFeatureSettingsProvider.PersonalDetailsPdfUpload);
-        var request = new
-        {
-            model = settings.Model,
-            temperature = settings.Temperature,
-            stream = false,
-            response_format = new
-            {
-                type = "json_object"
-            },
-            messages = new[]
-            {
-                    new
-                    {
-                        Role = "user",
-                        Content = new []
-                        {
-                            new
-                            {
-                                Type = "text",
-                                Text = prompt,
-                                File = new
-                                {
-                                    FileName = "",
-                                    FileData = ""
-                                }
-                            },
-                            new
-                            {
-                                Type = "file",
-                                Text = "",
-                                File = new
-                                {
-                                    FileName = fileName,
-                                    FileData = $"data:application/pdf;base64,{base64String}"
-                                }
-                            }
-                        }
-                    }
-            }
-        };
-
-        var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
-        });
-        var response = await SendOpenRouterRequestAsync(requestJson, cancellationToken);
-        var messageContent = response?.Choices.FirstOrDefault()?.Message?.Content ?? throw new InvalidOperationException($"No content found in the response from OpenRouter. Action: {nameof(ScrapePersonalInformationPdf)}");
-        return JsonSerializer.Deserialize<PersonalDataPdfScrapeResponseModel>(messageContent) ?? throw new InvalidOperationException($"Failed to deserialize response content to {nameof(PersonalDataPdfScrapeResponseModel)}. Action: {nameof(ScrapePersonalInformationPdf)}");
     }
 
     public async Task<EnhanceJobDescriptionResponseModel> EnhanceJobDescriptionAsync(string rawContentText, CancellationToken cancellationToken)
