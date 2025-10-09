@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
-using SaveInterviewPreparationContentRequest = CareerPilotAi.ViewModels.InterviewQuestions.SaveInterviewPreparationContentRequest;
 using CareerPilotAi.ViewModels.JobApplication;
 
 [Authorize]
@@ -34,7 +33,7 @@ public class InterviewQuestionsController : Controller
     }
 
     [HttpPost("api/generate/{jobApplicationId:guid}")]
-    public async Task<IActionResult> GenerateInterviewQuestions(Guid jobApplicationId, [FromBody] GenerateInterviewQuestionsRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> GenerateInterviewQuestions(Guid jobApplicationId, [FromBody] GenerateInterviewQuestionsViewModel vm, CancellationToken cancellationToken)
     {
         try
         {
@@ -46,10 +45,10 @@ public class InterviewQuestionsController : Controller
             // Note: For now, we're not passing the questionsCount to the command
             // This parameter will be handled in the business logic layer in a future update
             _logger.LogInformation("Generating interview questions for JobApplicationId: {JobApplicationId}, RequestedCount: {RequestedCount}", 
-                jobApplicationId, request.QuestionsCount);
+                jobApplicationId, vm.QuestionsCount);
             
             var response = await _commandDispatcher
-                .DispatchAsync<GenerateInterviewQuestionsCommand, GenerateInterviewQuestionsResponse>(new GenerateInterviewQuestionsCommand(jobApplicationId, request.QuestionsCount), cancellationToken);
+                .DispatchAsync<GenerateInterviewQuestionsCommand, GenerateInterviewQuestionsResponse>(new GenerateInterviewQuestionsCommand(jobApplicationId, vm.QuestionsCount), cancellationToken);
             if (response.IsSuccess)
             {
                 return Ok(response.InterviewQuestionsSection);
@@ -223,7 +222,7 @@ public class InterviewQuestionsController : Controller
     }
 
     [HttpPost("api/save-preparation-content/{jobApplicationId:guid}")]
-    public async Task<IActionResult> SaveInterviewPreparationContent(Guid jobApplicationId, [FromBody] SaveInterviewPreparationContentRequest request, CancellationToken cancellationToken)
+    public async Task<IActionResult> SaveInterviewPreparationContent(Guid jobApplicationId, [FromBody] SaveInterviewPreparationContentViewModel vm, CancellationToken cancellationToken)
     {
         try
         {
@@ -240,7 +239,7 @@ public class InterviewQuestionsController : Controller
 
             var response = await _commandDispatcher
                 .DispatchAsync<SaveInterviewPreparationContentCommand, SaveInterviewPreparationContentResponse>(
-                    new SaveInterviewPreparationContentCommand(jobApplicationId, request.PreparationContent), cancellationToken);
+                    new SaveInterviewPreparationContentCommand(jobApplicationId, vm.PreparationContent), cancellationToken);
 
             if (response.IsSuccess)
             {

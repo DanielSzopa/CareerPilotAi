@@ -106,11 +106,11 @@ namespace CareerPilotAi.Controllers
 
         [HttpPost]
         [Route("api/enhance-job-description")]
-        public async Task<IActionResult> EnhanceJobDescription([FromBody] EnhanceJobDescriptionRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> EnhanceJobDescription([FromBody] EnhanceJobDescriptionViewModel vm, CancellationToken cancellationToken)
         {
             try
             {
-                var response = await _commandDispatcher.DispatchAsync<EnhanceJobDescriptionCommand, EnhanceJobDescriptionResponse>(new (request.JobDescriptionText), cancellationToken);
+                var response = await _commandDispatcher.DispatchAsync<EnhanceJobDescriptionCommand, EnhanceJobDescriptionResponse>(new (vm.JobDescriptionText), cancellationToken);
                 if (!response.IsSuccess)
                 {
                     return Problem(
@@ -274,7 +274,7 @@ namespace CareerPilotAi.Controllers
 
         [HttpPatch]
         [Route("api/status/{jobApplicationId:guid}")]
-        public async Task<IActionResult> UpdateJobApplicationStatus(Guid jobApplicationId, [FromBody] UpdateJobApplicationStatusRequest request, CancellationToken cancellationToken)
+        public async Task<IActionResult> UpdateJobApplicationStatus(Guid jobApplicationId, [FromBody] UpdateJobApplicationStatusViewModel vm, CancellationToken cancellationToken)
         {
             try
             {
@@ -303,7 +303,7 @@ namespace CareerPilotAi.Controllers
                 }
 
                 var response = await _commandDispatcher.DispatchAsync<UpdateJobApplicationStatusCommand, UpdateJobApplicationStatusResponse>(
-                    new UpdateJobApplicationStatusCommand(jobApplicationId, request.Status), cancellationToken);
+                    new UpdateJobApplicationStatusCommand(jobApplicationId, vm.Status), cancellationToken);
 
                 if (!response.IsSuccess)
                 {

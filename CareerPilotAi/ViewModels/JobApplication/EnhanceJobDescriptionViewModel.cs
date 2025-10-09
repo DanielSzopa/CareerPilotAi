@@ -1,6 +1,6 @@
 namespace CareerPilotAi.ViewModels.JobApplication
 {
-    public class EnhanceJobDescriptionRequest
+    public class EnhanceJobDescriptionViewModel
     {
         public string JobDescriptionText { get; set; } = string.Empty;
     }

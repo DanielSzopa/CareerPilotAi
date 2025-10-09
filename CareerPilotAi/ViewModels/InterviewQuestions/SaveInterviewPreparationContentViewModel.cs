@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace CareerPilotAi.ViewModels.InterviewQuestions;
 
-public class SaveInterviewPreparationContentRequest
+public class SaveInterviewPreparationContentViewModel
 {
     [Required(ErrorMessage = "Preparation content is required.")]
     [MaxWords(5000)]
