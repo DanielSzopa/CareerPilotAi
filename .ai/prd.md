@@ -574,8 +574,8 @@ System rozwiązuje powyższe problemy poprzez:
 - Tytuł: Menu użytkownika
 - Opis: Jako użytkownik chcę mieć dostęp do opcji konta
 - Kryteria akceptacji:
-  - Dropdown menu z inicjałami, na przykład, John Smith = JS
-  - Opcje: Profile, Logout
+  - Dropdown menu z lewej strony na nagłówku, powinna być ikona charakteryzująca profil użytkownika z napisem "My Profile"
+  - Opcje: Settings, Logout
 
 ## 6. Metryki sukcesu
 
