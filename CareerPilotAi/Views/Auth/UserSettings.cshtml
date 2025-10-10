@@ -1,0 +1,45 @@
+@model CareerPilotAi.ViewModels.Authentication.UserSettingsViewModel
+
+@{
+    ViewData["Title"] = "User Settings";
+}
+
+<h1 class="mb-4">User Settings</h1>
+
+@if (ViewData["SuccessMessage"] is string successMessage)
+{
+    <div class="alert alert-success" role="alert">
+        @successMessage
+    </div>
+}
+
+    <style>
+        #save-btn {
+            background-color: var(--main-blue);
+            color: white;
+        }
+        #save-btn:hover {
+            background-color: var(--main-blue-hover);
+        }
+    </style>
+
+<div class="row">
+    <div class="col-md-6">
+        <div asp-validation-summary="All" class="text-danger"></div>
+        <form asp-action="UpdateUserSettings" asp-controller="Auth" method="post">
+            <div class="mb-3">
+                <label asp-for="Email" class="form-label"></label>
+                <input asp-for="Email" class="form-control" readonly />
+            </div>
+            <div class="mb-3">
+                <label asp-for="TimeZoneId" class="form-label"></label>
+                <select asp-for="TimeZoneId" asp-items="Model.TimeZones" class="form-select"></select>
+                <span asp-validation-for="TimeZoneId" class="text-danger"></span>
+            </div>
+            <button id="save-btn" type="submit" class="btn px-4 fw-semibold">Save</button>
+        </form>
+    </div>
+</div>
+
+<partial name="_ValidationScriptsPartial" />
+

@@ -13,6 +13,7 @@ public static class ServicesExtensions
     public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         return services
-            .AddScoped<IUserService, UserService>();
+            .AddScoped<IUserService, UserService>()
+            .AddScoped<ITimeZoneService, TimeZoneService>();
     }
 }

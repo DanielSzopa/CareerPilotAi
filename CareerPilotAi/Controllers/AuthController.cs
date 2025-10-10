@@ -1,8 +1,15 @@
+using CareerPilotAi.Application.Commands.Dispatcher;
+using CareerPilotAi.Application.Commands.UpdateUserSettings;
+using CareerPilotAi.Application.Services;
 using CareerPilotAi.Infrastructure.Email;
+using CareerPilotAi.Infrastructure.Persistence;
 using CareerPilotAi.ViewModels.Authentication;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using CareerPilotAi.Application.Commands.CreateUserSettings;
 
 namespace CareerPilotAi.Controllers
 {
@@ -13,17 +20,29 @@ namespace CareerPilotAi.Controllers
         private readonly SignInManager<IdentityUser> _signInManager;
         private readonly EmailService _emailService;
         private readonly ILogger<AuthController> _logger;
+        private readonly ICommandDispatcher _commandDispatcher;
+        private readonly ITimeZoneService _timeZoneService;
+        private readonly ApplicationDbContext _dbContext;
+        private readonly IUserService _userService;
 
         public AuthController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
             EmailService emailService,
-            ILogger<AuthController> logger)
+            ILogger<AuthController> logger,
+            ICommandDispatcher commandDispatcher,
+            ITimeZoneService timeZoneService,
+            ApplicationDbContext dbContext,
+            IUserService userService)
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _emailService = emailService;
             _logger = logger;
+            _commandDispatcher = commandDispatcher;
+            _timeZoneService = timeZoneService;
+            _dbContext = dbContext;
+            _userService = userService;
         }
 
         [HttpGet("register")]
@@ -63,6 +82,8 @@ namespace CareerPilotAi.Controllers
             if (result.Succeeded)
             {
                 _logger.LogInformation("User created a new account with email: {Email}", model.Email);
+
+                await _commandDispatcher.DispatchAsync(new CreateUserSettingsCommand(user.Id), cancellationToken);
 
                 var confirmationLink = await GetRegistrationConfirmationLink(user);
 
@@ -256,6 +277,91 @@ namespace CareerPilotAi.Controllers
         public IActionResult AccessDenied()
         {
             return View();
+        }
+
+        [Authorize]
+        [HttpGet("user-settings")]
+        public async Task<IActionResult> GetUserSettings(CancellationToken cancellationToken)
+        {
+            var user = await _userManager.GetUserAsync(User);
+            if (user is null)
+            {
+                _logger.LogError("User settings requested but user context was null");
+                return RedirectToAction(nameof(Login));
+            }
+
+            var userSettings = await _dbContext.UserSettings
+                .AsNoTracking()
+                .SingleAsync(settings => settings.UserId == user.Id, cancellationToken);
+
+            var timeZones = await _timeZoneService.GetAllAsync(cancellationToken);
+
+            var viewModel = new UserSettingsViewModel
+            {
+                Email = user.Email ?? string.Empty,
+                TimeZoneId = userSettings.TimeZoneId,
+                TimeZones = timeZones.Select(timeZone => new SelectListItem
+                {
+                    Value = timeZone.Id,
+                    Text = timeZone.Name,
+                    Selected = timeZone.Id == userSettings.TimeZoneId
+                })
+            };
+
+            if (TempData.TryGetValue("UserSettingsSuccess", out var successMessage))
+            {
+                ViewData["SuccessMessage"] = successMessage;
+            }
+
+            return View("UserSettings", viewModel);
+        }
+
+        [Authorize]
+        [HttpPost("user-settings")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> UpdateUserSettings(UserSettingsViewModel viewModel, CancellationToken cancellationToken)
+        {
+            var userId = _userService.GetUserIdOrThrowException();
+
+            if (!ModelState.IsValid)
+            {
+                await PopulateTimeZonesAsync(viewModel, cancellationToken);
+                return View("UserSettings", viewModel);
+            }
+
+            if (!await _timeZoneService.ExistsAsync(viewModel.TimeZoneId, cancellationToken))
+            {
+                ModelState.AddModelError(nameof(UserSettingsViewModel.TimeZoneId), "Invalid time zone.");
+                _logger.LogWarning("User settings submission with invalid time zone for UserId: {UserId}", userId);
+                await PopulateTimeZonesAsync(viewModel, cancellationToken);
+                return View("UserSettings", viewModel);
+            }
+
+            try
+            {
+                var command = new UpdateUserSettingsCommand(userId, viewModel.TimeZoneId);
+                await _commandDispatcher.DispatchAsync(command, cancellationToken);
+                TempData["UserSettingsSuccess"] = "Settings updated successfully.";
+                return RedirectToAction(nameof(GetUserSettings));
+            }
+            catch (Exception exception)
+            {
+                _logger.LogError(exception, "Failed to update user settings for UserId: {UserId}", userId);
+                ModelState.AddModelError(string.Empty, "Updating settings failed. Please try again later.");
+                await PopulateTimeZonesAsync(viewModel, cancellationToken);
+                return View("UserSettings", viewModel);
+            }
+        }
+
+        private async Task PopulateTimeZonesAsync(UserSettingsViewModel viewModel, CancellationToken cancellationToken)
+        {
+            var timeZones = await _timeZoneService.GetAllAsync(cancellationToken);
+            viewModel.TimeZones = timeZones.Select(timeZone => new SelectListItem
+            {
+                Value = timeZone.Id,
+                Text = timeZone.Name,
+                Selected = timeZone.Id == viewModel.TimeZoneId
+            });
         }
 
         [HttpGet("forgot-password")]

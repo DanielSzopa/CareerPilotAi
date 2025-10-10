@@ -11,6 +11,8 @@ public class ApplicationDbContext : IdentityDbContext<IdentityUser>
     internal DbSet<JobApplicationDataModel> JobApplications { get; set; }
     internal DbSet<InterviewQuestionsSectionDataModel> InterviewQuestionsSections { get; set; }
     internal DbSet<InterviewQuestionDataModel> InterviewQuestions { get; set; }
+    internal DbSet<TimeZoneDataModel> TimeZones { get; set; }
+    internal DbSet<UserSettingsDataModel> UserSettings { get; set; }
 
     public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
         : base(options)

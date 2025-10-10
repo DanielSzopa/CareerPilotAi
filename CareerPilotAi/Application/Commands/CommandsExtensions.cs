@@ -9,6 +9,8 @@ using CareerPilotAi.Application.Commands.PrepareInterviewPreparationContent;
 using CareerPilotAi.Application.Commands.SaveInterviewPreparationContent;
 using CareerPilotAi.Application.Commands.UpdateJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobApplicationStatus;
+using CareerPilotAi.Application.Commands.UpdateUserSettings;
+using CareerPilotAi.Application.Commands.CreateUserSettings;
 
 namespace CareerPilotAi.Application.Commands;
 
@@ -25,6 +27,8 @@ internal static class CommandsExtensions
             .AddScoped<ICommandHandler<DeleteInterviewQuestionCommand, DeleteInterviewQuestionResponse>, DeleteInterviewQuestionCommandHandler>()
             .AddScoped<ICommandHandler<GenerateInterviewQuestionsCommand, GenerateInterviewQuestionsResponse>, GenerateInterviewQuestionsCommandHandler>()
             .AddScoped<ICommandHandler<PrepareInterviewPreparationContentCommand, PrepareInterviewPreparationContentResponse>, PrepareInterviewPreparationContentCommandHandler>()
-            .AddScoped<ICommandHandler<SaveInterviewPreparationContentCommand, SaveInterviewPreparationContentResponse>, SaveInterviewPreparationContentCommandHandler>();
+            .AddScoped<ICommandHandler<SaveInterviewPreparationContentCommand, SaveInterviewPreparationContentResponse>, SaveInterviewPreparationContentCommandHandler>()
+            .AddScoped<ICommandHandler<UpdateUserSettingsCommand>, UpdateUserSettingsCommandHandler>()
+            .AddScoped<ICommandHandler<CreateUserSettingsCommand>, CreateUserSettingsCommandHandler>();
     }
 }
