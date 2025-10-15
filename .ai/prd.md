@@ -58,13 +58,13 @@ System rozwiązuje powyższe problemy poprzez:
   - Nazwa firmy (wymagane, 2-100 znaków)
   - Stanowisko (wymagane, 2-100 znaków)
   - Opis stanowiska (wymagane, 50-5000 słów)
-  - Umiejętności (opcjonalne, max 20 pozycji)
+  - Umiejętności (opcjonalne to znaczy, że użytkownik może je opcjonalnie wypełnić, max 20 pozycji)
   - Poziom doświadczenia (Junior/Mid/Senior/Not specified)
   - Lokalizacja (wymagane, 2-100 znaków)
   - Tryb pracy (wymagane, Remote/Hybrid/On-site)
   - Typ umowy (wymagane, B2B/FTE/Zlecenie/Inne)
-  - Widełki płacowe (opcjonalne, PLN, brutto/netto, plus dodatkowy input w celu wskazania czy wynagrodzenie jest monthly, daily, hourly, yearly)
-  - URL oferty (opcjonalne, walidowany format URL)
+  - Widełki płacowe (opcjonalne to znaczy, że użytkownik może je opcjonalnie wypełnić, PLN, brutto/netto, plus dodatkowy input w celu wskazania czy wynagrodzenie jest monthly, daily, hourly, yearly)
+  - URL oferty (opcjonalne to znaczy, że użytkownik może je opcjonalnie wypełnić, walidowany format URL)
   - Status (domyślnie Draft)
 
 #### 3.1.2 System umiejętności
