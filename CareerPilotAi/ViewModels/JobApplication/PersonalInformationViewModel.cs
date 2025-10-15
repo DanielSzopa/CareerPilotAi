@@ -12,7 +12,7 @@ namespace CareerPilotAi.ViewModels.JobApplication
         public string? Summary { get; set; }
         
         [MinimumCount(3, ErrorMessage = "At least 3 skills are required")]
-        public List<SkillViewModel> Skills { get; set; } = new();
+        public List<PersonalSkillViewModel> Skills { get; set; } = new();
         
         public List<ExperienceViewModel> Experience { get; set; } = new();
         
@@ -57,14 +57,14 @@ namespace CareerPilotAi.ViewModels.JobApplication
         public string Url { get; set; } = "";
     }
 
-    public class SkillViewModel
+    public class PersonalSkillViewModel
     {
         [Required(ErrorMessage = "Skill name is required")]
         [StringLength(100, MinimumLength = 2, ErrorMessage = "Skill name must be between 2 and 100 characters")]
         public string Label { get; set; } = "";
         
         [StringLength(50, ErrorMessage = "Level cannot exceed 50 characters")]
-        [Application.CustomValidationAttributes.AllowedValues("Junior", "Regular", "Expert", ErrorMessage = "Skill level must be Junior, Regular, or Expert.")]
+        [AllowedValues("Junior", "Regular", "Expert", ErrorMessage = "Skill level must be Junior, Regular, or Expert.")]
         public string? Level { get; set; }
     }
 
@@ -155,7 +155,7 @@ namespace CareerPilotAi.ViewModels.JobApplication
         
         [Required(ErrorMessage = "Proficiency level is required")]
         [StringLength(50, ErrorMessage = "Proficiency cannot exceed 50 characters")]
-        [Application.CustomValidationAttributes.AllowedValues("Native", "Fluent", "Advanced", "Intermediate", "Basic", ErrorMessage = "Language proficiency must be Native, Fluent, Advanced, Intermediate, or Basic.")]
+        [AllowedValues("Native", "Fluent", "Advanced", "Intermediate", "Basic", ErrorMessage = "Language proficiency must be Native, Fluent, Advanced, Intermediate, or Basic.")]
         public string Proficiency { get; set; } = "";
     }
 

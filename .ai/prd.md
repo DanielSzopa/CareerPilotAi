@@ -62,7 +62,7 @@ System rozwiązuje powyższe problemy poprzez:
   - Poziom doświadczenia (Junior/Mid/Senior/Not specified)
   - Lokalizacja (wymagane, 2-100 znaków)
   - Tryb pracy (wymagane, Remote/Hybrid/On-site)
-  - Typ umowy (wymagane, B2B/FTE/Zlecenie/Inne)
+  - Typ umowy (wymagane, B2B/FTE/Inne)
   - Widełki płacowe (opcjonalne to znaczy, że użytkownik może je opcjonalnie wypełnić, PLN, brutto/netto, plus dodatkowy input w celu wskazania czy wynagrodzenie jest monthly, daily, hourly, yearly)
   - URL oferty (opcjonalne to znaczy, że użytkownik może je opcjonalnie wypełnić, walidowany format URL)
   - Status (domyślnie Draft)

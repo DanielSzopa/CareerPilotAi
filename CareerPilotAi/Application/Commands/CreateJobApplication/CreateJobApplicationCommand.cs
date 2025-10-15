@@ -3,4 +3,4 @@ using CareerPilotAi.ViewModels.JobApplication;
 
 namespace CareerPilotAi.Application.Commands.CreateJobApplication;
 
-public record CreateJobApplicationCommand(JobOfferEntryDetailsViewModel vm) : ICommand;
+public record CreateJobApplicationCommand(CreateJobApplicationViewModel ViewModel) : ICommand<Guid>;

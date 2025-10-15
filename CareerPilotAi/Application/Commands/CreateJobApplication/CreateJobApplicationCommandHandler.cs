@@ -1,6 +1,5 @@
 using CareerPilotAi.Application.Commands.Abstractions;
 using CareerPilotAi.Application.Services;
-using CareerPilotAi.Core;
 using CareerPilotAi.Infrastructure.Persistence;
 using CareerPilotAi.Infrastructure.Persistence.DataModels;
 
@@ -8,36 +7,88 @@ namespace CareerPilotAi.Application.Commands.CreateJobApplication;
 
 public class CreateJobApplicationCommandHandler : ICommandHandler<CreateJobApplicationCommand, Guid>
 {
-    private readonly IUserService _userService;
     private readonly ApplicationDbContext _dbContext;
+    private readonly IUserService _userService;
     private readonly ILogger<CreateJobApplicationCommandHandler> _logger;
 
-    public CreateJobApplicationCommandHandler(IUserService userService, ApplicationDbContext dbContext, ILogger<CreateJobApplicationCommandHandler> logger)
+    public CreateJobApplicationCommandHandler(
+        ApplicationDbContext dbContext,
+        IUserService userService,
+        ILogger<CreateJobApplicationCommandHandler> logger)
     {
-        _userService = userService;
         _dbContext = dbContext;
+        _userService = userService;
         _logger = logger;
     }
-    public async Task<Guid> HandleAsync(CreateJobApplicationCommand command, CancellationToken cancellationToken)
+
+    public async Task<Guid> HandleAsync(
+        CreateJobApplicationCommand command,
+        CancellationToken cancellationToken)
     {
-        var vm = command.vm;
-        var jobApplication = new JobApplication(Guid.NewGuid(), _userService.GetUserIdOrThrowException(), vm.Title, vm.Company, vm.JobDescription, vm.URL, ApplicationStatus.Draft);
+        var userId = _userService.GetUserIdOrThrowException();
+        var vm = command.ViewModel;
 
-        await _dbContext.JobApplications.AddAsync(new JobApplicationDataModel()
+        // Create JobApplication data model
+        var jobApplicationDataModel = new JobApplicationDataModel
         {
-            JobApplicationId = jobApplication.JobApplicationId,
-            UserId = jobApplication.UserId,
-            Title = jobApplication.Title,
-            Company = jobApplication.Company,
-            Url = jobApplication.URL,
-            JobDescription = jobApplication.JobDescription,
+            JobApplicationId = Guid.NewGuid(),
+            UserId = userId,
+            Title = vm.Position,
+            Company = vm.CompanyName,
+            JobDescription = vm.JobDescription,
+            ExperienceLevel = vm.ExperienceLevel,
+            Location = vm.Location,
+            WorkMode = vm.WorkMode,
+            ContractType = vm.ContractType,
+            SalaryMin = vm.SalaryMin,
+            SalaryMax = vm.SalaryMax,
+            SalaryType = vm.SalaryType,
+            SalaryPeriod = vm.SalaryPeriod,
+            Url = vm.JobUrl,
+            Status = vm.Status,
             CreatedAt = DateTime.UtcNow,
-        }, cancellationToken);
+            UpdatedAt = DateTime.UtcNow
+        };
 
-        await _dbContext.SaveChangesAsync(cancellationToken);
+        // Create skills if provided
+        if (vm.Skills != null && vm.Skills.Any())
+        {
+            jobApplicationDataModel.Skills = vm.Skills.Select(s => new SkillDataModel
+            {
+                SkillId = Guid.NewGuid(),
+                JobApplicationId = jobApplicationDataModel.JobApplicationId,
+                Name = s.Name,
+                Level = s.Level
+            }).ToList();
+        }
 
-        _logger.LogInformation("Creating new job application with JobApplicationId: {jobApplicationId} for UserId: {userId}", jobApplication.JobApplicationId, jobApplication.UserId);
+        // Use transaction for data consistency
+        await using var transaction = await _dbContext.Database
+            .BeginTransactionAsync(cancellationToken);
 
-        return jobApplication.JobApplicationId;
+        try
+        {
+            await _dbContext.JobApplications.AddAsync(
+                jobApplicationDataModel,
+                cancellationToken);
+
+            await _dbContext.SaveChangesAsync(cancellationToken);
+            await transaction.CommitAsync(cancellationToken);
+
+            _logger.LogInformation(
+                "Job application created successfully. ID: {JobApplicationId}, User: {UserId}",
+                jobApplicationDataModel.JobApplicationId,
+                userId);
+
+            return jobApplicationDataModel.JobApplicationId;
+        }
+        catch (Exception ex)
+        {
+            await transaction.RollbackAsync(cancellationToken);
+            _logger.LogError(ex,
+                "Error creating job application for user: {UserId}",
+                userId);
+            throw;
+        }
     }
 }

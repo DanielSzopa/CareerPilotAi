@@ -103,7 +103,7 @@ Manages job application CRUD operations and related functionality.
     "experienceLevel": "Junior | Mid | Senior | NotSpecified",
     "location": "string",
     "workMode": "Remote | Hybrid | OnSite",
-    "contractType": "B2B | FTE | Zlecenie | Other",
+    "contractType": "B2B | FTE | Other",
     "salaryMin": "decimal (optional)",
     "salaryMax": "decimal (optional)",
     "salaryType": "Gross | Net",
@@ -147,7 +147,7 @@ Manages job application CRUD operations and related functionality.
   "experienceLevel": "Junior | Mid | Senior | NotSpecified",
   "location": "string (required, 2-100 chars)",
   "workMode": "Remote | Hybrid | OnSite",
-  "contractType": "B2B | FTE | Zlecenie | Other",
+  "contractType": "B2B | FTE | Other",
   "salaryMin": "decimal (optional)",
   "salaryMax": "decimal (optional)",
   "salaryType": "Gross | Net",
@@ -247,7 +247,7 @@ Manages job application CRUD operations and related functionality.
   "experienceLevel": "Junior | Mid | Senior | NotSpecified",
   "location": "string (required, 2-100 chars)",
   "workMode": "Remote | Hybrid | OnSite",
-  "contractType": "B2B | FTE | Zlecenie | Other",
+  "contractType": "B2B | FTE | Other",
   "salaryMin": "decimal (optional)",
   "salaryMax": "decimal (optional)",
   "salaryType": "Gross | Net",
@@ -493,7 +493,7 @@ builder.Services.ConfigureApplicationCookie(options =>
   - One of [Remote, Hybrid, OnSite]
 - **ContractType**:
   - Required
-  - One of [B2B, FTE, Zlecenie, Other]
+  - One of [B2B, FTE, Other]
 - **Salary** (Min/Max):
   - Optional
   - Range: 0 to 999,999
@@ -616,7 +616,6 @@ public enum ContractType
 {
     B2B,
     FTE,
-    Zlecenie,
     Other
 }
 ```

@@ -2,6 +2,7 @@
 using CareerPilotAi.Application.Commands.DeleteJobApplication;
 using CareerPilotAi.Application.Commands.Dispatcher;
 using CareerPilotAi.Application.Commands.EnhanceJobDescription;
+using CareerPilotAi.Application.Commands.ParseJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobApplicationStatus;
 using CareerPilotAi.Application.Services;
@@ -76,26 +77,124 @@ namespace CareerPilotAi.Controllers
 
             return Ok(vm);
         }
-
+        
         [HttpGet]
-        [Route("entry-job-details")]
-        public IActionResult CreateTheEntryJobApplication()
+        [Route("create")]
+        public IActionResult Create()
         {
-            return View("JobOfferEntryDetails", new JobOfferEntryDetailsViewModel());
+            var viewModel = new CreateJobApplicationViewModel
+            {
+                Status = ApplicationStatus.DefaultStatus
+            };
+            return View(viewModel);
         }
 
         [HttpPost]
-        [Route("entry-job-details")]
-        public async Task<IActionResult> ProcessTheEntryJobApplication(JobOfferEntryDetailsViewModel vm, CancellationToken cancellationToken)
+        [Route("create")]
+        public async Task<IActionResult> Create(CreateJobApplicationViewModel vm, CancellationToken cancellationToken)
         {
             if (!ModelState.IsValid)
             {
-                return View("JobOfferEntryDetails", vm);
+                return View(vm);
             }
 
-            var jobApplicationId = await _commandDispatcher.DispatchAsync<CreateJobApplicationCommand, Guid>(new CreateJobApplicationCommand(vm), cancellationToken);
+            try
+            {
+                // Validate salary range if both provided
+                if (vm.SalaryMin.HasValue && vm.SalaryMax.HasValue)
+                {
+                    if (vm.SalaryMax < vm.SalaryMin)
+                    {
+                        ModelState.AddModelError(
+                            nameof(vm.SalaryMax),
+                            "Maximum salary must be greater than or equal to minimum salary.");
+                        return View(vm);
+                    }
+                }
 
-            return RedirectToAction(nameof(JobApplicationDetails), new { jobApplicationId });
+                // Validate salary type if salary provided
+                if ((vm.SalaryMin.HasValue || vm.SalaryMax.HasValue) && string.IsNullOrEmpty(vm.SalaryType))
+                {
+                    ModelState.AddModelError(
+                        nameof(vm.SalaryType),
+                        "Salary type is required when salary is specified.");
+                    return View(vm);
+                }
+
+                var jobApplicationId = await _commandDispatcher.DispatchAsync<CreateJobApplicationCommand, Guid>(
+                    new CreateJobApplicationCommand(vm),
+                    cancellationToken);
+
+                TempData["SuccessMessage"] = "Application created successfully";
+                return RedirectToAction(nameof(JobApplicationDetails), new { jobApplicationId });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating job application");
+                ModelState.AddModelError(string.Empty,
+                    "An error occurred while creating the application. Please try again.");
+                return View(vm);
+            }
+        }
+
+        [HttpPost]
+        [Route("api/parse-job-description")]
+        public async Task<IActionResult> ParseJobDescription(
+            [FromBody] ParseJobDescriptionViewModel vm,
+            CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (!ModelState.IsValid)
+                {
+                    return BadRequest(new
+                    {
+                        success = false,
+                        errors = ModelState.Values
+                            .SelectMany(v => v.Errors)
+                            .Select(e => e.ErrorMessage)
+                            .ToList()
+                    });
+                }
+
+                var response = await _commandDispatcher.DispatchAsync<
+                    ParseJobDescriptionCommand,
+                    ParseJobDescriptionResponse>(
+                        new ParseJobDescriptionCommand(vm.JobDescriptionText),
+                        cancellationToken);
+
+                if (!response.IsSuccess)
+                {
+                    return StatusCode(
+                        response.ProblemDetails?.Status ?? 500,
+                        new ParseJobDescriptionResultViewModel
+                        {
+                            Success = false,
+                            ParsingResult = ParsingResultType.Failed,
+                            MissingFields = new List<string>(),
+                            Data = null
+                        });
+                }
+
+                return Ok(new ParseJobDescriptionResultViewModel
+                {
+                    Success = true,
+                    ParsingResult = response.ParsingResult,
+                    MissingFields = response.MissingFields ?? new List<string>(),
+                    Data = response.ParsedData
+                });
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error during parsing job description");
+                return StatusCode(500, new ParseJobDescriptionResultViewModel
+                {
+                    Success = false,
+                    ParsingResult = ParsingResultType.Failed,
+                    MissingFields = new List<string>(),
+                    Data = null
+                });
+            }
         }
 
         [HttpPost]
@@ -138,7 +237,7 @@ namespace CareerPilotAi.Controllers
             if (jobApplicationId == Guid.Empty)
             {
                 _logger.LogError("JobApplicationId cannot be empty during the action: {action}", nameof(JobApplicationDetails));
-                return RedirectToAction(nameof(CreateTheEntryJobApplication));
+                return RedirectToAction(nameof(Create));
             }
             var userId = _userService.GetUserIdOrThrowException();
             var jobApplicationDataModel = await _applicationDbContext.JobApplications
@@ -147,7 +246,7 @@ namespace CareerPilotAi.Controllers
             if (jobApplicationDataModel is null)
             {
                 _logger.LogError("Job application not found: {jobApplicationId}, {userId}", jobApplicationId, userId);
-                return RedirectToAction(nameof(CreateTheEntryJobApplication));
+                return RedirectToAction(nameof(Create));
             }
 
             var jobApplication = new JobApplication(

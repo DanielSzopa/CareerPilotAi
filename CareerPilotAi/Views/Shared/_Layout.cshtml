@@ -19,6 +19,14 @@
         --main-blue:#276CF5;
         --main-blue-hover:#2F74F7;
         }
+
+        #add-application-btn {
+            background-color: var(--main-blue);
+            color: white;
+        }
+        #add-application-btn:hover {
+            background-color: var(--main-blue-hover);
+        }
     </style>
 </head>
 <body>
@@ -38,6 +46,11 @@
                         <li class="nav-item">
                             <a class="nav-link text-dark" asp-area="" asp-controller="JobApplication" asp-action="Index">Job Applications</a>
                         </li>
+                        <li class="nav-item">
+                            <a id="add-application-btn" class="nav-link text-white rounded" asp-area="" asp-controller="JobApplication" asp-action="Create">
+                                <i class="fas fa-plus me-1"></i>Add Application
+                            </a>
+                        </li>
                     </ul>
                     <partial name="_LoginPartial" />
                 </div>
@@ -49,12 +62,6 @@
             @RenderBody()
         </main>
     </div>
-
-    <footer class="border-top footer text-muted">
-        <div class="container" style="text-align: center;">
-            &copy; 2025 - CareerPilotAi - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
-        </div>
-    </footer>
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>

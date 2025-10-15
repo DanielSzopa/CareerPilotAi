@@ -1,0 +1,272 @@
+@using CareerPilotAi.ViewModels.JobApplication
+@using CareerPilotAi.Core
+@model CreateJobApplicationViewModel
+
+@{
+    ViewData["Title"] = "Create New Job Application";
+}
+
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <h1 class="mb-4">Create New Job Application</h1>
+            
+            <!-- AI Parsing Section (Collapsible Accordion) -->
+            <div class="accordion mb-4" id="aiParsingAccordion">
+                <div class="accordion-item">
+                    <h2 class="accordion-header" id="headingAiParsing">
+                        <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseAiParsing" aria-expanded="true" aria-controls="collapseAiParsing">
+                            <i class="fas fa-magic me-2"></i>
+                            AI-Powered Job Description Parser (Optional)
+                        </button>
+                    </h2>
+                    <div id="collapseAiParsing" class="accordion-collapse collapse show" aria-labelledby="headingAiParsing" data-bs-parent="#aiParsingAccordion">
+                        <div class="accordion-body">
+                            <p class="text-muted">Paste a job description and let AI automatically extract and fill in the form fields for you.</p>
+                            
+                            <div class="mb-3">
+                                <label for="aiParsingTextarea" class="form-label">Job Description Text</label>
+                                <textarea id="aiParsingTextarea" class="form-control" rows="8" placeholder="Paste the full job description here..."></textarea>
+                                <div class="mt-1">
+                                    <small class="text-muted">Word count: <span id="aiParsingWordCount">0</span> / 5,000</small>
+                                </div>
+                                <div id="aiParsingWordLimitError" class="text-danger mt-1" style="display: none;">
+                                    Text exceeds the maximum limit of 5,000 words.
+                                </div>
+                            </div>
+                            
+                            <button type="button" id="parseWithAiButton" class="btn btn-primary">
+                                <i class="fas fa-robot me-2"></i>
+                                Parse with AI
+                            </button>
+                            
+                            <!-- Alert Container for AI Parsing Results -->
+                            <div id="aiParsingAlertContainer" class="mt-3"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Main Form -->
+            <form asp-action="Create" asp-controller="JobApplication" method="post" id="createJobApplicationForm">
+                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+                
+                <!-- Basic Information Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="CompanyName" class="form-label"></label>
+                                <input asp-for="CompanyName" class="form-control" placeholder="e.g. Microsoft" />
+                                <span asp-validation-for="CompanyName" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Position" class="form-label"></label>
+                                <input asp-for="Position" class="form-control" placeholder="e.g. Senior Software Engineer" />
+                                <span asp-validation-for="Position" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label asp-for="JobDescription" class="form-label"></label>
+                            <textarea asp-for="JobDescription" class="form-control" rows="6" id="jobDescriptionField" placeholder="Enter or paste the job description..."></textarea>
+                            <div class="mt-1">
+                                <small class="text-muted">Word count: <span id="jobDescWordCount">0</span> (min: 50, max: 5,000)</small>
+                            </div>
+                            <span asp-validation-for="JobDescription" class="text-danger"></span>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Skills Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Required Skills</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <label for="skillNameInput" class="form-label">Skill Name</label>
+                                <input type="text" id="skillNameInput" class="form-control" placeholder="e.g. C#, JavaScript, Docker" />
+                            </div>
+                            <div class="col-md-4">
+                                <label for="skillLevelInput" class="form-label">Skill Level</label>
+                                <select id="skillLevelInput" class="form-select">
+                                    <option value="">Select level...</option>
+                                    <option value="@SkillLevel.NiceToHave">Nice To Have</option>
+                                    <option value="@SkillLevel.Regular">Regular</option>
+                                    <option value="@SkillLevel.Advanced">Advanced</option>
+                                    <option value="@SkillLevel.Master">Master</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2 d-flex align-items-end">
+                                <button type="button" id="addSkillButton" class="btn btn-outline-primary w-100">
+                                    <i class="fas fa-plus me-1"></i>Add
+                                </button>
+                            </div>
+                        </div>
+                        
+                        <div id="skillsContainer" class="mb-3">
+                            <!-- Skills will be added here dynamically -->
+                        </div>
+                        
+                        <small class="text-muted">Skills added: <span id="skillsCount">0</span> / 20</small>
+                        
+                        <!-- Hidden fields for skills will be added here by JavaScript -->
+                        <div id="skillsHiddenFields"></div>
+                    </div>
+                </div>
+                
+                <!-- Job Details Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Job Details</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ExperienceLevel" class="form-label"></label>
+                                <select asp-for="ExperienceLevel" class="form-select">
+                                    <option value="">Select experience level...</option>
+                                    <option value="@ExperienceLevel.Junior">Junior</option>
+                                    <option value="@ExperienceLevel.Mid">Mid</option>
+                                    <option value="@ExperienceLevel.Senior">Senior</option>
+                                    <option value="@ExperienceLevel.NotSpecified">Not Specified</option>
+                                </select>
+                                <span asp-validation-for="ExperienceLevel" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Location" class="form-label"></label>
+                                <input asp-for="Location" class="form-control" placeholder="e.g. Warsaw, Poland" />
+                                <span asp-validation-for="Location" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="WorkMode" class="form-label"></label>
+                                <select asp-for="WorkMode" class="form-select">
+                                    <option value="">Select work mode...</option>
+                                    <option value="@WorkMode.Remote">Remote</option>
+                                    <option value="@WorkMode.Hybrid">Hybrid</option>
+                                    <option value="@WorkMode.OnSite">On-Site</option>
+                                </select>
+                                <span asp-validation-for="WorkMode" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="ContractType" class="form-label"></label>
+                                <select asp-for="ContractType" class="form-select">
+                                    <option value="">Select contract type...</option>
+                                    <option value="@ContractType.B2B">B2B</option>
+                                    <option value="@ContractType.FTE">Full-Time Employment (FTE)</option>
+                                    <option value="@ContractType.Other">Other</option>
+                                </select>
+                                <span asp-validation-for="ContractType" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Salary Section (Optional) -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Salary Information (Optional)</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SalaryMin" class="form-label"></label>
+                                <input asp-for="SalaryMin" class="form-control" type="number" step="0.01" placeholder="e.g. 5000" />
+                                <span asp-validation-for="SalaryMin" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SalaryMax" class="form-label"></label>
+                                <input asp-for="SalaryMax" class="form-control" type="number" step="0.01" placeholder="e.g. 8000" />
+                                <span asp-validation-for="SalaryMax" class="text-danger"></span>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SalaryType" class="form-label"></label>
+                                <select asp-for="SalaryType" class="form-select">
+                                    <option value="">Select salary type...</option>
+                                    <option value="@SalaryType.Gross">Gross</option>
+                                    <option value="@SalaryType.Net">Net</option>
+                                </select>
+                                <span asp-validation-for="SalaryType" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="SalaryPeriod" class="form-label"></label>
+                                <select asp-for="SalaryPeriod" class="form-select">
+                                    <option value="">Select period...</option>
+                                    <option value="@SalaryPeriodType.Monthly">Monthly</option>
+                                    <option value="@SalaryPeriodType.Yearly">Yearly</option>
+                                    <option value="@SalaryPeriodType.Daily">Daily</option>
+                                    <option value="@SalaryPeriodType.Hourly">Hourly</option>
+                                </select>
+                                <span asp-validation-for="SalaryPeriod" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Additional Information Section -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0"><i class="fas fa-info me-2"></i>Additional Information</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="JobUrl" class="form-label"></label>
+                                <input asp-for="JobUrl" class="form-control" type="url" placeholder="https://example.com/job-posting" />
+                                <span asp-validation-for="JobUrl" class="text-danger"></span>
+                            </div>
+                            
+                            <div class="col-md-6 mb-3">
+                                <label asp-for="Status" class="form-label"></label>
+                                <select asp-for="Status" class="form-select">
+                                    <option value="Draft">Draft</option>
+                                    <option value="Submitted">Submitted</option>
+                                    <option value="Interview Scheduled">Interview Scheduled</option>
+                                    <option value="Waiting for offer">Waiting for Offer</option>
+                                    <option value="Received offer">Received Offer</option>
+                                    <option value="Rejected">Rejected</option>
+                                    <option value="No contact">No Contact</option>
+                                </select>
+                                <span asp-validation-for="Status" class="text-danger"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Form Actions -->
+                <div class="d-flex justify-content-between mb-4">
+                    <a asp-controller="JobApplication" asp-action="Index" class="btn btn-secondary d-flex align-items-center">
+                        <i class="fas fa-times me-2"></i>Cancel
+                    </a>
+                    <button type="submit" class="btn btn-primary btn-lg">
+                        <i class="fas fa-save me-2"></i>Create Application
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/word-counter.js"></script>
+    <script src="~/js/create-job-application.js"></script>
+    
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
+

@@ -9,6 +9,7 @@ namespace CareerPilotAi.Infrastructure.Persistence;
 public class ApplicationDbContext : IdentityDbContext<IdentityUser>
 {
     internal DbSet<JobApplicationDataModel> JobApplications { get; set; }
+    internal DbSet<SkillDataModel> Skills { get; set; }
     internal DbSet<InterviewQuestionsSectionDataModel> InterviewQuestionsSections { get; set; }
     internal DbSet<InterviewQuestionDataModel> InterviewQuestions { get; set; }
     internal DbSet<TimeZoneDataModel> TimeZones { get; set; }
