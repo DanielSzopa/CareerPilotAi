@@ -97,7 +97,6 @@ Configuration reference (excerpt):
     "AuthToken": "",
     "Features": [
       { "Name": "EnhanceJobDescription", "Model": "google/gemini-2.0-flash-lite-001", "Temperature": 0.5 },
-      { "Name": "PersonalDetailsPdfUpload", "Model": "google/gemini-2.0-flash-lite-001" },
       { "Name": "GenerateInterviewQuestions", "Model": "google/gemini-2.5-flash", "Temperature": 1 },
       { "Name": "PrepareInterviewPreparationContent", "Model": "google/gemini-2.0-flash-lite-001", "Temperature": 0.5 }
     ]
