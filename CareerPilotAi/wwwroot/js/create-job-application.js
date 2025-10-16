@@ -41,33 +41,33 @@ $(document).ready(function() {
         
         // Validation
         if (!name) {
-            showAlert('Please enter a skill name', 'warning');
+            showAlert('Please enter a skill name');
             return;
         }
         
         if (!level) {
-            showAlert('Please select a skill level', 'warning');
+            showAlert('Please select a skill level');
             return;
         }
         
         if (name.length < 2) {
-            showAlert('Skill name must be at least 2 characters', 'warning');
+            showAlert('Skill name must be at least 2 characters');
             return;
         }
         
         if (name.length > 50) {
-            showAlert('Skill name cannot exceed 50 characters', 'warning');
+            showAlert('Skill name cannot exceed 50 characters');
             return;
         }
         
         if (skills.length >= 20) {
-            showAlert('Maximum 20 skills allowed', 'warning');
+            showAlert('Maximum 20 skills allowed');
             return;
         }
         
         // Check for duplicates
         if (skills.some(s => s.name.toLowerCase() === name.toLowerCase())) {
-            showAlert('This skill is already added', 'warning');
+            showAlert('This skill is already added');
             return;
         }
         
@@ -311,13 +311,13 @@ $(document).ready(function() {
         
         if (!jobDescValidation.isValid) {
             e.preventDefault();
-            showAlert('Job description exceeds the word limit. Please shorten it.', 'danger');
+            showAlert('Job description exceeds the word limit. Please shorten it.');
             return false;
         }
         
         if (jobDescValidation.wordCount < 50) {
             e.preventDefault();
-            showAlert('Job description must contain at least 50 words.', 'danger');
+            showAlert('Job description must contain at least 50 words.');
             return false;
         }
         
@@ -327,7 +327,7 @@ $(document).ready(function() {
         
         if (salaryMin && salaryMax && salaryMax < salaryMin) {
             e.preventDefault();
-            showAlert('Maximum salary must be greater than or equal to minimum salary.', 'danger');
+            showAlert('Maximum salary must be greater than or equal to minimum salary.');
             return false;
         }
         
@@ -338,22 +338,17 @@ $(document).ready(function() {
     // 5. UTILITY FUNCTIONS
     // ===========================================
     
-    function showAlert(message, type) {
+    function showAlert(message) {
         const alertHtml = `
-            <div class="alert alert-${type} alert-dismissible fade show" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
                 ${message}
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         `;
         
         // Insert alert at the top of the form
-        $('#createJobApplicationForm').prepend(alertHtml);
-        
-        // Scroll to alert
-        $('html, body').animate({
-            scrollTop: $('#createJobApplicationForm').offset().top - 20
-        }, 300);
-        
+        $('#skillsCardBody').prepend(alertHtml);
+
         // Auto-dismiss after 5 seconds
         setTimeout(function() {
             $('.alert').fadeOut('slow', function() {

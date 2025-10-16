@@ -54,7 +54,7 @@
                 <!-- Basic Information Section -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information</h5>
+                        <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Basic Information *</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
@@ -85,18 +85,17 @@
                 <!-- Skills Section -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Required Skills</h5>
+                        <h5 class="mb-0"><i class="fas fa-cogs me-2"></i>Required Skills *</h5>
                     </div>
-                    <div class="card-body">
+                    <div id="skillsCardBody" class="card-body">
                         <div class="row mb-3">
                             <div class="col-md-6">
-                                <label for="skillNameInput" class="form-label">Skill Name</label>
+                                <label for="skillNameInput" class="form-label">Skill</label>
                                 <input type="text" id="skillNameInput" class="form-control" placeholder="e.g. C#, JavaScript, Docker" />
                             </div>
                             <div class="col-md-4">
-                                <label for="skillLevelInput" class="form-label">Skill Level</label>
+                                <label for="skillLevelInput" class="form-label">Level</label>
                                 <select id="skillLevelInput" class="form-select">
-                                    <option value="">Select level...</option>
                                     <option value="@SkillLevel.NiceToHave">Nice To Have</option>
                                     <option value="@SkillLevel.Regular">Regular</option>
                                     <option value="@SkillLevel.Advanced">Advanced</option>
@@ -124,14 +123,13 @@
                 <!-- Job Details Section -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Job Details</h5>
+                        <h5 class="mb-0"><i class="fas fa-briefcase me-2"></i>Job Details *</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ExperienceLevel" class="form-label"></label>
                                 <select asp-for="ExperienceLevel" class="form-select">
-                                    <option value="">Select experience level...</option>
                                     <option value="@ExperienceLevel.Junior">Junior</option>
                                     <option value="@ExperienceLevel.Mid">Mid</option>
                                     <option value="@ExperienceLevel.Senior">Senior</option>
@@ -151,7 +149,6 @@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="WorkMode" class="form-label"></label>
                                 <select asp-for="WorkMode" class="form-select">
-                                    <option value="">Select work mode...</option>
                                     <option value="@WorkMode.Remote">Remote</option>
                                     <option value="@WorkMode.Hybrid">Hybrid</option>
                                     <option value="@WorkMode.OnSite">On-Site</option>
@@ -162,7 +159,6 @@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="ContractType" class="form-label"></label>
                                 <select asp-for="ContractType" class="form-select">
-                                    <option value="">Select contract type...</option>
                                     <option value="@ContractType.B2B">B2B</option>
                                     <option value="@ContractType.FTE">Full-Time Employment (FTE)</option>
                                     <option value="@ContractType.Other">Other</option>
@@ -197,7 +193,6 @@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="SalaryType" class="form-label"></label>
                                 <select asp-for="SalaryType" class="form-select">
-                                    <option value="">Select salary type...</option>
                                     <option value="@SalaryType.Gross">Gross</option>
                                     <option value="@SalaryType.Net">Net</option>
                                 </select>
@@ -207,7 +202,6 @@
                             <div class="col-md-6 mb-3">
                                 <label asp-for="SalaryPeriod" class="form-label"></label>
                                 <select asp-for="SalaryPeriod" class="form-select">
-                                    <option value="">Select period...</option>
                                     <option value="@SalaryPeriodType.Monthly">Monthly</option>
                                     <option value="@SalaryPeriodType.Yearly">Yearly</option>
                                     <option value="@SalaryPeriodType.Daily">Daily</option>
@@ -222,7 +216,7 @@
                 <!-- Additional Information Section -->
                 <div class="card mb-4">
                     <div class="card-header">
-                        <h5 class="mb-0"><i class="fas fa-info me-2"></i>Additional Information</h5>
+                        <h5 class="mb-0"><i class="fas fa-info me-2"></i>Additional Information (optional)</h5>
                     </div>
                     <div class="card-body">
                         <div class="row">
