@@ -4,9 +4,9 @@ namespace CareerPilotAi.Infrastructure.OpenRouter;
 
 internal static class OpenRouterExtensions
 {
-    internal static IServiceCollection AddOpenRouterHttpClient(this IServiceCollection services, IConfiguration configuration)
+    internal static IServiceCollection AddOpenRouter(this IServiceCollection services, IConfiguration configuration)
     {
-        return services.AddHttpClient("OpenRouter", (client) =>
+        services.AddHttpClient("OpenRouter", (client) =>
         {
             var openRouterAppSettings = new OpenRouterAppSettings();
             configuration.GetSection("OpenRouter")
@@ -17,10 +17,13 @@ internal static class OpenRouterExtensions
 
             client.BaseAddress = new Uri(baseAddress);
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", authToken);
-        })
-            .Services;
+        });
+        
+        services.AddSingleton<OpenRouterService>();
+        
+        return services;
     }
-
+    
     internal static IServiceCollection RegisterOpenRouterAppSettings(this IServiceCollection services, IConfiguration configuration)
     {
         services.AddOptions<OpenRouterAppSettings>()

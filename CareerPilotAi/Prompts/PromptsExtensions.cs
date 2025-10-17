@@ -1,5 +1,6 @@
 using CareerPilotAi.Prompts.EnhanceJobDescription;
 using CareerPilotAi.Prompts.GenerateInterviewQuestions;
+using CareerPilotAi.Prompts.ParseJobDescription;
 using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
 
 namespace CareerPilotAi.Prompts;
@@ -12,7 +13,8 @@ public static class PromptsExtensions
         {
             new EnhanceJobDescriptionPrompt(),
             new GenerateInterviewQuestionsPrompt(),
-            new PrepareInterviewPreparationContentPrompt()
+            new PrepareInterviewPreparationContentPrompt(),
+            new ParseJobDescriptionPrompt()
         };
 
         var promptsProvider = new PromptsProvider();

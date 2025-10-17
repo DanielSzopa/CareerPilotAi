@@ -181,18 +181,21 @@ $(document).ready(function() {
         })
         .then(response => {
             clearTimeout(timeoutId);
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw errorData;
+                });
+            }
             return response.json();
         })
         .then(data => {
-            if (data.success && data.data) {
-                populateFormWithParsedData(data.data, data.parsingResult, data.missingFields);
+            if (data.success) {
+                if (data.data) {
+                    populateFormWithParsedData(data.data);
+                }
                 
                 // Show success message
-                let message = 'Job description parsed successfully!';
-                if (data.parsingResult === 1) { // PartialSuccess
-                    message += ` Note: Some fields could not be extracted: ${data.missingFields.join(', ')}`;
-                }
-                showAiParsingAlert(message, data.parsingResult === 0 ? 'success' : 'info');
+                showAiParsingAlert(data.feedbackMessage || 'Job description parsed successfully!', 'success');
                 
                 // Collapse the AI parsing accordion
                 const collapseElement = document.getElementById('collapseAiParsing');
@@ -206,24 +209,24 @@ $(document).ready(function() {
                     scrollTop: $('#createJobApplicationForm').offset().top - 20
                 }, 500);
             } else {
-                showAiParsingAlert('Failed to parse job description. Please fill the form manually.', 'danger');
+                showAiParsingAlert(data.feedbackMessage || 'Failed to parse job description.', 'danger');
             }
         })
         .catch(error => {
             clearTimeout(timeoutId);
             if (error.name === 'AbortError') {
                 showAiParsingAlert('Request timed out. Please try again or fill the form manually.', 'danger');
-            } else {
-                showAiParsingAlert('An error occurred while parsing. Please try again or fill the form manually.', 'danger');
             }
-            console.error('AI Parsing error:', error);
+            else {
+                showAiParsingAlert(error.detail || 'An error occurred while parsing. Please try again or fill the form manually.', 'danger');
+            }
         })
         .finally(() => {
             hideLoadingState($button);
         });
     });
     
-    function populateFormWithParsedData(data, parsingResult, missingFields) {
+    function populateFormWithParsedData(data) {
         // Populate basic information
         if (data.companyName) $('#CompanyName').val(data.companyName);
         if (data.position) $('#Position').val(data.position);
@@ -245,7 +248,6 @@ $(document).ready(function() {
         if (data.salaryPeriod) $('#SalaryPeriod').val(data.salaryPeriod);
         
         // Populate additional information
-        if (data.jobUrl) $('#JobUrl').val(data.jobUrl);
         if (data.status) $('#Status').val(data.status);
         
         // Populate skills

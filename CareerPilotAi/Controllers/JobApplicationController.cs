@@ -14,6 +14,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using CareerPilotAi.ViewModels;
+using System.Text.Json;
 
 namespace CareerPilotAi.Controllers
 {
@@ -145,16 +146,21 @@ namespace CareerPilotAi.Controllers
         {
             try
             {
+                var userId = _userService.GetUserIdOrThrowException();
                 if (!ModelState.IsValid)
                 {
-                    return BadRequest(new
-                    {
-                        success = false,
-                        errors = ModelState.Values
-                            .SelectMany(v => v.Errors)
-                            .Select(e => e.ErrorMessage)
-                            .ToList()
-                    });
+                    _logger.LogError("Invalid model state for ParseJobDescription. UserId: {userId}, ModelState: {modelState}", userId, ModelState);
+                    var errors = ModelState.Values
+                                .SelectMany(v => v.Errors)
+                                .Select(e => e.ErrorMessage)
+                                .ToList();
+                    return Problem(
+                        type: HttpStatusCode.BadRequest.ToString(),
+                        title: "One or more validation errors occurred.",
+                        detail: string.Join(", ", errors),
+                        statusCode: (int)HttpStatusCode.BadRequest,
+                        instance: HttpContext.Request.Path.ToString()
+                    );
                 }
 
                 var response = await _commandDispatcher.DispatchAsync<
@@ -165,35 +171,32 @@ namespace CareerPilotAi.Controllers
 
                 if (!response.IsSuccess)
                 {
-                    return StatusCode(
-                        response.ProblemDetails?.Status ?? 500,
-                        new ParseJobDescriptionResultViewModel
-                        {
-                            Success = false,
-                            ParsingResult = ParsingResultType.Failed,
-                            MissingFields = new List<string>(),
-                            Data = null
-                        });
+                    return Problem(
+                        type: HttpStatusCode.BadRequest.ToString(),
+                        title: "Failed to parse job description",
+                        detail: response.FeedbackMessage,
+                        statusCode: (int)HttpStatusCode.BadRequest,
+                        instance: HttpContext.Request.Path.ToString()
+                    );
                 }
 
                 return Ok(new ParseJobDescriptionResultViewModel
                 {
                     Success = true,
-                    ParsingResult = response.ParsingResult,
-                    MissingFields = response.MissingFields ?? new List<string>(),
-                    Data = response.ParsedData
+                    FeedbackMessage = response.FeedbackMessage,
+                    Data = response.ParsedData?.Data
                 });
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error during parsing job description");
-                return StatusCode(500, new ParseJobDescriptionResultViewModel
-                {
-                    Success = false,
-                    ParsingResult = ParsingResultType.Failed,
-                    MissingFields = new List<string>(),
-                    Data = null
-                });
+                _logger.LogError(ex, "Error during parsing job description. UserId: {userId}", _userService.GetUserIdOrThrowException());
+                return Problem(
+                    type: HttpStatusCode.InternalServerError.ToString(),
+                    title: "Internal server error",
+                    detail: "Something went wrong. Please try again or provide different text content.",
+                    statusCode: (int)HttpStatusCode.InternalServerError,
+                    instance: HttpContext.Request.Path.ToString()
+                );
             }
         }
 

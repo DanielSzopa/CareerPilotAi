@@ -1,6 +1,10 @@
 using CareerPilotAi.Application.Commands.Abstractions;
-using CareerPilotAi.ViewModels.JobApplication;
+using CareerPilotAi.Application.Services;
 using CareerPilotAi.Core;
+using CareerPilotAi.Infrastructure.OpenRouter;
+using CareerPilotAi.Prompts.ParseJobDescription;
+using CareerPilotAi.ViewModels.JobApplication;
+using Microsoft.AspNetCore.Mvc;
 
 namespace CareerPilotAi.Application.Commands.ParseJobDescription;
 
@@ -8,53 +12,92 @@ public class ParseJobDescriptionCommandHandler :
     ICommandHandler<ParseJobDescriptionCommand, ParseJobDescriptionResponse>
 {
     private readonly ILogger<ParseJobDescriptionCommandHandler> _logger;
-
+    private readonly OpenRouterService _openRouterService;
+    private readonly IUserService _userService;
     public ParseJobDescriptionCommandHandler(
-        ILogger<ParseJobDescriptionCommandHandler> logger)
+        ILogger<ParseJobDescriptionCommandHandler> logger,
+        OpenRouterService openRouterService,
+        IUserService userService)
     {
         _logger = logger;
+        _openRouterService = openRouterService;
+        _userService = userService;
     }
 
     public async Task<ParseJobDescriptionResponse> HandleAsync(
         ParseJobDescriptionCommand command,
         CancellationToken cancellationToken)
     {
-        // TODO: Implement actual AI parsing with OpenRouter
-        // For now, return mock response for testing
+         var userId = _userService.GetUserIdOrThrowException();
 
-        _logger.LogInformation("Parsing job description (MOCK)");
-
-        // Simulate async operation
-        await Task.Delay(1000, cancellationToken);
-
-        // Mock response - FullSuccess with sample data
-        return new ParseJobDescriptionResponse
+        try
         {
-            IsSuccess = true,
-            ParsingResult = ParsingResultType.FullSuccess,
-            MissingFields = new List<string>(),
-            ParsedData = new CreateJobApplicationViewModel
+            var input = new ParseJobDescriptionInputModel(command.JobDescriptionText);
+            var parsedResult = await _openRouterService.ParseJobDescriptionAsync(input, cancellationToken);
+           
+            if (parsedResult.IsSuccess == false)
             {
-                CompanyName = "Example Company",
-                Position = "Senior Software Developer",
-                JobDescription = command.JobDescriptionText,
-                ExperienceLevel = ExperienceLevel.Senior,
-                Location = "Warsaw, Poland",
-                WorkMode = WorkMode.Hybrid,
-                ContractType = ContractType.B2B,
-                SalaryMin = 15000,
-                SalaryMax = 20000,
-                SalaryType = Core.SalaryType.Net,
-                SalaryPeriod = SalaryPeriodType.Monthly,
-                Skills = new List<SkillViewModel>
+                _logger.LogError("Failed to parse job description: {feedbackMessage}, UserId: {userId}", parsedResult.FeedbackMessage, userId);
+                return new ParseJobDescriptionResponse
                 {
-                    new() { Name = "C#", Level = SkillLevel.Advanced },
-                    new() { Name = "ASP.NET Core", Level = SkillLevel.Advanced },
-                    new() { Name = "Entity Framework", Level = SkillLevel.Regular }
-                },
-                Status = ApplicationStatus.DefaultStatus
+                    IsSuccess = false,
+                    ProblemDetails = new ProblemDetails
+                    {
+                        Title = "Failed to parse job description",
+                        Status = StatusCodes.Status400BadRequest,
+                        Detail = parsedResult.FeedbackMessage,
+                    }
+                };
             }
+
+            return new ParseJobDescriptionResponse
+            {
+                IsSuccess = true,
+                FeedbackMessage = parsedResult.FeedbackMessage,
+                ParsedData = MapToViewModel(parsedResult)
+            };
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "An error occurred while parsing job description. UserId: {userId}", userId);
+            return new ParseJobDescriptionResponse
+            {
+                IsSuccess = false,
+                ProblemDetails = new ProblemDetails
+                {
+                    Title = "Internal Server Error",
+                    Status = StatusCodes.Status500InternalServerError,
+                    Detail = "An error occurred while parsing job description. Please try again later.",
+                }
+            };
+        }
+    }
+
+    private static ParseJobDescriptionResultViewModel MapToViewModel(ParseJobDescriptionOutputModel model)
+    {
+        return new ParseJobDescriptionResultViewModel
+        {
+            Data = new CreateJobApplicationViewModel 
+            {
+                CompanyName = model.CompanyName,
+                Position = model.Position,
+                JobDescription = model.JobDescription,
+                ExperienceLevel = model.ExperienceLevel,
+                Location = model.Location,
+                WorkMode = model.WorkMode,
+                ContractType = model.ContractType,
+                SalaryMin = model.SalaryMin,
+                SalaryMax = model.SalaryMax,
+                SalaryType = model.SalaryType,
+                SalaryPeriod = model.SalaryPeriod,
+                Skills = model.Skills?.Select(s => new SkillViewModel
+                {
+                    Name = s.Name,
+                    Level = s.Level
+                }).ToList() ?? new List<SkillViewModel>(),
+                Status = ApplicationStatus.DefaultStatus
+            },
+            FeedbackMessage = model.FeedbackMessage
         };
     }
 }
-

@@ -7,6 +7,7 @@ public class OpenRouterFeatureSettingsProvider
     public const string EnhanceJobDescription = nameof(EnhanceJobDescription);
     public const string GenerateInterviewQuestions = nameof(GenerateInterviewQuestions);
     public const string PrepareInterviewPreparationContent = nameof(PrepareInterviewPreparationContent);
+    public const string ParseJobDescription = nameof(ParseJobDescription);
 
     private readonly IOptions<OpenRouterAppSettings> _options;
 

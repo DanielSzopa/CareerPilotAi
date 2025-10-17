@@ -11,10 +11,9 @@ public static class InfrastructureExtensions
     public static IServiceCollection AddInfrastructure(this IServiceCollection services, IConfiguration configuration)
     {
         services
-        .AddSingleton<OpenRouterService>()
         .AddSingleton<OpenRouterFeatureSettingsProvider>()
         .AddIdentityExtensions()
-        .AddOpenRouterHttpClient(configuration)
+        .AddOpenRouter(configuration)
         .RegisterOpenRouterAppSettings(configuration)
         .AddEmailServices(configuration)
         .AddDbContext<ApplicationDbContext>(options =>
