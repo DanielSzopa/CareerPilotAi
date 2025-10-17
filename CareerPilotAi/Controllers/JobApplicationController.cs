@@ -13,7 +13,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using CareerPilotAi.ViewModels;
-using System.Text.Json;
 
 namespace CareerPilotAi.Controllers
 {
@@ -100,27 +99,6 @@ namespace CareerPilotAi.Controllers
 
             try
             {
-                // Validate salary range if both provided
-                if (vm.SalaryMin.HasValue && vm.SalaryMax.HasValue)
-                {
-                    if (vm.SalaryMax < vm.SalaryMin)
-                    {
-                        ModelState.AddModelError(
-                            nameof(vm.SalaryMax),
-                            "Maximum salary must be greater than or equal to minimum salary.");
-                        return View(vm);
-                    }
-                }
-
-                // Validate salary type if salary provided
-                if ((vm.SalaryMin.HasValue || vm.SalaryMax.HasValue) && string.IsNullOrEmpty(vm.SalaryType))
-                {
-                    ModelState.AddModelError(
-                        nameof(vm.SalaryType),
-                        "Salary type is required when salary is specified.");
-                    return View(vm);
-                }
-
                 var jobApplicationId = await _commandDispatcher.DispatchAsync<CreateJobApplicationCommand, Guid>(
                     new CreateJobApplicationCommand(vm),
                     cancellationToken);

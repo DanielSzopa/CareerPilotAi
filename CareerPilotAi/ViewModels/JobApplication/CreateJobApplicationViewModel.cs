@@ -4,6 +4,8 @@ using CareerPilotAi.Core;
 
 namespace CareerPilotAi.ViewModels.JobApplication;
 
+[ValidSalaryRange]
+[SalaryTypeRequiredIfSalaryProvided]
 public class CreateJobApplicationViewModel
 {
     [Required(ErrorMessage = "Company name is required")]
