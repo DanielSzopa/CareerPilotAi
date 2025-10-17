@@ -1,7 +1,6 @@
 ﻿using CareerPilotAi.Application.Commands.CreateJobApplication;
 using CareerPilotAi.Application.Commands.DeleteJobApplication;
 using CareerPilotAi.Application.Commands.Dispatcher;
-using CareerPilotAi.Application.Commands.EnhanceJobDescription;
 using CareerPilotAi.Application.Commands.ParseJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobApplicationStatus;
@@ -197,39 +196,6 @@ namespace CareerPilotAi.Controllers
                     statusCode: (int)HttpStatusCode.InternalServerError,
                     instance: HttpContext.Request.Path.ToString()
                 );
-            }
-        }
-
-        [HttpPost]
-        [Route("api/enhance-job-description")]
-        public async Task<IActionResult> EnhanceJobDescription([FromBody] EnhanceJobDescriptionViewModel vm, CancellationToken cancellationToken)
-        {
-            try
-            {
-                var response = await _commandDispatcher.DispatchAsync<EnhanceJobDescriptionCommand, EnhanceJobDescriptionResponse>(new (vm.JobDescriptionText), cancellationToken);
-                if (!response.IsSuccess)
-                {
-                    return Problem(
-                        type: response.ProblemDetails?.Type,
-                        title: response.ProblemDetails?.Title,
-                        detail: response.ProblemDetails?.Detail,
-                        statusCode: response.ProblemDetails?.Status,
-                        instance: response.ProblemDetails?.Instance
-                    );
-                }
-
-                return Ok(new { Content = response.EnhancedJobDescription });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error during enhancing job description");
-                return Problem(
-                       type: HttpStatusCode.InternalServerError.ToString(),
-                       title: "Internal server error",
-                       detail: "Something went wrong. Please try again or provide different text content.",
-                       statusCode: (int)HttpStatusCode.InternalServerError,
-                       instance: HttpContext.Request.Path.ToString()
-                       );
             }
         }
 

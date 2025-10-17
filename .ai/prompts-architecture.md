@@ -158,12 +158,7 @@ public async Task<[YourFeature]PromptOutputModel> [YourFeature]Async([YourFeatur
 - **Output**: Structured interview questions with answers and feedback
 - **Pattern**: System prompt + JSON user input → JSON response
 
-### 2. EnhanceJobDescription Feature
-- **Input**: Raw job description text
-- **Output**: Enhanced and structured job description
-- **Pattern**: System prompt + text user input → JSON response
-
-### 3. PersonalDataPdfScrape Feature
+### 2. PersonalDataPdfScrape Feature
 - **Input**: PDF file (base64) + filename
 - **Output**: Extracted personal information
 - **Pattern**: System prompt + file attachment → JSON response

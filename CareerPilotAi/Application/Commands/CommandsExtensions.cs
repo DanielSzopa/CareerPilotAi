@@ -3,7 +3,6 @@ using CareerPilotAi.Application.Commands.CreateJobApplication;
 using CareerPilotAi.Application.Commands.DeleteJobApplication;
 using CareerPilotAi.Application.Commands.DeleteInterviewQuestion;
 using CareerPilotAi.Application.Commands.Dispatcher;
-using CareerPilotAi.Application.Commands.EnhanceJobDescription;
 using CareerPilotAi.Application.Commands.GenerateInterviewQuestions;
 using CareerPilotAi.Application.Commands.ParseJobDescription;
 using CareerPilotAi.Application.Commands.PrepareInterviewPreparationContent;
@@ -22,7 +21,6 @@ internal static class CommandsExtensions
             .AddScoped<ICommandDispatcher, CommandDispatcher>()
             .AddScoped<ICommandHandler<CreateJobApplicationCommand, Guid>, CreateJobApplicationCommandHandler>()
             .AddScoped<ICommandHandler<ParseJobDescriptionCommand, ParseJobDescriptionResponse>, ParseJobDescriptionCommandHandler>()
-            .AddScoped<ICommandHandler<EnhanceJobDescriptionCommand, EnhanceJobDescriptionResponse>, EnhanceJobDescriptionCommandHandler>()
             .AddScoped<ICommandHandler<UpdateJobDescriptionCommand, UpdateJobDescriptionResponse>, UpdateJobDescriptionCommandHandler>()
             .AddScoped<ICommandHandler<UpdateJobApplicationStatusCommand, UpdateJobApplicationStatusResponse>, UpdateJobApplicationStatusCommandHandler>()
             .AddScoped<ICommandHandler<DeleteJobApplicationCommand, DeleteJobApplicationResponse>, DeleteJobApplicationCommandHandler>()

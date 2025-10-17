@@ -1,5 +1,4 @@
 ﻿using CareerPilotAi.Prompts;
-using CareerPilotAi.Prompts.EnhanceJobDescription;
 using CareerPilotAi.Prompts.GenerateInterviewQuestions;
 using CareerPilotAi.Prompts.ParseJobDescription;
 using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
@@ -28,48 +27,6 @@ public class OpenRouterService
         response.EnsureSuccessStatusCode();
 
         return await response.Content.ReadFromJsonAsync<OpenRouterCommonResponse>(cancellationToken) ?? throw new InvalidOperationException("Failed to deserialize response from OpenRouter.");
-    }
-
-    public async Task<EnhanceJobDescriptionResponseModel> EnhanceJobDescriptionAsync(string rawContentText, CancellationToken cancellationToken)
-    {
-        if (string.IsNullOrWhiteSpace(rawContentText))
-        {
-            throw new ArgumentException("Raw content text cannot be null or empty.", nameof(rawContentText));
-        }
-
-        var prompt = _promptsProvider.GetPrompt(new EnhanceJobDescriptionPrompt());
-        var settings = _openRouterFeatureSettings.Get(OpenRouterFeatureSettingsProvider.EnhanceJobDescription);
-        var request = new
-        {
-            model = settings.Model,
-            temperature = settings.Temperature,
-            stream = false,
-            response_format = new
-            {
-                type = "json_object"
-            },
-            messages = new[]
-            {
-                new
-                {
-                    role = "system",
-                    content = prompt
-                },
-                new
-                {
-                    role = "user",
-                    content = rawContentText
-                }
-            }
-        };
-
-        var requestJson = JsonSerializer.Serialize(request, new JsonSerializerOptions
-        {
-            DefaultIgnoreCondition = System.Text.Json.Serialization.JsonIgnoreCondition.WhenWritingDefault,
-        });
-        var response = await SendOpenRouterRequestAsync(requestJson, cancellationToken);
-        var messageContent = response?.Choices.FirstOrDefault()?.Message?.Content ?? throw new InvalidOperationException($"No content found in the response from OpenRouter. Action: {nameof(EnhanceJobDescriptionAsync)}");
-        return JsonSerializer.Deserialize<EnhanceJobDescriptionResponseModel>(messageContent) ?? throw new InvalidOperationException($"Failed to deserialize response content to {nameof(EnhanceJobDescriptionResponseModel)}. Action: {nameof(EnhanceJobDescriptionAsync)}");
     }
 
     public async Task<GenerateInterviewQuestionsPromptOutputModel> GenerateInterviewQuestionsAsync(GenerateInterviewQuestionsPromptInputModel inputModel, CancellationToken cancellationToken)

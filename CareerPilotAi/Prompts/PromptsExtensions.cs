@@ -1,4 +1,3 @@
-using CareerPilotAi.Prompts.EnhanceJobDescription;
 using CareerPilotAi.Prompts.GenerateInterviewQuestions;
 using CareerPilotAi.Prompts.ParseJobDescription;
 using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
@@ -11,7 +10,6 @@ public static class PromptsExtensions
     {
         var prompts = new List<PromptBase>
         {
-            new EnhanceJobDescriptionPrompt(),
             new GenerateInterviewQuestionsPrompt(),
             new PrepareInterviewPreparationContentPrompt(),
             new ParseJobDescriptionPrompt()
