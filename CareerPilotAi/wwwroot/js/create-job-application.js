@@ -327,12 +327,6 @@ $(document).ready(function() {
         const salaryMin = parseFloat($('#SalaryMin').val()) || 0;
         const salaryMax = parseFloat($('#SalaryMax').val()) || 0;
         
-        if (salaryMin && salaryMax && salaryMax < salaryMin) {
-            e.preventDefault();
-            showAlert('Maximum salary must be greater than or equal to minimum salary.');
-            return false;
-        }
-        
         return true;
     });
     
