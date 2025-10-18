@@ -188,6 +188,7 @@ namespace CareerPilotAi.Controllers
             }
             var userId = _userService.GetUserIdOrThrowException();
             var jobApplicationDataModel = await _applicationDbContext.JobApplications
+                .Include(j => j.Skills)
                 .FirstOrDefaultAsync(j => j.JobApplicationId == jobApplicationId && j.UserId == userId, cancellationToken);
 
             if (jobApplicationDataModel is null)
@@ -213,6 +214,22 @@ namespace CareerPilotAi.Controllers
                 JobTitle = jobApplication.Title,
                 JobDescription = jobApplication.JobDescription,
                 Status = jobApplication.ApplicationStatus.Status,
+                Location = jobApplicationDataModel.Location,
+                WorkMode = jobApplicationDataModel.WorkMode,
+                ContractType = jobApplicationDataModel.ContractType,
+                ExperienceLevel = jobApplicationDataModel.ExperienceLevel,
+                SalaryMin = jobApplicationDataModel.SalaryMin,
+                SalaryMax = jobApplicationDataModel.SalaryMax,
+                SalaryType = jobApplicationDataModel.SalaryType,
+                SalaryPeriod = jobApplicationDataModel.SalaryPeriod,
+                JobUrl = jobApplicationDataModel.Url,
+                Skills = jobApplicationDataModel.Skills?.Select(s => new SkillViewModel
+                {
+                    Name = s.Name,
+                    Level = s.Level
+                }).ToList() ?? new List<SkillViewModel>(),
+                CreatedAt = jobApplicationDataModel.CreatedAt,
+                UpdatedAt = jobApplicationDataModel.UpdatedAt
             };
 
             return View("JobApplicationDetails", viewModel);

@@ -1,24 +1,31 @@
 @model CareerPilotAi.ViewModels.JobApplication.JobApplicationDetailsViewModel
+@using CareerPilotAi.ViewModels.JobApplication
 @{
     ViewData["Title"] = Model.JobTitle + " - " + Model.CompanyName;
     
     // Helper function to get CSS class from status
     string GetStatusCssClass(string status)
     {
-        return status?.ToLowerInvariant() switch
-        {
-            "draft" => "status-draft",
-            "submitted" => "status-submitted",
-            "interview scheduled" => "status-interview-scheduled",
-            "waiting for offer" => "status-waiting-for-offer",
-            "received offer" => "status-received-offer",
-            "rejected" => "status-rejected",
-            "no contact" => "status-no-contact",
-            _ => "status-draft" // Default to draft if status is unknown
-        };
+        var output = $"status-{status?.ToLower()?.Replace(" ", "-")}";
+        return output;
     }
     
-    var currentStatusCssClass = GetStatusCssClass(Model.Status);
+    // Helper function to get CSS class from skill level
+    string GetSkillCssClass(SkillViewModel skill)
+    {
+        if (string.IsNullOrEmpty(skill?.Level))
+            return "skill-badge-regular";
+
+        return skill.Level.ToLowerInvariant() switch
+        {
+            "nicetoha" => "skill-badge-nice-to-have",
+            "junior" => "skill-badge-nice-to-have",
+            "regular" => "skill-badge-regular",
+            "advanced" => "skill-badge-advanced",
+            "master" => "skill-badge-master",
+            _ => "skill-badge-regular"
+        };
+    }
 }
 
 <link href="~/css/interview-questions.css" rel="stylesheet" />
@@ -27,7 +34,8 @@
 
 <div class="container-fluid">
     <div class="row">
-        <div class="col-12">            <div class="d-flex justify-content-between align-items-center mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center mb-4">
                 <div class="d-flex align-items-center gap-3">
                     <div>
                         <h2 class="mb-0">@Model.JobTitle</h2>
@@ -40,7 +48,7 @@
                                 id="statusDropdown" 
                                 data-bs-toggle="dropdown" 
                                 aria-expanded="false">
-                            <span class="status-dot @currentStatusCssClass"></span>
+                            <span class="status-dot @GetStatusCssClass(Model.Status)"></span>
                             <span class="status-text">@Model.Status</span>
                         </button>
                         <ul class="dropdown-menu" aria-labelledby="statusDropdown">
@@ -69,8 +77,11 @@
                     </div>
                 </div>
                 <div class="d-flex gap-2">
-                    <a href="/job-applications" class="btn btn-outline-secondary">
-                        <i class="fas fa-arrow-left"></i>
+                    <a href="/job-applications" class="btn btn-outline-secondary px-4">
+                        <i class="fas fa-arrow-left"></i> <span class="ms-2">Back</span>
+                    </a>
+                    <a href="@Url.Action("Edit", "JobApplication", new { id = Model.JobApplicationId })" class="btn btn-outline-primary">
+                        <i class="fas fa-edit me-2"></i>Edit
                     </a>
                     <button type="button" 
                             class="btn btn-outline-danger" 
@@ -83,7 +94,7 @@
             <!-- Tab Navigation -->
             <ul class="nav nav-tabs" id="jobApplicationTabs" role="tablist">
                 <li class="nav-item" role="presentation">
-                    <button class="nav-link" id="job-details-tab" data-bs-toggle="tab" data-bs-target="#job-details" type="button" role="tab" data-tab-param="job-details">
+                    <button class="nav-link active" id="job-details-tab" data-bs-toggle="tab" data-bs-target="#job-details" type="button" role="tab" data-tab-param="job-details">
                         <i class="fas fa-briefcase me-2"></i>Job Details
                     </button>
                 </li>
@@ -97,47 +108,128 @@
             <!-- Tab Content -->
             <div class="tab-content" id="jobApplicationTabContent">
                 <!-- Job Details Tab -->
-                <div class="tab-pane fade" id="job-details" role="tabpanel">
-                    <div class="card mt-3">
-                        <div class="card-body">
-                            <!-- Tab-specific message container -->
-                            <div id="jobDetailsMessages"></div>
-                            
-                            <label class="form-label fw-bold">Job Description & Requirements</label>
-                            
-                            <!-- Display Mode -->
-                            <div id="jobDescriptionDisplay" class="job-description-display">
-                                @Html.Raw(Model.JobDescription.Replace("\n", "<br>"))
-                            </div>
-                            
-                            <!-- Edit Mode -->
-                            <div id="jobDescriptionEdit" style="display: none;">
-                                <textarea id="jobDescriptionTextArea" class="form-control" rows="15">@Model.JobDescription</textarea>
-                                <div class="mt-2">
-                                    <div class="text-muted">Word count: <span id="wordCount">0</span> / 5,000</div>
-                                </div>
-                                <div id="wordLimitError" class="text-danger mt-1" style="display: none;">
-                                    Text exceeds the maximum limit of 5,000 words. Please shorten your text to continue.
+                <div class="tab-pane fade show active" id="job-details" role="tabpanel">
+                    <div class="row mt-4">
+                        <!-- Left Column: Main Content -->
+                        <div class="col-lg-8">
+                            <!-- Job Description Card -->
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Job Description & Requirements</h5>
+                                    <pre class="job-description-display">@Model.JobDescription</pre>
                                 </div>
                             </div>
-                            
-                            <!-- Action Buttons -->
-                            <div class="mt-3">
-                                <div id="editActions">
-                                    <button type="button" class="btn btn-outline-primary me-2" id="editJobDescriptionBtn">
-                                        <i class="fas fa-edit me-2"></i>Edit
-                                    </button>
+
+                            <!-- Skills Card -->
+                            @if (Model.Skills != null && Model.Skills.Any())
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Required Skills</h5>
+                                        <div class="skills-container">
+                                            @foreach (var skill in Model.Skills)
+                                            {
+                                                <span class="badge @GetSkillCssClass(skill) me-2 mb-2">
+                                                    @skill.Name
+                                                </span>
+                                            }
+                                        </div>
+                                    </div>
                                 </div>
-                                <div id="saveActions" style="display: none;">
-                                    <button type="button" class="btn btn-success me-2" id="saveJobDescriptionBtn">
-                                        <i class="fas fa-save me-2"></i>Save
-                                    </button>
-                                    <button type="button" class="btn btn-secondary me-2" id="cancelEditBtn">
-                                        <i class="fas fa-times me-2"></i>Cancel
-                                    </button>
-                                    <button type="button" class="btn btn-outline-secondary" id="enhanceJobDescriptionBtn" title="Enhance the Job Description with AI">
-                                        <i class="fas fa-wand-magic-sparkles me-2"></i>Enhance with AI
-                                    </button>
+                            }
+                            else
+                            {
+                                <div class="card">
+                                    <div class="card-body">
+                                        <p class="text-muted mb-0">No skills specified</p>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Right Column: Sidebar Information -->
+                        <div class="col-lg-4">
+                            <!-- Key Information Card -->
+                            <div class="card mb-3">
+                                <div class="card-body">
+                                    <h5 class="card-title">Key Information</h5>
+                                    <div class="info-item mb-1">
+                                        <small class="text-muted d-block">Experience Level</small>
+                                        <i class="fas fa-chart-line me-2 text-primary"></i>
+                                        <span>@Model.ExperienceLevel</span>
+                                    </div>
+                                    <div class="info-item mb-1">
+                                        <small class="text-muted d-block">Location</small>
+                                        <i class="fas fa-map-marker-alt me-2 text-primary"></i>
+                                        <span>@Model.Location</span>
+                                    </div>
+                                    <div class="info-item mb-1">
+                                        <small class="text-muted d-block">Work Mode</small>
+                                        <i class="fas fa-laptop me-2 text-primary"></i>
+                                        <span>@Model.WorkMode</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <small class="text-muted d-block">Contract Type</small>
+                                        <i class="fas fa-handshake me-2 text-primary"></i>
+                                        <span>@Model.ContractType</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Salary Information Card -->
+                            @if (Model.SalaryMin.HasValue)
+                            {
+                                <div class="card mb-3">
+                                    <div class="card-body">
+                                        <h5 class="card-title">Salary Information</h5>
+                                        <div class="info-item mb-1">
+                                            <small class="text-muted d-block">Range</small>
+                                            <i class="fas fa-money-bill-wave me-2 text-success"></i>
+                                            <span>
+                                                @Model.SalaryMin?.ToString("N0") PLN - @Model.SalaryMax?.ToString("N0") PLN
+                                            </span>
+                                        </div>
+                                        @if (!string.IsNullOrEmpty(Model.SalaryType))
+                                        {
+                                            <div class="info-item mb-1">
+                                                <small class="text-muted d-block">Type</small>
+                                                <span>@(Model.SalaryType?.ToLowerInvariant() == "gross" ? "Gross" : "Net")</span>
+                                            </div>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.SalaryPeriod))
+                                        {
+                                            <div class="info-item">
+                                                <small class="text-muted d-block">Period</small>
+                                                <span>@Model.SalaryPeriod</span>
+                                            </div>
+                                        }
+                                    </div>
+                                </div>
+                            }
+
+                            <!-- Additional Information Card -->
+                            <div class="card">
+                                <div class="card-body">
+                                    <h5 class="card-title">Additional Information</h5>
+                                    @if (!string.IsNullOrEmpty(Model.JobUrl))
+                                    {
+                                        <div class="info-item mb-1">
+                                            <small class="text-muted d-block">Job URL</small>
+                                            <a href="@Model.JobUrl" target="_blank" rel="noopener noreferrer" class="text-primary">
+                                                <i class="fas fa-external-link-alt me-1"></i>View Offer
+                                            </a>
+                                        </div>
+                                    }
+                                    <div class="info-item mb-1">
+                                        <small class="text-muted d-block">Created</small>
+                                        <i class="fas fa-calendar me-2 text-info"></i>
+                                        <span>@Model.CreatedAt.ToString("dd MMMM yyyy, HH:mm")</span>
+                                    </div>
+                                    <div class="info-item">
+                                        <small class="text-muted d-block">Last Updated</small>
+                                        <i class="fas fa-calendar me-2 text-info"></i>
+                                        <span>@Model.UpdatedAt.ToString("dd MMMM yyyy, HH:mm")</span>
+                                    </div>
                                 </div>
                             </div>
                         </div>
@@ -152,34 +244,6 @@
 </div>
 
 <style>
-    /* CSS Custom Properties for Status Colors */
-    :root {
-        --status-draft-color: #007bff;
-        --status-rejected-color: #dc3545;
-        --status-submitted-color: #28a745;
-        --status-interview-scheduled-color: #28a745;
-        --status-waiting-for-offer-color: #28a745;
-        --status-received-offer-color: #28a745;
-        --status-no-contact-color: #dc3545;
-    }
-
-    /* Status Dot Styles */
-    .status-dot {
-        width: 8px;
-        height: 8px;
-        border-radius: 50%;
-        display: inline-block;
-        flex-shrink: 0;
-    }
-
-    .status-draft { background-color: var(--status-draft-color); }
-    .status-rejected { background-color: var(--status-rejected-color); }
-    .status-submitted { background-color: var(--status-submitted-color); }
-    .status-interview-scheduled { background-color: var(--status-interview-scheduled-color); }
-    .status-waiting-for-offer { background-color: var(--status-waiting-for-offer-color); }
-    .status-received-offer { background-color: var(--status-received-offer-color); }
-    .status-no-contact { background-color: var(--status-no-contact-color); }
-
     /* Status Dropdown Styling */
     #statusDropdown {
         min-width: 160px;
@@ -200,17 +264,69 @@
     }
 
     .job-description-display {
-        word-wrap: break-word;
+        white-space: pre-wrap;
+        word-break: break-word;
+        overflow-wrap: anywhere;
         border: 1px solid #e9ecef;
         border-radius: 0.375rem;
         padding: 1rem;
         background-color: #f8f9fa;
-        min-height: 300px;
         max-height: 500px;
         overflow-y: auto;
+        overflow-x: hidden;
         line-height: 1.6;
+        font-size: 0.9rem;
     }
-    
+
+    /* Skill Badge Styles */
+    .skill-badge-nice-to-have {
+        background-color: #6c757d;
+        color: white;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .skill-badge-regular {
+        background-color: #0d6efd;
+        color: white;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .skill-badge-advanced {
+        background-color: #fd7e14;
+        color: white;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .skill-badge-master {
+        background-color: #ffc107;
+        color: #212529;
+        font-size: 0.85rem;
+        padding: 0.5rem 0.75rem;
+    }
+
+    .skills-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+    /* Info Item Styling */
+    .info-item {
+        padding: 0.5rem 0;
+    }
+
+    .info-item small {
+        font-weight: 500;
+        letter-spacing: 0.5px;
+    }
+
+    .info-item span {
+        font-size: 0.95rem;
+    }
+
     .tab-content {
         min-height: 500px;
     }
@@ -232,20 +348,23 @@
         #statusDropdown {
             min-width: 100%;
         }
+
+        .col-lg-8, .col-lg-4 {
+            flex: 0 0 100%;
+            max-width: 100%;
+        }
     }
 </style>
 
 @section Scripts {
-    <script src="~/js/word-counter.js"></script>
     <script src="~/js/interview-questions.js"></script>
     <script>
         $(document).ready(function() {
             // ===========================================
-            // VARIABLE DECLARATIONS (must be at top for tab initialization)
+            // VARIABLE DECLARATIONS
             // ===========================================
             
             let originalJobDescription = @Html.Raw(Json.Serialize(Model.JobDescription));
-            let wordCounter;
             
             // Initialize Interview Questions Manager
             const interviewQuestionsManager = new InterviewQuestionsManager({
@@ -263,7 +382,6 @@
                 defaultTab: 'job-details',
                 paramName: 'tab',
                 
-                // Configuration for all tabs - easily extendable for future tabs
                 tabConfigs: {
                     'job-details': {
                         tabSelector: '#job-details-tab',
@@ -281,19 +399,16 @@
                     }
                 },
                 
-                // Initialize tab management system
                 init: function() {
                     this.bindEvents();
                     this.activateTabFromUrl();
                 },
                 
-                // Bind events for tab management
                 bindEvents: function() {
                     const self = this;
                     
-                    // Handle tab clicks to update URL parameters
                     $('#jobApplicationTabs button[data-bs-toggle="tab"]').on('click', function(e) {
-                        e.preventDefault(); // Prevent default Bootstrap behavior temporarily
+                        e.preventDefault();
                         
                         const tabParam = $(this).data('tab-param');
                         if (tabParam) {
@@ -303,12 +418,10 @@
                         interviewQuestionsManager.clearTabMessages();
                     });
                     
-                    // Handle browser back/forward buttons
                     $(window).on('popstate', function() {
                         self.activateTabFromUrl();
                     });
                     
-                    // Handle Bootstrap tab shown event for custom logic
                     $('#jobApplicationTabs button[data-bs-toggle="tab"]').on('shown.bs.tab', function(e) {
                         const tabParam = $(e.target).data('tab-param');
                         const config = self.tabConfigs[tabParam];
@@ -318,41 +431,33 @@
                     });
                 },
                 
-                // Get URL search parameters
                 getUrlParams: function() {
                     return new URLSearchParams(window.location.search);
                 },
                 
-                // Get current tab from URL parameter
                 getCurrentTabFromUrl: function() {
                     return this.getUrlParams().get(this.paramName);
                 },
                 
-                // Update URL parameter without page reload
                 updateUrlParameter: function(tabParam) {
                     const url = new URL(window.location);
                     
                     if (tabParam === this.defaultTab) {
-                        // Remove tab parameter for default tab to keep URL clean
                         url.searchParams.delete(this.paramName);
                     } else {
                         url.searchParams.set(this.paramName, tabParam);
                     }
                     
-                    // Update URL without triggering page reload
                     window.history.pushState({ tab: tabParam }, '', url);
                 },
                 
-                // Activate tab based on current URL parameter
                 activateTabFromUrl: function() {
                     const currentTab = this.getCurrentTabFromUrl();
                     const targetTab = currentTab && this.tabConfigs[currentTab] ? currentTab : this.defaultTab;
                     
-                    // Activate the target tab
                     this.activateTab(targetTab);
                 },
                 
-                // Activate specific tab programmatically
                 activateTab: function(tabParam) {
                     const config = this.tabConfigs[tabParam];
                     if (!config) {
@@ -360,24 +465,19 @@
                         return;
                     }
                     
-                    // Remove active classes from all tabs and content
                     $('#jobApplicationTabs .nav-link').removeClass('active');
                     $('.tab-pane').removeClass('show active');
                     
-                    // Activate the target tab and content
                     $(config.tabSelector).addClass('active');
                     $(config.contentSelector).addClass('show active');
                     
-                    // Trigger Bootstrap's shown event manually for custom logic
                     $(config.tabSelector).trigger('shown.bs.tab');
                 },
                 
-                // Helper method to add new tab configuration (for future extensibility)
                 addTab: function(tabParam, config) {
                     this.tabConfigs[tabParam] = config;
                 },
                 
-                // Helper method to navigate to a specific tab programmatically
                 navigateToTab: function(tabParam) {
                     if (this.tabConfigs[tabParam]) {
                         this.updateUrlParameter(tabParam);
@@ -386,35 +486,29 @@
                 }
             };
             
-            // Initialize the tab management system
             TabManager.init();
             
             // ===========================================
             // STATUS DROPDOWN FUNCTIONALITY
             // ===========================================
             
-            // Handle status dropdown item clicks
             $('.dropdown-menu .dropdown-item').on('click', function(e) {
                 e.preventDefault();
                 
                 const newStatus = $(this).data('status');
                 const newColorClass = $(this).data('color-class');
                 
-                // Update the dropdown button text and color
                 const $statusButton = $('#statusDropdown');
                 const $statusDot = $statusButton.find('.status-dot');
                 const $statusText = $statusButton.find('.status-text');
                 
-                // Remove all status classes and add the new one
                 $statusDot.removeClass('status-draft status-submitted status-interview-scheduled status-waiting-for-offer status-received-offer status-rejected status-no-contact');
                 $statusDot.addClass(newColorClass);
                 $statusText.text(newStatus);
                 
-                // Call the placeholder function to update application status
                 updateApplicationStatus('@Model.JobApplicationId', newStatus);
             });
             
-            // Function for updating application status
             async function updateApplicationStatus(jobApplicationId, newStatus) {
                 try {
                     const response = await fetch(`/job-applications/api/status/${jobApplicationId}`, {
@@ -435,19 +529,16 @@
                     }
 
                     const data = await response.json();
-                    showSuccessMessage(`Application status updated to "${newStatus}" successfully!`, 'jobDetailsMessages');
+                    showSuccessMessage(`Application status updated to "${newStatus}" successfully!`);
                 } catch (error) {
                     console.error('Error updating application status:', error);
-                    showErrorMessage(error.message, 'jobDetailsMessages');
-                    // Revert the UI changes on error by reloading the page or restoring previous state
+                    showErrorMessage(error.message);
                     location.reload();
                 }
             }
             
-            // Initialize Interview Questions Manager
             interviewQuestionsManager.init();
             
-            // Initialize Bootstrap tooltips
             if (typeof bootstrap !== 'undefined') {
                 var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
                 var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
@@ -456,237 +547,44 @@
             }
             
             // ===========================================
-            // JOB DESCRIPTION FUNCTIONALITY
-            // ===========================================
-            
-            // Initialize word counter when entering edit mode
-            function initializeWordCounter() {
-                wordCounter = new WordCounter({
-                    textAreaSelector: '#jobDescriptionTextArea',
-                    wordCountSelector: '#wordCount',
-                    maxWords: 5000,
-                    warningThreshold: 4000,
-                    submitButtonSelector: '#saveJobDescriptionBtn',
-                    errorMessageSelector: '#wordLimitError'
-                });
-            }
-            
-            // Edit button click
-            $('#editJobDescriptionBtn').on('click', function() {
-                $('#jobDescriptionDisplay').hide();
-                $('#jobDescriptionEdit').show();
-                $('#editActions').hide();
-                $('#saveActions').show();
-                
-                // Initialize word counter
-                initializeWordCounter();
-                
-                // Focus on textarea
-                $('#jobDescriptionTextArea').focus();
-            });
-            
-            // Enhance with AI button click
-            $('#enhanceJobDescriptionBtn').on('click', function(e) {
-                e.preventDefault();
-                
-                const $button = $(this);
-                const jobDescriptionDisplay = $('#jobDescriptionDisplay');
-                
-                // Extract plain text from display (remove HTML br tags)
-                let jobDescriptionText = jobDescriptionDisplay.html();
-                if (jobDescriptionText) {
-                    // Convert HTML br tags back to newlines and strip HTML
-                    jobDescriptionText = jobDescriptionText.replace(/<br\s*\/?>/gi, '\n');
-                    jobDescriptionText = $('<div>').html(jobDescriptionText).text().trim();
-                }
-                
-                // Clear previous messages
-                clearTabMessages();
-                
-                if (!jobDescriptionText) {
-                    showErrorMessage('No job description content available to enhance.', 'jobDetailsMessages');
-                    return;
-                }
-                
-                // Show loading state
-                showEnhanceLoadingState($button);
-                
-                // Create AbortController for timeout
-                const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 40000); // 40 seconds
-                
-                // Make Fetch API request
-                fetch('/job-applications/api/enhance-job-description', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': document.querySelector('input[name="__RequestVerificationToken"]')?.value
-                    },
-                    body: JSON.stringify({
-                        JobDescriptionText: jobDescriptionText
-                    }),
-                    signal: controller.signal
-                })
-                .then(response => {
-                    clearTimeout(timeoutId);
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            // Handle ProblemDetails response format
-                            const errorMessage = errorData.detail || errorData.error || 'Something went wrong. Please try again or provide different text content.';
-                            throw new Error(errorMessage);
-                        });
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    if (data.content) {
-                        // Update both display and textarea with enhanced content
-                        const enhancedContent = data.content;
-                        
-                        // Update display mode (convert newlines to br tags)
-                        $('#jobDescriptionDisplay').html(enhancedContent.replace(/\n/g, '<br>'));
-                        
-                        // Update edit mode textarea (keep as plain text)
-                        $('#jobDescriptionTextArea').val(enhancedContent);
-                        
-                        // Update the original variable so cancel works correctly
-                        originalJobDescription = enhancedContent;
-                        
-                        // Update the Interview Questions Manager with the enhanced job description
-                        interviewQuestionsManager.updateJobDescription(enhancedContent);
-                        
-                        // Show success message
-                        showSuccessMessage('Job description enhanced successfully!', 'jobDetailsMessages');
-                    }
-                })
-                .catch(error => {
-                    clearTimeout(timeoutId);
-                    if (error.name === 'AbortError') {
-                        showErrorMessage('Request timed out. Please try again with a shorter text or check your connection.', 'jobDetailsMessages');
-                    } else {
-                        showErrorMessage(error.message, 'jobDetailsMessages');
-                    }
-                })
-                .finally(() => {
-                    hideEnhanceLoadingState($button);
-                });
-            });
-
-            // Cancel button click
-            $('#cancelEditBtn').on('click', function() {
-                // Reset textarea to original value
-                $('#jobDescriptionTextArea').val(originalJobDescription);
-                
-                // Switch back to display mode
-                $('#jobDescriptionDisplay').show();
-                $('#jobDescriptionEdit').hide();
-                $('#editActions').show();
-                $('#saveActions').hide();
-            });
-            
-            // Save button click
-            $('#saveJobDescriptionBtn').on('click', function() {
-                const $button = $(this);
-                const newJobDescription = $('#jobDescriptionTextArea').val().trim();
-                
-                // Validate word count
-                if (wordCounter && !wordCounter.validateWordCount().isValid) {
-                    return;
-                }
-                
-                if (!newJobDescription) {
-                    alert('Job description cannot be empty.');
-                    return;
-                }
-                
-                // Show loading state
-                $button.prop('disabled', true);
-                $button.html('<span class="spinner-border spinner-border-sm me-2" role="status" aria-hidden="true"></span>Saving...');
-                
-                // Make API call to save
-                fetch('/job-applications/api/update-job-description', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        'RequestVerificationToken': $('input[name="__RequestVerificationToken"]').val()
-                    },
-                    body: JSON.stringify({
-                        JobApplicationId: '@Model.JobApplicationId',
-                        JobDescription: newJobDescription
-                    })
-                })
-                .then(response => {
-                    if (!response.ok) {
-                        return response.json().then(errorData => {
-                            // Handle ProblemDetails response format
-                            const errorMessage = errorData.detail || errorData.error || 'Failed to save job description.';
-                            throw new Error(errorMessage);
-                        });
-                    }    
-                    return response.json();
-                })
-                .then(data => {
-                    // Update the display with new content and original variable
-                    originalJobDescription = newJobDescription;
-                    $('#jobDescriptionDisplay').html(newJobDescription.replace(/\n/g, '<br>'));
-                    
-                    // Update the Interview Questions Manager with the new job description
-                    interviewQuestionsManager.updateJobDescription(newJobDescription);
-                    
-                    // Switch back to display mode
-                    $('#jobDescriptionDisplay').show();
-                    $('#jobDescriptionEdit').hide();
-                    $('#editActions').show();
-                    $('#saveActions').hide();
-                    
-                    // Show success message
-                    showSuccessMessage('Job description updated successfully!', 'jobDetailsMessages');
-                })
-                .catch(error => {
-                    console.error('Error saving job description:', error);
-                    showErrorMessage(error.message, 'jobDetailsMessages');
-                })
-                .finally(() => {
-                    // Reset button state
-                    $button.prop('disabled', false);
-                    $button.html('<i class="fas fa-save me-2"></i>Save');
-                });
-            });
-            
-            // Initialize the Interview Questions Manager
-            interviewQuestionsManager.init();
-            
-            // ===========================================
             // SHARED UTILITY FUNCTIONS
             // ===========================================
             
-            function showSuccessMessage(message, containerId = 'jobDetailsMessages') {
+            function showSuccessMessage(message) {
                 const successHtml = `
                     <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
                         <i class="fas fa-check-circle me-2"></i>${message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
-                $(`#${containerId}`).prepend(successHtml);
+                const $jobDetailsDiv = $('#job-details');
+                if ($jobDetailsDiv.length) {
+                    $jobDetailsDiv.prepend(successHtml);
+                } else {
+                    $('body').prepend(successHtml);
+                }
                 
-                // Auto-hide after 8 seconds
                 setTimeout(() => {
-                    $(`#${containerId} .alert-success`).fadeOut();
+                    $('.alert-success').fadeOut();
                 }, 8000);
             }
             
-            function showErrorMessage(message, containerId = 'jobDetailsMessages') {
+            function showErrorMessage(message) {
                 const errorHtml = `
                     <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
                         <i class="fas fa-exclamation-triangle me-2"></i>${message}
                         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
                 `;
-                $(`#${containerId}`).prepend(errorHtml);
+                const $jobDetailsDiv = $('#job-details');
+                if ($jobDetailsDiv.length) {
+                    $jobDetailsDiv.prepend(errorHtml);
+                } else {
+                    $('body').prepend(errorHtml);
+                }
                 
-                // Auto-hide after 8 seconds
                 setTimeout(() => {
-                    $(`#${containerId} .alert-danger`).fadeOut();
+                    $('.alert-danger').fadeOut();
                 }, 8000);
             }
         });
@@ -710,7 +608,7 @@
                 if (response.ok) {
                     const result = await response.json();
                     alert(result.message);
-                    window.location.href = '/job-applications'; // Redirect to index page after deletion
+                    window.location.href = '/job-applications';
                 } else {
                     const errorData = await response.json();
                     alert(errorData.detail || 'An error occurred while deleting the job application.');
@@ -722,4 +620,3 @@
         }
     </script>
 }
-

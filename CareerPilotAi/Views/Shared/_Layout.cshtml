@@ -27,6 +27,34 @@
         #add-application-btn:hover {
             background-color: var(--main-blue-hover);
         }
+
+          /* CSS Custom Properties for Status Colors */
+  :root {
+      --status-draft-color: #007bff;
+      --status-rejected-color: #dc3545;
+      --status-submitted-color: #28a745;
+      --status-interview-scheduled-color: #28a745;
+      --status-waiting-for-offer-color: #28a745;
+      --status-received-offer-color: #28a745;
+      --status-no-contact-color: #dc3545;
+  }
+
+  /* Status Dot Styles */
+  .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+      flex-shrink: 0;
+  }
+
+  .status-draft { background-color: var(--status-draft-color); }
+  .status-rejected { background-color: var(--status-rejected-color); }
+  .status-submitted { background-color: var(--status-submitted-color); }
+  .status-interview-scheduled { background-color: var(--status-interview-scheduled-color); }
+  .status-waiting-for-offer { background-color: var(--status-waiting-for-offer-color); }
+  .status-received-offer { background-color: var(--status-received-offer-color); }
+  .status-no-contact { background-color: var(--status-no-contact-color); }
     </style>
 </head>
 <body>

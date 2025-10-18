@@ -1,6 +1,5 @@
 4. Implement the OpenTelemetry
 5. Implement cache mechanisms
-6. add URL to JobApplicationDetailsViewModel
 7. CreatedAt = DateTime.UtcNow, - Fix the UTC to local time
 - https://localhost:5000/job-applications/details/edf24d1c-bafc-4f99-b43a-2ef760feb87e enhance button doesn't work correctly
 - statuses
@@ -16,3 +15,9 @@
 - Logging, how to write logs
 - Adding information to styling: one lines if statements, one line namespaces
 - Create command handler architecture description
+
+
+-------------------------------------- 
+1. Naprawić wyświetlanie czasu na JobApplicationDetails, wyświetlać lokalny czas (USTAWIONY przez użytkownika) zamiast UTC.
+2. Wyświetlać w przyjemniejszy sposób skille.
+3. Poprawnie dzielenie się css i javascript, odchudzanie widoku, css i javascript ładowane z pliku

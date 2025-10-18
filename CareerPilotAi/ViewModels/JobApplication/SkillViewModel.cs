@@ -1,6 +1,5 @@
 using System.ComponentModel.DataAnnotations;
 using CareerPilotAi.Core;
-using CareerPilotAi.Prompts.ParseJobDescription;
 
 namespace CareerPilotAi.ViewModels.JobApplication;
 
