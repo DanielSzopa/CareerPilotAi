@@ -907,13 +907,6 @@ class InterviewQuestionsManager {
     }
 
     /**
-     * Update the job description when it changes in the main tab
-     */
-    updateJobDescription(newJobDescription) {
-        this.originalJobDescription = newJobDescription;
-    }
-
-    /**
      * Cleanup method to properly unbind events and reset state
      */
     cleanup() {
