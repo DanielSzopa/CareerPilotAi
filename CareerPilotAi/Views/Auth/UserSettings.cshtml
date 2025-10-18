@@ -4,6 +4,8 @@
     ViewData["Title"] = "User Settings";
 }
 
+<link rel="stylesheet" href="~/css/auth.css" />
+
 <h1 class="mb-4">User Settings</h1>
 
 @if (ViewData["SuccessMessage"] is string successMessage)
@@ -13,15 +15,6 @@
     </div>
 }
 
-    <style>
-        #save-btn {
-            background-color: var(--main-blue);
-            color: white;
-        }
-        #save-btn:hover {
-            background-color: var(--main-blue-hover);
-        }
-    </style>
 
 <div class="row">
     <div class="col-md-6">

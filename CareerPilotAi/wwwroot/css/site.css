@@ -1,5 +1,19 @@
+:root {
+  --main-blue:#276CF5;
+  --main-blue-hover:#2F74F7;
+  --status-draft-color: #007bff;
+  --status-rejected-color: #dc3545;
+  --status-submitted-color: #28a745;
+  --status-interview-scheduled-color: #28a745;
+  --status-waiting-for-offer-color: #28a745;
+  --status-received-offer-color: #28a745;
+  --status-no-contact-color: #dc3545;
+}
+
 html {
   font-size: 14px;
+  position: relative;
+  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -12,13 +26,10 @@ html {
   box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem #258cfb;
 }
 
-html {
-  position: relative;
-  min-height: 100%;
-}
-
 body {
   margin-bottom: 60px;
+  margin: 0;
+  padding: 0;
 }
 
 .form-floating > .form-control-plaintext::placeholder, .form-floating > .form-control::placeholder {
@@ -28,4 +39,36 @@ body {
 
 .form-floating > .form-control-plaintext:focus::placeholder, .form-floating > .form-control:focus::placeholder {
   text-align: start;
+}
+
+#add-application-btn {
+  background-color: var(--main-blue);
+  color: white;
+}
+#add-application-btn:hover {
+  background-color: var(--main-blue-hover);
+}
+
+.status-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  display: inline-block;
+  flex-shrink: 0;
+}
+
+.status-draft { background-color: var(--status-draft-color); }
+.status-rejected { background-color: var(--status-rejected-color); }
+.status-submitted { background-color: var(--status-submitted-color); }
+.status-interview-scheduled { background-color: var(--status-interview-scheduled-color); }
+.status-waiting-for-offer { background-color: var(--status-waiting-for-offer-color); }
+.status-received-offer { background-color: var(--status-received-offer-color); }
+.status-no-contact { background-color: var(--status-no-contact-color); }
+
+#sign-up-btn {
+  background-color: var(--main-blue);
+  color: white;
+}
+#sign-up-btn:hover {
+  background-color: var(--main-blue-hover);
 }
