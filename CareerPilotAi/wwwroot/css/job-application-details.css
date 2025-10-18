@@ -1,0 +1,107 @@
+
+#statusDropdown {
+    min-width: 160px;
+    border-color: #e9ecef;
+}
+
+#statusDropdown:hover {
+    border-color: #007bff;
+}
+
+.dropdown-menu .dropdown-item {
+    padding: 0.5rem 1rem;
+    font-size: 0.875rem;
+}
+
+.dropdown-menu .dropdown-item:hover {
+    background-color: #f8f9fa;
+}
+
+.job-description-display {
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    border: 1px solid #e9ecef;
+    border-radius: 0.375rem;
+    padding: 1rem;
+    background-color: #f8f9fa;
+    max-height: 500px;
+    overflow-y: auto;
+    overflow-x: hidden;
+    line-height: 1.6;
+    font-size: 0.9rem;
+}
+
+.skill-badge-nice-to-have {
+    background-color: #6c757d;
+    color: white;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.skill-badge-regular {
+    background-color: #0d6efd;
+    color: white;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.skill-badge-advanced {
+    background-color: #fd7e14;
+    color: white;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.skill-badge-master {
+    background-color: #ffc107;
+    color: #212529;
+    font-size: 0.85rem;
+    padding: 0.5rem 0.75rem;
+}
+
+.skills-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.info-item {
+    padding: 0.5rem 0;
+}
+
+.info-item small {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+}
+
+.info-item span {
+    font-size: 0.95rem;
+}
+
+.tab-content {
+    min-height: 500px;
+}
+
+@media (max-width: 768px) {
+    .d-flex.justify-content-between.align-items-center.mb-4 {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    .d-flex.align-items-center.gap-3 {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 1rem;
+    }
+    
+    #statusDropdown {
+        min-width: 100%;
+    }
+
+    .col-lg-8, .col-lg-4 {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
