@@ -49,8 +49,10 @@
             
             <!-- Main Form -->
             <form asp-action="Create" asp-controller="JobApplication" method="post" id="createJobApplicationForm">
-                <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
-                
+                @if (!ViewData.ModelState.IsValid) {
+                    <div asp-validation-summary="All" id="validationSummary" class="alert alert-danger pb-0" role="alert"></div>
+                }
+
                 <!-- Basic Information Section -->
                 <div class="card mb-4">
                     <div class="card-header">
@@ -97,6 +99,7 @@
                                 <label for="skillLevelInput" class="form-label">Level</label>
                                 <select id="skillLevelInput" class="form-select">
                                     <option value="@SkillLevel.NiceToHave">Nice To Have</option>
+                                    <option value="@SkillLevel.Junior">Junior</option>
                                     <option value="@SkillLevel.Regular">Regular</option>
                                     <option value="@SkillLevel.Advanced">Advanced</option>
                                     <option value="@SkillLevel.Master">Master</option>

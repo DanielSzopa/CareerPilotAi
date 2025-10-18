@@ -53,6 +53,6 @@ public class Skill
     public string Name { get; set; }
 
     [JsonPropertyName("level")]
-    public string Level { get; set; } // "NiceToHave", "Regular", "Advanced", "Master"
+    public string Level { get; set; } // "NiceToHave", "Junior", "Regular", "Advanced", "Master"
 }
 

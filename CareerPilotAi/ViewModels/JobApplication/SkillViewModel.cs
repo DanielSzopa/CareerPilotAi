@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using CareerPilotAi.Core;
+using CareerPilotAi.Prompts.ParseJobDescription;
 
 namespace CareerPilotAi.ViewModels.JobApplication;
 
@@ -12,7 +13,7 @@ public class SkillViewModel
     public string Name { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Skill level is required")]
-    [AllowedValues(SkillLevel.NiceToHave, SkillLevel.Regular, SkillLevel.Advanced, SkillLevel.Master)]
+    [AllowedValues(SkillLevel.NiceToHave, SkillLevel.Junior, SkillLevel.Regular, SkillLevel.Advanced, SkillLevel.Master)]
     [Display(Name = "Level")]
     public string Level { get; set; } = string.Empty;
 }

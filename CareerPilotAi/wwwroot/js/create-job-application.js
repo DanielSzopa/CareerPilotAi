@@ -363,5 +363,12 @@ $(document).ready(function() {
         };
         return text.replace(/[&<>"']/g, function(m) { return map[m]; });
     }
+
+    const validationSummary = document.getElementById('validationSummary');
+    if (validationSummary) {
+        $('html, body').animate({
+            scrollTop: validationSummary.offset().top - 20
+        }, 300);
+    }
 });
 
