@@ -294,7 +294,7 @@
                                             </button>
                                             <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="kebabMenu-@card.JobApplicationId">
                                                 <li>
-                                                    <a class="dropdown-item" href="#">
+                                                    <a class="dropdown-item" id="editJobApplicationBtn" href="#">
                                                         <i class="fas fa-edit me-2"></i>Edit
                                                     </a>
                                                 </li>
@@ -638,4 +638,10 @@
             alert('An error occurred while deleting the job application. Please try again.');
         }
     }
+    // Handle Edit click in cards list view
+    const el = document.querySelector('#editJobApplicationBtn');
+    el.addEventListener('click', function(e) {
+            e.preventDefault();
+            alert('Oops! This feature is not implemented yet. It will be delivered soon. Stay tuned!');
+        });
 </script>

@@ -161,6 +161,10 @@ $(document).ready(function() {
     }
     
     interviewQuestionsManager.init();
+    $('#editJobApplicationBtn').on('click', function(e) {
+        e.preventDefault();
+        alert('Oops! This feature is not implemented yet. It will be delivered soon. Stay tuned!');
+    });
     
     if (typeof bootstrap !== 'undefined') {
         var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));

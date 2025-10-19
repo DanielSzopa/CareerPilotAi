@@ -81,7 +81,7 @@
                     <a href="@(ViewBag.ReturnUrl ?? "/job-applications")" class="btn btn-outline-secondary px-4">
                         <i class="fas fa-arrow-left"></i> <span class="ms-2">Back</span>
                     </a>
-                    <a href="@Url.Action("Edit", "JobApplication", new { id = Model.JobApplicationId })" class="btn btn-outline-primary">
+                    <a href="#" class="btn btn-outline-primary" id="editJobApplicationBtn">
                         <i class="fas fa-edit me-2"></i>Edit
                     </a>
                     <button type="button" 
