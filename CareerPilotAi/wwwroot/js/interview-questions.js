@@ -5,7 +5,6 @@
 class InterviewQuestionsManager {
     constructor(options) {
         this.jobApplicationId = options.jobApplicationId;
-        this.originalJobDescription = options.originalJobDescription;
         this.showSuccessMessage = options.showSuccessMessage;
         this.showErrorMessage = options.showErrorMessage;
         
@@ -238,9 +237,9 @@ class InterviewQuestionsManager {
      */
     async extractKeyPointsFromJobDescription() {
         const $button = $('#extractKeyPointsBtn');
-        
-        // Check if job description exists
-        if (!this.originalJobDescription || this.originalJobDescription.trim() === '') {
+
+        const originalJobDescription = document.querySelector('pre.job-description-display');
+        if (!originalJobDescription || originalJobDescription.textContent.trim() === '') {
             this.showTabMessage(
                 'No job description found. Please add a job description in the Job Details tab first.',
                 'warning',
