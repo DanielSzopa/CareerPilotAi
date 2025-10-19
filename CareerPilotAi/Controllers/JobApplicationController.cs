@@ -227,7 +227,8 @@ namespace CareerPilotAi.Controllers
                 {
                     Name = s.Name,
                     Level = s.Level
-                }).ToList() ?? new List<SkillViewModel>(),
+                }).OrderBy(s => SkillLevel.GetLevelIndex(s.Level))
+                .ToList() ?? new List<SkillViewModel>(),
                 CreatedAt = jobApplicationDataModel.CreatedAt,
                 UpdatedAt = jobApplicationDataModel.UpdatedAt
             };

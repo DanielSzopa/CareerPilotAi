@@ -16,10 +16,10 @@
         if (string.IsNullOrEmpty(skill?.Level))
             return "skill-badge-regular";
 
-        return skill.Level.ToLowerInvariant() switch
+        return skill.Level.Replace(" ", "").ToLower() switch
         {
-            "nicetoha" => "skill-badge-nice-to-have",
-            "junior" => "skill-badge-nice-to-have",
+            "nicetohave" => "skill-badge-nice-to-have",
+            "junior" => "skill-badge-junior",
             "regular" => "skill-badge-regular",
             "advanced" => "skill-badge-advanced",
             "master" => "skill-badge-master",
@@ -130,8 +130,8 @@
                                         <div class="skills-container">
                                             @foreach (var skill in Model.Skills)
                                             {
-                                                <span class="badge @GetSkillCssClass(skill) me-2 mb-2">
-                                                    @skill.Name
+                                                <span class="badge @GetSkillCssClass(skill) me-2 mb-2 skill-common">
+                                                    @skill.Name (@skill.Level)
                                                 </span>
                                             }
                                         </div>

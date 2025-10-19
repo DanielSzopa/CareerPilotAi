@@ -32,32 +32,34 @@
     font-size: 0.9rem;
 }
 
-.skill-badge-nice-to-have {
-    background-color: #6c757d;
-    color: white;
+.skill-common {
     font-size: 0.85rem;
     padding: 0.5rem 0.75rem;
+}
+
+.skill-badge-nice-to-have {
+    background-color: #68B007;
+    color: white;
+}
+
+.skill-badge-junior {
+    background-color: #6c757d;
+    color: white;
 }
 
 .skill-badge-regular {
     background-color: #0d6efd;
     color: white;
-    font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
 }
 
 .skill-badge-advanced {
     background-color: #fd7e14;
     color: white;
-    font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
 }
 
 .skill-badge-master {
     background-color: #ffc107;
     color: #212529;
-    font-size: 0.85rem;
-    padding: 0.5rem 0.75rem;
 }
 
 .skills-container {

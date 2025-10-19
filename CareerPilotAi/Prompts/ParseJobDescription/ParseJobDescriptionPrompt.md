@@ -19,7 +19,7 @@ You are an expert HR assistant specializing in parsing job descriptions. Your ta
   "skills": [
     {
       "name": "string",
-      "level": "NiceToHave | Regular | Advanced | Master"
+      "level": "NiceToHave | Junior | Regular | Advanced | Master"
     }
   ],
   "experienceLevel": "Junior | Mid | Senior | NotSpecified",
