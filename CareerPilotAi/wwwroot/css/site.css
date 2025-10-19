@@ -41,11 +41,11 @@ body {
   text-align: start;
 }
 
-#add-application-btn {
+.add-application-btn {
   background-color: var(--main-blue);
   color: white;
 }
-#add-application-btn:hover {
+.add-application-btn:hover {
   background-color: var(--main-blue-hover);
 }
 
