@@ -115,7 +115,7 @@ $(document).ready(function() {
     
     TabManager.init();
     
-    $('.dropdown-menu .dropdown-item').on('click', function(e) {
+    $('#statusDropdownMenu .dropdown-item').on('click', function(e) {
         e.preventDefault();
         
         const newStatus = $(this).data('status');

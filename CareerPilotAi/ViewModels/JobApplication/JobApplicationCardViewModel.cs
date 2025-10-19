@@ -1,5 +1,3 @@
-using CareerPilotAi.Application.Extensions;
-
 namespace CareerPilotAi.ViewModels.JobApplication;
 
 public class JobApplicationCardViewModel

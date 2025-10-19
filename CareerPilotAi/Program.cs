@@ -2,7 +2,7 @@ using CareerPilotAi.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using CareerPilotAi.Prompts;
 using CareerPilotAi.Application.Commands;
-using CareerPilotAi.Application.Services;
+using CareerPilotAi.Application;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -12,7 +12,7 @@ services
     .AddHttpContextAccessor()
     .AddInfrastructure(builder.Configuration)
     .RegisterCommands()
-    .AddApplicationServices();
+    .AddApplication();
 
 services.AddControllersWithViews(options =>
 {

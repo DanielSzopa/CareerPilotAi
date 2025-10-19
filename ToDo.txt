@@ -18,6 +18,5 @@
 
 
 -------------------------------------- 
-1. Naprawić wyświetlanie czasu na JobApplicationDetails, wyświetlać lokalny czas (USTAWIONY przez użytkownika) zamiast UTC.
-2. Wyświetlać w przyjemniejszy sposób skille.
-3. Poprawnie dzielenie się css i javascript, odchudzanie widoku, css i javascript ładowane z pliku
+2. Poprawić prompt do parsowania. Mapować lepiej skille level itp.
+3. Dodać trochę więcej styli do create view, żeby bardziej pasowało stylingiem do job details page.

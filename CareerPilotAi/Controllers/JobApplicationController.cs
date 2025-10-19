@@ -13,6 +13,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
 using CareerPilotAi.ViewModels;
+using CareerPilotAi.Application.Helpers;
 
 namespace CareerPilotAi.Controllers
 {
@@ -24,14 +25,16 @@ namespace CareerPilotAi.Controllers
         private readonly ApplicationDbContext _applicationDbContext;
         private readonly ILogger<JobApplicationController> _logger;
         private readonly ICommandDispatcher _commandDispatcher;
+        private readonly IClock _clock;
 
         public JobApplicationController(IUserService userService, ApplicationDbContext applicationDbContext,
-            ILogger<JobApplicationController> logger, ICommandDispatcher commandDispatcher)
+            ILogger<JobApplicationController> logger, ICommandDispatcher commandDispatcher, IClock clock)
         {
             _userService = userService;
             _applicationDbContext = applicationDbContext;
             _logger = logger;
             _commandDispatcher = commandDispatcher;
+            _clock = clock;
         }
 
         [HttpGet]
@@ -186,7 +189,14 @@ namespace CareerPilotAi.Controllers
                 _logger.LogError("JobApplicationId cannot be empty during the action: {action}", nameof(JobApplicationDetails));
                 return RedirectToAction(nameof(Create));
             }
+            
             var userId = _userService.GetUserIdOrThrowException();
+
+            var timeZoneId = await _applicationDbContext.UserSettings
+                .AsNoTracking()
+                .Select(us => us.TimeZoneId)
+                .SingleAsync();
+
             var jobApplicationDataModel = await _applicationDbContext.JobApplications
                 .Include(j => j.Skills)
                 .FirstOrDefaultAsync(j => j.JobApplicationId == jobApplicationId && j.UserId == userId, cancellationToken);
@@ -229,8 +239,8 @@ namespace CareerPilotAi.Controllers
                     Level = s.Level
                 }).OrderBy(s => SkillLevel.GetLevelIndex(s.Level))
                 .ToList() ?? new List<SkillViewModel>(),
-                CreatedAt = jobApplicationDataModel.CreatedAt,
-                UpdatedAt = jobApplicationDataModel.UpdatedAt
+                CreatedAt = _clock.GetDateTimeAdjustedToTimeZone(jobApplicationDataModel.CreatedAt, timeZoneId),
+                UpdatedAt = _clock.GetDateTimeAdjustedToTimeZone(jobApplicationDataModel.UpdatedAt, timeZoneId),
             };
 
             return View("JobApplicationDetails", viewModel);
