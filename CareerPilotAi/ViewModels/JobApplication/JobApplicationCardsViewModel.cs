@@ -2,14 +2,9 @@ namespace CareerPilotAi.ViewModels.JobApplication;
 
 public class JobApplicationCardsViewModel
 {
-    public List<JobApplicationCardViewModel> Cards { get; set; }
-
-    public int TotalApplications { get; set; }
-    public int DraftStatusQuantity { get; set; }
-    public int RejectedStatusQuantity { get; set; }
-    public int SubmittedStatusQuantity { get; set; }
-    public int InterviewScheduledStatusQuantity { get; set; }
-    public int WaitingForOfferStatusQuantity { get; set; }
-    public int ReceivedOfferStatusQuantity { get; set; }
-    public int NoContactStatusQuantity { get; set; }
+    public List<JobApplicationCardViewModel> Cards { get; set; } = new();
+    
+    public int ResultCount { get; set; }
+    
+    public JobApplicationFiltersViewModel Filters { get; set; } = new();
 }

@@ -128,8 +128,8 @@ System rozwiązuje powyższe problemy poprzez:
 - Multi-select statusów
 - Slider zakresu płac (plus dropdown dla monthly, daily, hourly, yearly, (default monthly))
 - Pole lokalizacji
-- Checkboxy trybu pracy
-- Checkboxy poziomu doświadczenia
+- Checkboxy trybu pracy (Multi select)
+- Checkboxy poziomu doświadczenia (Multi select)
 - Przycisk "Clear all filters"
 - Przycisk "Apply filters"
 

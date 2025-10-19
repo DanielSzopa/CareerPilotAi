@@ -38,56 +38,124 @@ namespace CareerPilotAi.Controllers
         }
 
         [HttpGet]
-        public IActionResult Index()
-        {
-            // Return empty view - data will be loaded via API
-            return View();
-        }
-
-        [HttpGet]
-        [Route("api/cards")]
-        public async Task<IActionResult> GetJobApplicationCards(CancellationToken cancellationToken)
+        public async Task<IActionResult> Index([FromQuery] JobApplicationFiltersViewModel filters, CancellationToken cancellationToken)
         {
             var userId = _userService.GetUserIdOrThrowException();
-            var jobApplications = await _applicationDbContext.JobApplications
-                .AsNoTracking()
-                .Where(j => j.UserId == userId)
-                .ToListAsync(cancellationToken);
 
-            if (jobApplications == null || !jobApplications.Any())
-                return Ok(new JobApplicationCardsViewModel() { Cards = new List<JobApplicationCardViewModel>() });
-            
-            var vm = new JobApplicationCardsViewModel
+            var timeZoneId = await _applicationDbContext.UserSettings
+                .AsNoTracking()
+                .Where(us => us.UserId == userId)
+                .Select(us => us.TimeZoneId)
+                .SingleAsync(cancellationToken);
+
+            var query = _applicationDbContext.JobApplications
+                .AsNoTracking()
+                .Include(j => j.Skills)
+                .Where(j => j.UserId == userId);
+
+            // Apply search filter (Company OR Title)
+            if (!string.IsNullOrWhiteSpace(filters.SearchTerm))
             {
-                Cards = jobApplications.Select(j => new JobApplicationCardViewModel
+                var searchLower = filters.SearchTerm.ToLower();
+                query = query.Where(j => 
+                    EF.Functions.ILike(j.Company, $"%{searchLower}%") || 
+                    EF.Functions.ILike(j.Title, $"%{searchLower}%"));
+            }
+
+            // Apply status filter
+            if (filters.Statuses != null && filters.Statuses.Any())
+            {
+                query = query.Where(j => filters.Statuses.Contains(j.Status));
+            }
+
+            // Apply salary filters
+            if (filters.MinSalary.HasValue)
+            {
+                query = query.Where(j => j.SalaryMin >= filters.MinSalary.Value);
+            }
+
+            if (filters.MaxSalary.HasValue)
+            {
+                query = query.Where(j => j.SalaryMax <= filters.MaxSalary.Value);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filters.SalaryPeriod) && (filters.MinSalary.HasValue || filters.MaxSalary.HasValue))
+            {
+                query = query.Where(j => j.SalaryPeriod == filters.SalaryPeriod);
+            }
+
+            if (!string.IsNullOrWhiteSpace(filters.SalaryType))
+            {
+                query = query.Where(j => j.SalaryType == filters.SalaryType);
+            }
+
+            // Apply location filter
+            if (!string.IsNullOrWhiteSpace(filters.Location))
+            {
+                query = query.Where(j => EF.Functions.ILike(j.Location, $"%{filters.Location}%"));
+            }
+
+            // Apply work mode filter
+            if (filters.WorkModes != null && filters.WorkModes.Any())
+            {
+                query = query.Where(j => filters.WorkModes.Contains(j.WorkMode));
+            }
+
+            // Apply experience level filter
+            if (filters.ExperienceLevels != null && filters.ExperienceLevels.Any())
+            {
+                query = query.Where(j => filters.ExperienceLevels.Contains(j.ExperienceLevel));
+            }
+
+            // Apply sorting
+            var sortBy = filters.SortBy ?? "DateAddedDesc";
+            query = sortBy switch
+            {
+                "DateAddedAsc" => query.OrderBy(j => j.CreatedAt),
+                _ => query.OrderByDescending(j => j.CreatedAt) // Default: DateAddedDesc
+            };
+
+            // Project to view model
+            var filteredApplications = await query
+                .Select(j => new JobApplicationCardViewModel
                 {
                     JobApplicationId = j.JobApplicationId,
                     Title = j.Title,
                     Company = j.Company,
-                    CreatedAt = j.CreatedAt,
+                    Location = j.Location,
+                    WorkMode = j.WorkMode,
+                    ContractType = j.ContractType,
+                    SalaryMin = j.SalaryMin,
+                    SalaryMax = j.SalaryMax,
+                    SalaryType = j.SalaryType,
+                    SalaryPeriod = j.SalaryPeriod,
+                    SkillsTop = j.Skills.OrderBy(s => s.Level).Take(3).Select(s => s.Name).ToList(),
+                    SkillsCount = j.Skills.Count,
+                    CreatedAt = _clock.GetDateTimeAdjustedToTimeZone(j.CreatedAt, timeZoneId),
                     Status = j.Status
-                }).ToList(),
-                TotalApplications = jobApplications.Count,
-                DraftStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.Draft.Status),
-                RejectedStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.Rejected.Status),
-                SubmittedStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.Submitted.Status),
-                InterviewScheduledStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.InterviewScheduled.Status),
-                WaitingForOfferStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.WaitingForOffer.Status),
-                ReceivedOfferStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.ReceivedOffer.Status),
-                NoContactStatusQuantity = jobApplications.Count(j => j.Status == ApplicationStatus.NoContact.Status)
+                })
+                .ToListAsync(cancellationToken);
+
+            var viewModel = new JobApplicationCardsViewModel
+            {
+                Cards = filteredApplications,
+                ResultCount = filteredApplications.Count(),
+                Filters = filters
             };
 
-            return Ok(vm);
+            return View(viewModel);
         }
         
         [HttpGet]
         [Route("create")]
-        public IActionResult Create()
+        public IActionResult Create(string? returnUrl)
         {
             var viewModel = new CreateJobApplicationViewModel
             {
                 Status = ApplicationStatus.DefaultStatus
             };
+            
+            ViewBag.ReturnUrl = returnUrl;
             return View(viewModel);
         }
 
@@ -182,7 +250,7 @@ namespace CareerPilotAi.Controllers
 
         [HttpGet]
         [Route("details/{jobApplicationId:guid}")]
-        public async Task<IActionResult> JobApplicationDetails(Guid jobApplicationId, CancellationToken cancellationToken)
+        public async Task<IActionResult> JobApplicationDetails(Guid jobApplicationId, string? returnUrl, CancellationToken cancellationToken)
         {
             if (jobApplicationId == Guid.Empty)
             {
@@ -191,6 +259,9 @@ namespace CareerPilotAi.Controllers
             }
             
             var userId = _userService.GetUserIdOrThrowException();
+            
+            // Store returnUrl in ViewBag for use in the view
+            ViewBag.ReturnUrl = returnUrl;
 
             var timeZoneId = await _applicationDbContext.UserSettings
                 .AsNoTracking()
@@ -246,53 +317,6 @@ namespace CareerPilotAi.Controllers
             return View("JobApplicationDetails", viewModel);
         }
 
-        [HttpPost]
-        [Route("api/update-job-description")]
-        public async Task<IActionResult> UpdateJobDescription([FromBody] UpdateJobDescriptionViewModel vm, CancellationToken cancellationToken)
-        {
-            try
-            {
-                if (!ModelState.IsValid)
-                {
-                    _logger.LogError("Invalid model state for UpdateJobDescription: {modelState}", ModelState);
-                    return Problem(
-                        type: HttpStatusCode.BadRequest.ToString(),
-                        title: "Invalid Input Data",
-                        detail: "The provided data is invalid.",
-                        statusCode: (int)HttpStatusCode.BadRequest,
-                        instance: HttpContext.Request.Path.ToString()
-                    );
-                }
-
-                var response = await _commandDispatcher.DispatchAsync<UpdateJobDescriptionCommand, UpdateJobDescriptionResponse>(
-                    new UpdateJobDescriptionCommand(vm.JobApplicationId, vm.JobDescription), cancellationToken);
-
-                if (!response.IsSuccess)
-                {
-                    return Problem(
-                        type: response.ProblemDetails?.Type,
-                        title: response.ProblemDetails?.Title,
-                        detail: response.ProblemDetails?.Detail,
-                        statusCode: response.ProblemDetails?.Status,
-                        instance: response.ProblemDetails?.Instance
-                    );
-                }
-
-                return Ok(new { success = true, message = "Job description updated successfully." });
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error updating job description for JobApplicationId: {jobApplicationId}", vm.JobApplicationId);
-                return Problem(
-                    type: HttpStatusCode.InternalServerError.ToString(),
-                    title: "Internal Server Error",
-                    detail: "An error occurred while updating the job description. Please try again.",
-                    statusCode: (int)HttpStatusCode.InternalServerError,
-                    instance: HttpContext.Request.Path.ToString()
-                );
-            }
-        }
-
         [HttpDelete]
         [Route("api/delete/{jobApplicationId:guid}")]
         public async Task<IActionResult> DeleteJobApplication(Guid jobApplicationId, CancellationToken cancellationToken)
@@ -340,6 +364,48 @@ namespace CareerPilotAi.Controllers
             }
         }
 
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        [Route("delete/{jobApplicationId:guid}")]
+        public async Task<IActionResult> DeleteJobApplicationPost(Guid jobApplicationId, string? returnUrl, CancellationToken cancellationToken)
+        {
+            try
+            {
+                if (jobApplicationId == Guid.Empty)
+                {
+                    _logger.LogError("JobApplicationId cannot be empty during delete action");
+                    TempData["ErrorMessage"] = "Invalid job application ID.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                var response = await _commandDispatcher.DispatchAsync<DeleteJobApplicationCommand, DeleteJobApplicationResponse>(
+                    new DeleteJobApplicationCommand(jobApplicationId), cancellationToken);
+
+                if (!response.IsSuccess)
+                {
+                    _logger.LogError("Failed to delete job application: {jobApplicationId}, Error: {error}", jobApplicationId, response.ErrorMessage);
+                    TempData["ErrorMessage"] = response.ErrorMessage ?? "The job application could not be found.";
+                    return RedirectToAction(nameof(Index));
+                }
+
+                TempData["SuccessMessage"] = "Job application deleted successfully.";
+                
+                // Redirect to returnUrl if provided and valid, otherwise to Index
+                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
+                {
+                    return Redirect(returnUrl);
+                }
+                
+                return RedirectToAction(nameof(Index));
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting job application: {jobApplicationId}", jobApplicationId);
+                TempData["ErrorMessage"] = "An error occurred while deleting the job application. Please try again.";
+                return RedirectToAction(nameof(Index));
+            }
+        }
+
         [HttpPatch]
         [Route("api/status/{jobApplicationId:guid}")]
         public async Task<IActionResult> UpdateJobApplicationStatus(Guid jobApplicationId, [FromBody] UpdateJobApplicationStatusViewModel vm, CancellationToken cancellationToken)
@@ -384,7 +450,8 @@ namespace CareerPilotAi.Controllers
                     );
                 }
 
-                return Ok(new { success = true, message = "Application status updated successfully." });
+                TempData["SuccessMessage"] = $"Status updated to {vm.Status}";
+                return Ok(new { success = true, message = $"Status updated to {vm.Status}" });
             }
             catch (Exception ex)
             {

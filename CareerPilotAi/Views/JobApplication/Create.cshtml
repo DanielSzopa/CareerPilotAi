@@ -248,7 +248,7 @@
                 
                 <!-- Form Actions -->
                 <div class="d-flex justify-content-between mb-4">
-                    <a asp-controller="JobApplication" asp-action="Index" class="btn btn-secondary d-flex align-items-center">
+                    <a href="@(ViewBag.ReturnUrl ?? Url.Action("Index", "JobApplication"))" class="btn btn-secondary d-flex align-items-center">
                         <i class="fas fa-times me-2"></i>Cancel
                     </a>
                     <button type="submit" class="btn btn-primary btn-lg">
