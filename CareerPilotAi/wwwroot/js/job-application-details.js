@@ -230,10 +230,13 @@ async function deleteJobApplication(jobApplicationId) {
             window.location.href = '/job-applications';
         } else {
             const errorData = await response.json();
-            alert(errorData.detail || 'An error occurred while deleting the job application.');
+            const errorMessage = errorData.detail || 'An error occurred while deleting the job application.';
+            
+            // Show error message inline
+            showErrorMessage(errorMessage);
         }
     } catch (error) {
         console.error('Error deleting job application:', error);
-        alert('An error occurred while deleting the job application. Please try again.');
+        showErrorMessage('An error occurred while deleting the job application. Please try again.');
     }
 }

@@ -364,47 +364,6 @@ namespace CareerPilotAi.Controllers
             }
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        [Route("delete/{jobApplicationId:guid}")]
-        public async Task<IActionResult> DeleteJobApplicationPost(Guid jobApplicationId, string? returnUrl, CancellationToken cancellationToken)
-        {
-            try
-            {
-                if (jobApplicationId == Guid.Empty)
-                {
-                    _logger.LogError("JobApplicationId cannot be empty during delete action");
-                    TempData["ErrorMessage"] = "Invalid job application ID.";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                var response = await _commandDispatcher.DispatchAsync<DeleteJobApplicationCommand, DeleteJobApplicationResponse>(
-                    new DeleteJobApplicationCommand(jobApplicationId), cancellationToken);
-
-                if (!response.IsSuccess)
-                {
-                    _logger.LogError("Failed to delete job application: {jobApplicationId}, Error: {error}", jobApplicationId, response.ErrorMessage);
-                    TempData["ErrorMessage"] = response.ErrorMessage ?? "The job application could not be found.";
-                    return RedirectToAction(nameof(Index));
-                }
-
-                TempData["SuccessMessage"] = "Job application deleted successfully.";
-                
-                // Redirect to returnUrl if provided and valid, otherwise to Index
-                if (!string.IsNullOrWhiteSpace(returnUrl) && Url.IsLocalUrl(returnUrl))
-                {
-                    return Redirect(returnUrl);
-                }
-                
-                return RedirectToAction(nameof(Index));
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error deleting job application: {jobApplicationId}", jobApplicationId);
-                TempData["ErrorMessage"] = "An error occurred while deleting the job application. Please try again.";
-                return RedirectToAction(nameof(Index));
-            }
-        }
 
         [HttpPatch]
         [Route("api/status/{jobApplicationId:guid}")]
