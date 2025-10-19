@@ -230,10 +230,10 @@
                             
                             <select class="form-select" name="sortBy" id="sort-select" onchange="this.form.submit()">
                                 <option value="DateAddedDesc" selected="@(Model.Filters.SortBy != "DateAddedAsc")">
-                                    Date added (newest first)
+                                    Order by Latest
                                 </option>
                                 <option value="DateAddedAsc" selected="@(Model.Filters.SortBy == "DateAddedAsc")">
-                                    Date added (oldest first)
+                                    Order by Oldest
                                 </option>
                             </select>
                         </form>
@@ -373,7 +373,7 @@
                                     <!-- Created Date -->
                                     <div class="mt-auto">
                                         <small class="text-muted">
-                                            Added: @card.CreatedAt.ToString("MMM dd, yyyy HH:mm")
+                                            Added: @card.CreatedAt.ToString("yyyy-MM-dd HH:mm")
                                         </small>
                                     </div>
 
