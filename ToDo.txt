@@ -20,3 +20,10 @@
 -------------------------------------- 
 2. Poprawić prompt do parsowania. Mapować lepiej skille level itp.
 3. Dodać trochę więcej styli do create view, żeby bardziej pasowało stylingiem do job details page.
+
+
+
+Features:
+1. Edit job application
+2. Dashboard
+3. Upgrade InterviewQuestions, dostarczenie większego contextu
