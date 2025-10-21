@@ -11,6 +11,7 @@
 - [Tech stack](#tech-stack)
 - [Getting started locally](#getting-started-locally)
 - [Available scripts](#available-scripts)
+- [Testing](#testing)
 - [Project scope](#project-scope)
 - [Project status](#project-status)
 - [License](#license)
@@ -156,6 +157,40 @@ Common commands:
   docker compose up -d
   docker compose down -v
   ```
+
+### Testing
+
+The project follows a comprehensive testing strategy with unit, integration, and end-to-end (E2E) tests. The testing stack includes:
+- **Test Framework**: xUnit
+- **Mocking**: NSubstitute
+- **Assertions**: Shouldly
+- **Data Generation**: Bogus
+- **E2E Testing**: Playwright
+
+The test projects are structured as follows:
+```
+tests/
+├── CareerPilotAi.UnitTests/
+├── CareerPilotAi.IntegrationTests/
+└── CareerPilotAi.E2ETests/
+```
+
+To run all tests, use the command from the root directory:
+```bash
+dotnet test
+```
+
+To run specific test suites:
+```bash
+# Run Unit Tests
+dotnet test tests/CareerPilotAi.UnitTests
+
+# Run Integration Tests
+dotnet test tests/CareerPilotAi.IntegrationTests
+
+# Run End-to-End (E2E) Tests
+dotnet test tests/CareerPilotAi.E2ETests
+```
 
 ### Project scope
 
