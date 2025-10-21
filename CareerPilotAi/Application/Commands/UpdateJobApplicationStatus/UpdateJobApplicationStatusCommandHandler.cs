@@ -46,19 +46,8 @@ public class UpdateJobApplicationStatusCommandHandler : ICommandHandler<UpdateJo
 
         try
         {
-            var jobApplication = new JobApplication(
-                jobApplicationDataModel.JobApplicationId,
-                jobApplicationDataModel.UserId,
-                jobApplicationDataModel.Title,
-                jobApplicationDataModel.Company,
-                jobApplicationDataModel.JobDescription,
-                jobApplicationDataModel.Url,
-                new ApplicationStatus(jobApplicationDataModel.Status)
-            );
-
             var newApplicationStatus = new ApplicationStatus(command.Status);
-            jobApplication.UpdateStatus(newApplicationStatus);
-            jobApplicationDataModel.Status = jobApplication.ApplicationStatus.Status;
+            jobApplicationDataModel.Status = newApplicationStatus.Status;
 
             await _dbContext.SaveChangesAsync(cancellationToken);
 

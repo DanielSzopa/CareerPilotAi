@@ -2,7 +2,6 @@
 using CareerPilotAi.Application.Commands.DeleteJobApplication;
 using CareerPilotAi.Application.Commands.Dispatcher;
 using CareerPilotAi.Application.Commands.ParseJobDescription;
-using CareerPilotAi.Application.Commands.UpdateJobDescription;
 using CareerPilotAi.Application.Commands.UpdateJobApplicationStatus;
 using CareerPilotAi.Application.Services;
 using CareerPilotAi.Core;
@@ -278,23 +277,13 @@ namespace CareerPilotAi.Controllers
                 return RedirectToAction(nameof(Create));
             }
 
-            var jobApplication = new JobApplication(
-                jobApplicationDataModel.JobApplicationId,
-                jobApplicationDataModel.UserId,
-                jobApplicationDataModel.Title,
-                jobApplicationDataModel.Company,
-                jobApplicationDataModel.JobDescription,
-                jobApplicationDataModel.Url,
-                new ApplicationStatus(jobApplicationDataModel.Status)
-            );
-
             var viewModel = new JobApplicationDetailsViewModel
             {
-                JobApplicationId = jobApplication.JobApplicationId,
-                CompanyName = jobApplication.Company,
-                JobTitle = jobApplication.Title,
-                JobDescription = jobApplication.JobDescription,
-                Status = jobApplication.ApplicationStatus.Status,
+                JobApplicationId = jobApplicationDataModel.JobApplicationId,
+                CompanyName = jobApplicationDataModel.Company,
+                JobTitle = jobApplicationDataModel.Title,
+                JobDescription = jobApplicationDataModel.JobDescription,
+                Status = jobApplicationDataModel.Status,
                 Location = jobApplicationDataModel.Location,
                 WorkMode = jobApplicationDataModel.WorkMode,
                 ContractType = jobApplicationDataModel.ContractType,
