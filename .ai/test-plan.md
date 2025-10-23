@@ -204,6 +204,47 @@ public class AuthenticationE2ETests : IAsyncLifetime
 3. **No Salary Provided**
    - All null values → Should pass
 
+#### 2.1.6 MinimumCountAttribute Tests
+
+**File:** `tests/CareerPilotAi.UnitTests/CustomValidationAttributes/MinimumCountAttributeTests.cs`
+
+**Test Cases:**
+
+1. **Valid Collections**
+   - List with exact minimum count → Should pass
+   - List exceeding minimum count → Should pass
+   - Array with sufficient items → Should pass
+
+2. **Invalid Collections**
+   - List below minimum count → Should fail with appropriate error message
+   - Empty collection → Should fail
+   - Null collection → Should fail
+
+3. **Edge Cases**
+   - IEnumerable with sufficient items → Should pass
+   - Non-collection value → Should fail with "Value must be a collection"
+   - Custom minimum count (e.g., 5 items minimum) → Should validate correctly
+
+#### 2.1.7 MaximumCountAttribute Tests
+
+**File:** `tests/CareerPilotAi.UnitTests/CustomValidationAttributes/MaximumCountAttributeTests.cs`
+
+**Test Cases:**
+
+1. **Valid Collections**
+   - List with count below maximum → Should pass
+   - List with exact maximum count → Should pass
+   - Empty collection → Should pass (allows null values)
+
+2. **Invalid Collections**
+   - List exceeding maximum count → Should fail with appropriate error message
+   - Array with too many items → Should fail
+
+3. **Edge Cases**
+   - IEnumerable with excessive items → Should fail
+   - Non-collection value → Should fail with "Value must be a collection"
+   - Custom maximum count (e.g., 10 items maximum) → Should validate correctly
+
 ### 2.2 Helper Classes and Validators
 
 #### 2.2.1 MaxTextWordsValidator Tests
@@ -220,23 +261,6 @@ public class AuthenticationE2ETests : IAsyncLifetime
    - Exceeds limit (5001 words) → Should return false
    - Null value → Should return false
    - Empty string → Should return false
-
-#### 2.2.2 UrlValidator Tests
-
-**File:** `tests/CareerPilotAi.UnitTests/Helpers/UrlValidatorTests.cs`
-
-**Test Cases:**
-
-1. **Valid URLs**
-   - HTTP URL: `http://example.com` → Should not throw
-   - HTTPS URL: `https://example.com` → Should not throw
-   - URL with path: `https://example.com/path/to/page` → Should not throw
-   - URL with query parameters and port → Should not throw
-
-2. **Invalid URLs**
-   - Missing scheme: `example.com` → Should throw ArgumentException
-   - FTP scheme: `ftp://example.com` → Should throw ArgumentException
-   - Null/Empty string → Should throw ArgumentException
 
 ### 2.3 Core Domain Models
 
@@ -300,7 +324,7 @@ public class AuthenticationE2ETests : IAsyncLifetime
 
 #### 2.4.2 Clock Service Tests
 
-**File:** `tests/CareerPilotAi.UnitTests/Services/ClockServiceTests.cs`
+**File:** `tests/CareerPilotAi.UnitTests/Services/ClockTests.cs`
 
 **Test Cases:**
 
@@ -308,6 +332,31 @@ public class AuthenticationE2ETests : IAsyncLifetime
    - UTC datetime with UTC timezone → Should return same datetime
    - UTC datetime with EST timezone → Should return correctly offset datetime
    - Handle half-hour offset timezones (India) → Should calculate correctly
+
+#### 2.4.3 TimeZoneService Tests
+
+**File:** `tests/CareerPilotAi.UnitTests/Services/TimeZoneServiceTests.cs`
+
+**Test Cases:**
+
+1. **GetAllAsync Method**
+   - Valid cancellation token → Should return list of (Id, Name) tuples
+   - Multiple time zones in database → Should return all time zones
+   - Basic application time zones → Should include America/New_York, Asia/Tokyo, Europe/London, Europe/Warsaw, UTC
+   - Empty database → Should return empty list
+   - Ordering → Should be ordered by Name ascending
+   - Data integrity → Should return correct TimeZoneId and Name pairs where Id equals Name
+   - Time zone name format → Should use IANA format (e.g., "America/New_York", "Europe/Warsaw")
+
+2. **ExistsAsync Method**
+   - Valid existing time zone ID → Should return true for America/New_York
+   - Valid existing time zone ID → Should return true for Europe/Warsaw
+   - Valid existing time zone ID → Should return true for UTC
+   - Valid non-existing time zone ID → Should return false for "Invalid/Timezone"
+   - Valid non-existing time zone ID → Should return false for "America/Invalid"
+   - Null time zone ID → Should return false
+   - Empty string time zone ID → Should return false
+   - Cancellation token handling → Should respect cancellation
 
 ### 2.5 ViewModel Validation
 
