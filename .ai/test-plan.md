@@ -597,13 +597,13 @@ public class AuthenticationE2ETests : IAsyncLifetime
 3. Navigate to link → Token processed
 4. Verify success → Confirmation message shown
 5. Automatic login → User authenticated
-6. Redirect → Dashboard shown
+6. Redirect → Job applications page shown
 7. Email confirmed → Status updated
 
 **Expected Outcome:**
 - Email confirmed
 - User authenticated
-- Dashboard accessible
+- Job applications page accessible
 
 #### 4.1.3 Login E2E Test
 

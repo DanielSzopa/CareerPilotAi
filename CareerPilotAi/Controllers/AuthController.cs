@@ -141,7 +141,7 @@ namespace CareerPilotAi.Controllers
             {
                 _logger.LogInformation("Email confirmed for user: {Email}, {UserId}", user.Email, user.Id);
                 await _signInManager.SignInAsync(user, isPersistent: false);
-                return RedirectToAction("Index", "Home");
+                return RedirectToAction("Index", "JobApplication");
             }
 
             var errors = string.Join(", ", result.Errors.Select(e => $"{e.Code}: {e.Description}"));

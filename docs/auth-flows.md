@@ -20,6 +20,7 @@ This document describes all authentication flows implemented in the application 
 - Forgot Password
 - Reset Password
 - Post-login redirect target: Job Applications
+- User Settings
 
 ---
 
@@ -59,7 +60,7 @@ This document describes all authentication flows implemented in the application 
 
 - Purpose: Activate a new account.
 - GET route: `/auth/confirm-email?userId={id}&token={token}`
-- Success: Confirms email, auto-signs in, redirect → `Home/Index` (`/`).
+- Success: Confirms email, auto-signs in, redirect → `JobApplication/Index` (`/job-applications`).
 - Failure cases: Missing parameters, invalid user, or invalid token → Redirect → `Home/Error`.
 
 Register Confirmation View
@@ -139,6 +140,21 @@ Reset Password Confirmation View
 - GET route: `/auth/reset-password-confirmation` → View: `Views/Auth/ResetPasswordConfirmation.cshtml`
 - In-view navigation: “Continue to Login” → `/auth/login`
 
+---
+
+### User Settings
+
+- Purpose: Allow authenticated users to manage their settings (e.g., time zone).
+- GET route: `/auth/user-settings` → View: `Views/Auth/UserSettings.cshtml`
+- POST route: `/auth/user-settings`
+- Authorization: Requires an active user session.
+- Inputs: `TimeZoneId`
+- In-view navigation: Users can select a time zone from a dropdown list.
+- Outcomes:
+  - Success: Settings are updated, and a confirmation message is displayed on the same page.
+  - Invalid Time Zone: The page is reloaded with a validation error message.
+  - General Validation Errors: The form is re-displayed with relevant error messages.
+   
 ---
 
 ### Post-login Redirect Target: Job Applications
@@ -250,6 +266,7 @@ flowchart TD
 - Forgot Password Confirmation: GET `/auth/forgot-password-confirmation` → `Views/Auth/ForgotPasswordConfirmation.cshtml`
 - Reset Password: GET/POST `/auth/reset-password` → `Views/Auth/ResetPassword.cshtml`
 - Reset Password Confirmation: GET `/auth/reset-password-confirmation` → `Views/Auth/ResetPasswordConfirmation.cshtml`
+- User Settings: GET/POST `/auth/user-settings` → `Views/Auth/UserSettings.cshtml`
 - Post-login redirect default: `JobApplication/Index` → GET `/job-applications` (view)
 
 ---
