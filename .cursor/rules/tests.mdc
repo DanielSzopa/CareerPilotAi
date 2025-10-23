@@ -1,0 +1,8 @@
+---
+alwaysApply: false
+---
+
+# Tests rules
+- Create rules in AAA (Arrange, Act, Assert) pattern.
+- Avoid unnecessary comments in code.
+- Create consistent tests naming pattern.
