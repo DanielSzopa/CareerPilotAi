@@ -3,6 +3,7 @@ alwaysApply: false
 ---
 
 # Tests rules
-- Create rules in AAA (Arrange, Act, Assert) pattern.
+- Create rules in AAA (Arrange, Act, Assert) pattern. Don't add comments regarding AAA pattern.
 - Avoid unnecessary comments in code.
 - Create consistent tests naming pattern.
+- If possible, use Theory instead of Fact. e.g. if you have tests which check parameters null, empty, whitespace, is better to use Theory with InlineData.

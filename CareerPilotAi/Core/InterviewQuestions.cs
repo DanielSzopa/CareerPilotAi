@@ -35,6 +35,9 @@ internal class InterviewQuestions
 
     internal void AddQuestion(SingleInterviewQuestion question)
     {
+        if (question is null)
+            throw new SingleInterviewQuestionCannotBeNullException();
+            
         Questions.Add(question);
     }
 

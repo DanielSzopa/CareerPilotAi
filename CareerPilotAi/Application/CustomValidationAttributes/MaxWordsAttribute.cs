@@ -15,12 +15,12 @@ public class MaxWordsAttribute : ValidationAttribute
 
     protected override ValidationResult? IsValid(object? value, ValidationContext validationContext)
     {
-        if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
+        if (value == null || string.IsNullOrWhiteSpace(value?.ToString()))
         {
-            return new ValidationResult("The field is required.");
+            return ValidationResult.Success;
         }
 
-        if (MaxTextWordsValidator.ValidateText(value?.ToString(), _maxWords))
+        if (MaxTextWordsValidator.ValidateText(value?.ToString()!, _maxWords))
         {
             return ValidationResult.Success;
         }
