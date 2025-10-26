@@ -1,9 +1,5 @@
-using System.Collections;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
 using CareerPilotAi.Application.CustomValidationAttributes;
-using Shouldly;
-using Xunit;
+using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
 
 namespace CareerPilotAi.Tests.CustomAttributesTests;
 

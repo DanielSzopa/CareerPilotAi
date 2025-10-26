@@ -1,7 +1,5 @@
-using Bogus;
 using CareerPilotAi.Core;
 using CareerPilotAi.Core.Exceptions;
-using Shouldly;
 
 namespace CareerPilotAi.UnitTests.Core;
 

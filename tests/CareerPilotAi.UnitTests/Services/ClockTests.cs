@@ -1,6 +1,4 @@
 using CareerPilotAi.Application.Services;
-using Shouldly;
-using Xunit;
 
 namespace CareerPilotAi.Tests.Services;
 

@@ -1,6 +1,4 @@
 using CareerPilotAi.Application.Helpers;
-using Shouldly;
-using Xunit;
 
 namespace CareerPilotAi.Tests.Helpers;
 

@@ -1,7 +1,5 @@
-using System.ComponentModel.DataAnnotations;
 using CareerPilotAi.ViewModels.Authentication;
-using Shouldly;
-using Xunit;
+using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
 
 namespace CareerPilotAi.Tests.ViewModels.Authentication;
 

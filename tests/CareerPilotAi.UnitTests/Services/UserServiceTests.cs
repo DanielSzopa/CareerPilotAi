@@ -3,8 +3,6 @@ using CareerPilotAi.Application.Exceptions;
 using CareerPilotAi.Application.Services;
 using Microsoft.AspNetCore.Http;
 using NSubstitute;
-using Shouldly;
-using Xunit;
 
 namespace CareerPilotAi.Tests.Services;
 
