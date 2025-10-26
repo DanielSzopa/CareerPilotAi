@@ -17,7 +17,7 @@ public class MinWordsAttribute : ValidationAttribute
     {
         if (value == null || string.IsNullOrWhiteSpace(value.ToString()))
         {
-            return ValidationResult.Success; // Allow empty values, use [Required] if needed
+            return new ValidationResult(ErrorMessage);
         }
 
         var text = value.ToString() ?? string.Empty;
