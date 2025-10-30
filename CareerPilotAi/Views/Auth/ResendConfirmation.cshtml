@@ -13,20 +13,20 @@
                 <p class="text-muted">Enter your email address to resend the confirmation email</p>
             </div>
 
-            <form asp-action="ResendConfirmation" method="post">
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <form asp-action="ResendConfirmation" method="post" data-test-id="resend-confirmation-form">
+                <div asp-validation-summary="All" class="text-danger mb-3" data-test-id="validation-summary"></div>
                 
                 <div class="form-group mb-3">
-                    <input asp-for="Email" class="form-control auth-input" placeholder="Enter your email address" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <input asp-for="Email" class="form-control auth-input" placeholder="Enter your email address" data-test-id="email-input" />
+                    <span asp-validation-for="Email" class="text-danger" data-test-id="email-validation"></span>
                 </div>
                 
                 <div class="form-group mb-3">
-                    <button type="submit" class="btn btn-primary action-button w-100">Resend Confirmation Email</button>
+                    <button type="submit" class="btn btn-primary action-button w-100" data-test-id="resend-confirmation-button">Resend Confirmation Email</button>
                 </div>
                 
                 <div class="text-center">
-                    <a href="@Url.Action("Login", "Auth")" class="link">
+                    <a href="@Url.Action("Login", "Auth")" class="link" data-test-id="back-to-login-link">
                         Back to Login
                     </a>
                 </div>

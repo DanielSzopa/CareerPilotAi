@@ -10,45 +10,52 @@
 <div>
     <div class="d-flex justify-content-center align-items-center">
             <div class="auth-card bg-white rounded py-5 px-4">
-                <div class="text-center mb-4">
-                    <h4 class="auth-title">Welcome</h4>
-                    <p class="login-subtitle text-muted">Log in to CareerPilotAi to pilot your career</p>
-                </div>
+            <div class="text-center mb-4">
+                <h4 class="auth-title">Welcome</h4>
+                <p class="login-subtitle text-muted">Log in to CareerPilotAi to pilot your career</p>
+            </div>
 
-                <form asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl" method="post">
-                    <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            @if (!string.IsNullOrEmpty(Model.Message))
+            {
+                <div class="alert alert-info mb-4" role="alert" data-test-id="login-message-banner">
+                    @Model.Message
+                </div>
+            }
+
+            <form asp-action="Login" asp-route-returnUrl="@Model.ReturnUrl" method="post" data-test-id="login-form">
+                    <div asp-validation-summary="All" class="text-danger mb-3" data-test-id="validation-summary"></div>
                     
                     <div class="form-group mb-3">
-                        <input asp-for="Email" class="form-control auth-input" placeholder="Email address" />
-                        <span asp-validation-for="Email" class="text-danger"></span>
+                        <input asp-for="Email" class="form-control auth-input" placeholder="Email address" data-test-id="email-input" />
+                        <span asp-validation-for="Email" class="text-danger" data-test-id="email-validation"></span>
                     </div>
-                    
+
                     <div class="form-group mb-3">
                         <div class="password-field">
-                            <input asp-for="Password" class="form-control auth-input" placeholder="Password" />
-                            <button type="button" class="password-toggle">
+                            <input asp-for="Password" class="form-control auth-input" placeholder="Password" data-test-id="password-input" />
+                            <button type="button" class="password-toggle" data-test-id="password-toggle-button">
                                 <i class="fas fa-eye" id="passwordToggleIcon"></i>
                             </button>
                         </div>
-                        <span asp-validation-for="Password" class="text-danger"></span>
+                        <span asp-validation-for="Password" class="text-danger" data-test-id="password-validation"></span>
                     </div>
                     
                     <div class="form-group mb-3 text-end">
-                        <a asp-action="ForgotPassword" id="forgot-password-link" class="link">Forgot password?</a>
+                        <a asp-action="ForgotPassword" id="forgot-password-link" class="link" data-test-id="forgot-password-link">Forgot password?</a>
                     </div>
                     
                     <div class="form-group mb-3">
-                        <button type="submit" class="btn btn-primary action-button w-100">Continue</button>
+                        <button type="submit" class="btn btn-primary action-button w-100" data-test-id="login-button">Continue</button>
                     </div>
                     
                     <div class="form-check mb-3">
-                        <input asp-for="RememberMe" class="form-check-input" />
+                        <input asp-for="RememberMe" class="form-check-input" data-test-id="remember-me-checkbox" />
                         <label asp-for="RememberMe" class="form-check-label small">Remember me</label>
                     </div>
                     
                     <div class="text-center">
                         <p id="sign-up-text" class="m-0">
-                            Don't have an account? <a asp-action="Register" class="link fw-medium">Sign up</a>
+                            Don't have an account? <a asp-action="Register" class="link fw-medium" data-test-id="register-link">Sign up</a>
                         </p>
                     </div>
                 </form>

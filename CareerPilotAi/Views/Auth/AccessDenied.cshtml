@@ -9,12 +9,12 @@
         <div class="auth-card bg-white rounded py-5 px-4">
             <div class="text-center">
                 <i class="fas fa-ban fa-3x mb-4 text-danger"></i>
-                <h4 class="auth-title">@ViewData["Title"]</h4>
-                <p class="text-muted">You do not have access to this resource.</p>
+                <h4 class="auth-title" data-test-id="access-denied-title">@ViewData["Title"]</h4>
+                <p class="text-muted" data-test-id="access-denied-message">You do not have access to this resource.</p>
             </div>
 
             <div class="form-group mt-1">
-                <a asp-controller="Home" asp-action="Index" class="btn btn-primary action-button w-100">
+                <a asp-controller="Home" asp-action="Index" class="btn btn-primary action-button w-100" data-test-id="return-to-home-button">
                     Return to Home Page
                 </a>
             </div>
@@ -24,7 +24,7 @@
                     Think this is a mistake? Access to certain areas requires specific permissions.
                     Try signing in with a different account.
                 </p>
-                <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary w-100 mt-2">
+                <a asp-controller="Auth" asp-action="Login" class="btn btn-outline-primary w-100 mt-2" data-test-id="go-to-signin-button">
                     <i class="fas fa-sign-in-alt me-2"></i>Go to Sign In
                 </a>
             </div>

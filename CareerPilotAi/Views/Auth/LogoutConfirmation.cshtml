@@ -9,7 +9,7 @@
         <div class="auth-card bg-white rounded py-5 px-4">
             <div class="text-center mb-4">
                 <i class="fas fa-sign-out-alt fa-3x text-success mb-4"></i>
-                <h4 class="auth-title">You've been successfully logged out</h4>
+                <h4 class="auth-title" data-test-id="logout-confirmation-title">You've been successfully logged out</h4>
                 <p class="text-muted">Your career data is safely stored and waiting for your return</p>
             </div>
 
@@ -20,13 +20,13 @@
             </div>
 
             <div class="form-group mb-3">
-                <a href="@Url.Action("Login", "Auth")" class="btn btn-primary action-button w-100">
+                <a href="@Url.Action("Login", "Auth")" class="btn btn-primary action-button w-100" data-test-id="log-back-in-button">
                     <i class="fas fa-sign-in-alt me-2"></i>Log Back In
                 </a>
             </div>
 
             <div class="form-group mb-3">
-                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary w-100">
+                <a href="@Url.Action("Index", "Home")" class="btn btn-outline-primary w-100" data-test-id="go-to-homepage-button">
                     <i class="fas fa-home me-2"></i>Go to Homepage
                 </a>
             </div>
@@ -34,8 +34,8 @@
             <div class="text-center">
                 <p class="small text-muted mb-0">
                     Ready to continue your career journey?
-                    <a href="/job-applications" class="link">View your job applications</a> or
-                    <a href="/job-applications/entry-job-details" class="link">start a new application</a>.
+                    <a href="/job-applications" class="link" data-test-id="view-job-applications-link">View your job applications</a> or
+                    <a href="/job-applications/entry-job-details" class="link" data-test-id="new-application-link">start a new application</a>.
                 </p>
             </div>
         </div>

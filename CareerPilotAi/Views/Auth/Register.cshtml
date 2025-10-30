@@ -15,41 +15,41 @@
                 <p class="text-muted">Join CareerPilotAi to pilot your career</p>
             </div>
 
-            <form asp-action="Register" method="post">
-                <div asp-validation-summary="All" class="text-danger mb-3"></div>
+            <form asp-action="Register" method="post" data-test-id="register-form">
+                <div asp-validation-summary="All" class="text-danger mb-3" data-test-id="validation-summary"></div>
 
                 <div class="form-group mb-3">
-                    <input asp-for="Email" class="form-control auth-input" placeholder="Email address" />
-                    <span asp-validation-for="Email" class="text-danger"></span>
+                    <input asp-for="Email" class="form-control auth-input" placeholder="Email address" data-test-id="email-input" />
+                    <span asp-validation-for="Email" class="text-danger" data-test-id="email-validation"></span>
                 </div>
 
                 <div class="form-group mb-3">
                     <div class="password-field">
-                        <input asp-for="Password" class="form-control auth-input" placeholder="Password" />
-                        <button type="button" class="password-toggle">
+                        <input asp-for="Password" class="form-control auth-input" placeholder="Password" data-test-id="password-input" />
+                        <button type="button" class="password-toggle" data-test-id="password-toggle-button">
                             <i class="fas fa-eye" id="passwordToggleIcon"></i>
                         </button>
                     </div>
-                    <span asp-validation-for="Password" class="text-danger"></span>
+                    <span asp-validation-for="Password" class="text-danger" data-test-id="password-validation"></span>
                 </div>
 
                 <div class="form-group mb-3">
                     <div class="password-field">
-                        <input asp-for="ConfirmPassword" class="form-control auth-input" placeholder="Confirm password" />
-                        <button type="button" class="password-toggle">
+                        <input asp-for="ConfirmPassword" class="form-control auth-input" placeholder="Confirm password" data-test-id="confirm-password-input" />
+                        <button type="button" class="password-toggle" data-test-id="confirm-password-toggle-button">
                             <i class="fas fa-eye" id="confirmPasswordToggleIcon"></i>
                         </button>
                     </div>
-                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                    <span asp-validation-for="ConfirmPassword" class="text-danger" data-test-id="confirm-password-validation"></span>
                 </div>
 
                 <div class="form-group mb-3">
-                    <button type="submit" class="btn btn-primary action-button w-100">Continue</button>
+                    <button type="submit" class="btn btn-primary action-button w-100" data-test-id="register-button">Continue</button>
                 </div>
 
                 <div class="text-center">
                     <p id="log-in-text" class="m-0">
-                        Already have an account? <a asp-action="Login" class="link fw-medium">Log in</a>
+                        Already have an account? <a asp-action="Login" class="link fw-medium" data-test-id="login-link">Log in</a>
                     </p>
                 </div>
             </form>

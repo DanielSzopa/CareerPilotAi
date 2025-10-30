@@ -9,13 +9,13 @@
         <div class="auth-card bg-white rounded py-5 px-4">
             <div class="text-center">
                 <i class="fas fa-envelope fa-3x mb-4" style="color: var(--main-blue);"></i>
-                <h4 class="auth-title">Check Your Email</h4>
+                <h4 class="auth-title" data-test-id="register-confirmation-title">Check Your Email</h4>
                 <p class="text-muted">We've sent a confirmation link to complete your registration</p>
             </div>
 
             @if (!string.IsNullOrEmpty(ViewData["Message"]?.ToString()))
             {
-                <div class="alert alert-info mb-4" role="alert">
+                <div class="alert alert-info mb-4" role="alert" data-test-id="info-isAlreadyRegisteredButNotConfirmed-banner">
                     @ViewData["Message"]
                 </div>
             }
@@ -26,12 +26,12 @@
                 </p>
                 <p class="text-muted small">
                     Don't see the email? Check your spam folder or
-                    <a href="@Url.Action("ResendConfirmation", "Auth")" class="link">resend confirmation email</a>.
+                    <a href="@Url.Action("ResendConfirmation", "Auth")" class="link" data-test-id="resend-confirmation-link">resend confirmation email</a>.
                 </p>
             </div>
 
             <div class="form-group">
-                <a href="@Url.Action("Login", "Auth")" class="btn btn-primary action-button w-100">
+                <a href="@Url.Action("Login", "Auth")" class="btn btn-primary action-button w-100" data-test-id="return-to-login-button">
                     Return to Login
                 </a>
             </div>
