@@ -2,6 +2,8 @@
 
 This document describes all authentication flows implemented in the application with exact routes, view locations, expected behaviors, redirections, and user-visible messages. It also includes Mermaid diagrams (dark theme) for complex flows.
 
+> **Developer Note:** A `ConfirmRegistration` feature flag exists to disable email confirmation. This is primarily intended for E2E testing environments to remove the dependency on an email-reading service. When disabled, new users are signed in immediately after registration.
+
 - Routes live in `AuthController` (route prefix: `/auth`).
 - Views live in `Views/Auth/*` (Razor `.cshtml`).
 - After successful login, users are redirected to `JobApplication/Index` (`/job-applications`) unless a safe local `ReturnUrl` is provided.
@@ -43,16 +45,17 @@ This document describes all authentication flows implemented in the application 
 
 ### Registration
 
-- Purpose: Create a new account; email confirmation required before login.
+- Purpose: Create a new account. By default, email confirmation is required before login, but this can be disabled for specific environments (like E2E testing).
 - GET route: `/auth/register` → View: `Views/Auth/Register.cshtml`
 - POST route: `/auth/register`
 - In-view navigation:
   - “Log in” → `/auth/login`
 - Outcomes:
-  - Success (new user) → Email confirmation link sent; redirect → `/auth/register-confirmation`.
+  - Success (new user, confirmation enabled) → Email confirmation link sent; redirect → `/auth/register-confirmation`.
+  - Success (new user, confirmation disabled) → User is automatically signed in; redirect → `/job-applications`.
   - Email already exists and confirmed → Stay on view with: "An account with this email already exists. Please log in or reset your password."
   - Email already exists but not confirmed → Redirect → `/auth/register-confirmation?isAlreadyRegisteredButNotConfirmed=true`.
-  - Email send failure after user created → Stay on view with: "Sign up failed, something happened on our end. Please contact support."
+  - Email send failure after user created (confirmation enabled) → Stay on view with: "Sign up failed, something happened on our end. Please contact support."
 
 ---
 
@@ -236,19 +239,24 @@ flowchart TD
   R1[/GET /auth/register/] --> R2[User enters email + passwords]
   R2 -->|POST /auth/register| R3{User exists?}
   R3 -- No --> R4[Create user]
-  R4 --> R5[Generate email confirmation token]
+  R4 --> R4_1{ConfirmRegistration enabled?}
+  R4_1 -- Yes --> R5[Generate email confirmation token]
   R5 --> R6[Send confirmation email]
   R6 --> R7[Redirect /auth/register-confirmation]
+  R4_1 -- No --> R4_2[Auto sign-in]
+  R4_2 --> R4_3[Redirect /job-applications]
   R3 -- Yes --> R8{Email confirmed?}
   R8 -- Yes --> R9[Show error on Register.cshtml]
   R8 -- No --> R10[Redirect /auth/register-confirmation?isAlreadyRegisteredButNotConfirmed=true]
 
-  C1[User opens confirmation link]
-  C1 -->|GET /auth/confirm-email?userId&token| C2{Valid userId & token?}
-  C2 -- Yes --> C3[Confirm email]
-  C3 --> C4[Auto sign-in]
-  C4 --> C5[Redirect /]
-  C2 -- No --> C6[Redirect /Home/Error]
+  subgraph Email Confirmation Flow
+    C1[User opens confirmation link]
+    C1 -->|GET /auth/confirm-email?userId&token| C2{Valid userId & token?}
+    C2 -- Yes --> C3[Confirm email]
+    C3 --> C4[Auto sign-in]
+    C4 --> C5[Redirect /job-applications]
+    C2 -- No --> C6[Redirect /Home/Error]
+  end
 ```
 
 ---
@@ -274,6 +282,6 @@ flowchart TD
 ## Notes on ReturnUrl and Tokens
 
 - ReturnUrl: Login redirects to `returnUrl` only if `Url.IsLocalUrl(returnUrl)`; otherwise to `/job-applications`.
-- Token policies: Using ASP.NET Identity default token providers. Password policy per `IdentityExtensions`: minimum length 8, require upper/lower/digit/non-alphanumeric; unique emails required; email confirmation required to sign in.
+- Token policies: Using ASP.NET Identity default token providers. Password policy per `IdentityExtensions`: minimum length 8, require upper/lower/digit/non-alphanumeric; unique emails required; email confirmation required to sign in (can be disabled via the `ConfirmRegistration` feature flag).
 
 

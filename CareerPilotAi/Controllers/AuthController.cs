@@ -10,6 +10,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using CareerPilotAi.Application.Commands.CreateUserSettings;
+using CareerPilotAi.Infrastructure.Settings;
+using Microsoft.Extensions.Options;
 
 namespace CareerPilotAi.Controllers
 {
@@ -24,7 +26,7 @@ namespace CareerPilotAi.Controllers
         private readonly ITimeZoneService _timeZoneService;
         private readonly ApplicationDbContext _dbContext;
         private readonly IUserService _userService;
-
+        private readonly IOptions<FeaturesSettings> _featuresSettings;
         public AuthController(
             UserManager<IdentityUser> userManager,
             SignInManager<IdentityUser> signInManager,
@@ -33,7 +35,8 @@ namespace CareerPilotAi.Controllers
             ICommandDispatcher commandDispatcher,
             ITimeZoneService timeZoneService,
             ApplicationDbContext dbContext,
-            IUserService userService)
+            IUserService userService,
+            IOptions<FeaturesSettings> featuresSettings)
         {
             _userManager = userManager;
             _signInManager = signInManager;
@@ -43,6 +46,7 @@ namespace CareerPilotAi.Controllers
             _timeZoneService = timeZoneService;
             _dbContext = dbContext;
             _userService = userService;
+            _featuresSettings = featuresSettings;
         }
 
         [HttpGet("register")]
@@ -84,6 +88,13 @@ namespace CareerPilotAi.Controllers
                 _logger.LogInformation("User created a new account with email: {Email}", model.Email);
 
                 await _commandDispatcher.DispatchAsync(new CreateUserSettingsCommand(user.Id), cancellationToken);
+
+                if (!_featuresSettings.Value.ConfirmRegistration)
+                {
+                    _logger.LogInformation("Confirmation registration is disabled, signing in user: {Email}", model.Email);
+                    await _signInManager.SignInAsync(user, isPersistent: false);
+                    return RedirectToAction("Index", "JobApplication");
+                }
 
                 var confirmationLink = await GetRegistrationConfirmationLink(user);
 
