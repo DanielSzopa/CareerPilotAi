@@ -1,0 +1,42 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: careerpilot-postgres-e2e
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: careerpilotai_test
+    ports:
+      - "5432:5432"
+    networks:
+      e2e-network:
+        aliases:
+          - postgres-e2e
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile.e2e
+    container_name: careerpilot-app-e2e
+    environment:
+      ASPNETCORE_ENVIRONMENT: e2e
+      ASPNETCORE_URLS: http://+:8080
+    ports:
+      - "8080:8080"
+    networks:
+      - e2e-network
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+networks:
+  e2e-network:
+    name: e2e-network
+    driver: bridge

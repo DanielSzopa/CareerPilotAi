@@ -3,6 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using CareerPilotAi.Prompts;
 using CareerPilotAi.Application.Commands;
 using CareerPilotAi.Application;
+using CareerPilotAi.Infrastructure.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 var services = builder.Services;
@@ -29,7 +31,11 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseHttpsRedirection();
+// Skip HTTPS redirection for E2E tests (they use HTTP only.)
+if (app.Environment.EnvironmentName != "e2e")
+{
+    app.UseHttpsRedirection();
+}
 app.UseStaticFiles();
 app.UseRouting();
 
