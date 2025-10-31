@@ -1,0 +1,13 @@
+---
+alwaysApply: true
+---
+
+# E2E Testing Rules - Playwright
+
+- Initialize configuration only with Chromium/Desktop Chrome browser
+- Use browser contexts for isolating test environments
+- Implement the Page Object Model for maintainable tests
+- Use `data-testid` attributes when introducing resilient test-oriented selectors
+- Leverage parallel execution for faster test runs
+- Follow 'Arrange', 'Act', 'Assert' approach to test structure for simplicity and readability.
+- Try to write parametrized tests for common actions using Theory.

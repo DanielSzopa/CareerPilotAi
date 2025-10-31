@@ -7,18 +7,18 @@
 @if (SignInManager.IsSignedIn(User))
 {
     <li class="nav-item dropdown">
-        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <a class="nav-link dropdown-toggle d-flex align-items-center" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false" data-test-id="profile-link">
             <span class="me-2">My Profile</span>
             <i class="fa-solid fa-user"></i>
         </a>
         <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
             <li>
-                <a class="dropdown-item" asp-controller="Auth" asp-action="GetUserSettings">Settings</a>
+                <a class="dropdown-item" asp-controller="Auth" asp-action="GetUserSettings" data-test-id="settings-link">Settings</a>
             </li>
             <li><hr class="dropdown-divider" /></li>
             <li>
                 <form class="dropdown-item p-0" asp-controller="Auth" asp-action="Logout" method="post">
-                    <button type="submit" class="btn btn-link dropdown-item text-start">Logout</button>
+                    <button type="submit" class="btn btn-link dropdown-item text-start" data-test-id="logout-button">Logout</button>
                 </form>
             </li>
         </ul>
@@ -27,10 +27,10 @@
 else
 {
     <li class="nav-item">
-        <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">Log in</a>
+        <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login" data-test-id="login-link">Log in</a>
     </li>
     <li class="nav-item">
-        <a class="nav-link text-white rounded" id="sign-up-btn" asp-controller="Auth" asp-action="Register">Sign up</a>
+        <a class="nav-link text-white rounded" id="sign-up-btn" asp-controller="Auth" asp-action="Register" data-test-id="register-link">Sign up</a>
     </li>
 }
 </ul> 

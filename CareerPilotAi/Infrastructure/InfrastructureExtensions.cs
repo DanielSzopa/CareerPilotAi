@@ -18,6 +18,7 @@ public static class InfrastructureExtensions
         .RegisterOpenRouterAppSettings(configuration)
         .AddEmailServices(configuration)
         .RegisterFeaturesSettings(configuration)
+        .AddHostedService<ApplyMigrationJob>()
         .AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),

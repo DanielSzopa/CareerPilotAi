@@ -4,6 +4,19 @@ Ten dokument zawiera proponowane atrybuty `data-test-id` dla każdego widoku w p
 
 ---
 
+## `Views/Shared/_LoginPartial.cshtml` (Navigation Authentication Elements)
+
+### Dla zalogowanych użytkowników:
+- **Link "My Profile" (dropdown)**: `profile-link`
+- **Link "Settings" w dropdown**: `settings-link`
+- **Przycisk "Logout" w dropdown**: `logout-button`
+
+### Dla niezalogowanych użytkowników:
+- **Link "Log in"**: `login-link`
+- **Przycisk "Sign up"**: `register-link`
+
+---
+
 ## `Views/Auth/Login.cshtml`
 
 -   **Formularz**: `login-form`

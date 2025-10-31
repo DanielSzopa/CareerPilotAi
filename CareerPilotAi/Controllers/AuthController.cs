@@ -68,7 +68,7 @@ namespace CareerPilotAi.Controllers
             if (existingUser != null)
             {
                 var userAlreadyConfirmedEmail = await _userManager.IsEmailConfirmedAsync(existingUser);
-                if (userAlreadyConfirmedEmail)
+                if (userAlreadyConfirmedEmail || !_featuresSettings.Value.ConfirmRegistration)
                 {
                     _logger.LogInformation("User tried to register with email {Email}, but account already exists and is confirmed.", model.Email);
                     ModelState.AddModelError(string.Empty, "An account with this email already exists. Please log in or reset your password.");

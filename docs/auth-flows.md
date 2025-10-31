@@ -97,7 +97,7 @@ Register Confirmation View
 - Logout Confirmation View navigation:
   - “Log Back In” → `/auth/login`
   - “Go to Homepage” → `/`
-  - Helpful links: `/job-applications`, `/job-applications/entry-job-details`
+  - Helpful links: `/job-applications`, `/job-applications/create`
 
 ---
 

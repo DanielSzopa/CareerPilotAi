@@ -69,39 +69,20 @@ items.ShouldHaveCount(5);
 - Implement database initialization in test fixtures
 - Use Respawn library to reset database state between tests
 
-### 1.6 Playwright Configuration
+### 1.6 Konfiguracja E2E z Playwright i Testcontainers
+
+Testy End-to-End (E2E) wykorzystują Playwright do interakcji z aplikacją i Testcontainers do zarządzania kontenerami Dockera. Takie podejście zapewnia w pełni izolowane środowisko testowe, które obejmuje bazę danych i samą aplikację.
 
 **Setup:**
-- Install: `Install-Package Microsoft.Playwright`
-- Run: `pwsh bin/Debug/net8.0/playwright.ps1 install`
-- Version: 1.40+
+- `Microsoft.Playwright` - Do sterowania przeglądarką.
+- `Testcontainers` - Do programistycznego zarządzania kontenerami Dockera.
+- `DotNet.Testcontainers` - Dostarcza implementację Testcontainers dla .NET.
 
-**Test Setup Pattern:**
-```csharp
-[Collection("Playwright collection")]
-public class AuthenticationE2ETests : IAsyncLifetime
-{
-    private IPlaywright _playwright;
-    private IBrowser _browser;
-    private IPage _page;
-    private const string BaseUrl = "https://localhost:7001";
-
-    public async Task InitializeAsync()
-    {
-        _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync();
-        _page = await _browser.NewPageAsync();
-    }
-
-    public async Task DisposeAsync()
-    {
-        await _page?.CloseAsync();
-        await _browser?.CloseAsync();
-        _playwright?.Dispose();
-    }
-}
-```
-
+**Kluczowe kroki w konfiguracji testów E2E:**
+1.  **Tworzenie sieci Dockera:** Izolowana sieć jest tworzona, aby umożliwić komunikację między kontenerem aplikacji a kontenerem bazy danych.
+2.  **Uruchomienie kontenera bazy danych:** Kontener PostgreSQL jest uruchamiany w stworzonej sieci.
+3.  **Budowanie i uruchamianie kontenera aplikacji:** Obraz Docker dla aplikacji jest budowany (na podstawie `Dockerfile.e2e`), a następnie kontener jest uruchamiany i dołączany do tej samej sieci.
+4.  **Konfiguracja Playwright:** Playwright jest inicjalizowany, aby mógł połączyć się z aplikacją działającą w kontenerze.
 ---
 
 ## 5. Additional Testing Recommendations
