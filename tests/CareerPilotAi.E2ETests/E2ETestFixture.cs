@@ -17,10 +17,30 @@ public class E2ETestFixture : IAsyncLifetime
     private IPlaywright? _playwright;
     private IBrowser? _browser;
 
+    private static readonly int _port = 8080;
     public IBrowser Browser => _browser ?? throw new InvalidOperationException("Browser not initialized");
-    public string BaseUrl { get; private set; } = string.Empty;
+    public string BaseUrl { get; private set; } = $"http://localhost:{_port}";
 
     public async Task InitializeAsync()
+    {
+        // isSelfHostedRun is set to true then e2e tests will run docker containers itself.
+        // If it is set to false then e2e tests will use containers runned manualy thanks to docker-compose-e2e-test.yml file.
+        var isSelfHostedRun = true;
+
+        if(isSelfHostedRun)
+        {
+            await InitializeSelfHostedE2ETestsRunAsync();
+        }
+
+        // Step 5: Initialize Playwright and launch Chromium browser
+        _playwright = await Playwright.CreateAsync();
+        _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
+        {
+            Headless = true
+        });
+    }
+
+    private async Task InitializeSelfHostedE2ETestsRunAsync()
     {
         // Step 1: Create Docker network
         _network = new NetworkBuilder()
@@ -55,23 +75,12 @@ public class E2ETestFixture : IAsyncLifetime
         _appContainer = new ContainerBuilder()
             .WithNetwork(_network)
             .WithImage(appImage)
-            .WithPortBinding(0, 8080) // 0 = dynamic port on host
+            .WithPortBinding(_port, _port)
             .WithEnvironment("ASPNETCORE_ENVIRONMENT", "e2e")
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(8080))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(_port))
             .Build();
 
         await _appContainer.StartAsync();
-        
-        // Step 4: Get mapped port and create BaseUrl
-        var port = _appContainer.GetMappedPublicPort(8080);
-        BaseUrl = $"http://localhost:{port}";
-
-        // Step 5: Initialize Playwright and launch Chromium browser
-        _playwright = await Playwright.CreateAsync();
-        _browser = await _playwright.Chromium.LaunchAsync(new BrowserTypeLaunchOptions
-        {
-            Headless = true
-        });
     }
 
     public async Task DisposeAsync()
