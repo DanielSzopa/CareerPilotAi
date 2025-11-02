@@ -2,6 +2,7 @@ using CareerPilotAi.Infrastructure.Email;
 using CareerPilotAi.Infrastructure.Identity;
 using CareerPilotAi.Infrastructure.OpenRouter;
 using CareerPilotAi.Infrastructure.Persistence;
+using CareerPilotAi.Infrastructure.Persistence.Seeders;
 using CareerPilotAi.Infrastructure.Settings;
 using Microsoft.EntityFrameworkCore;
 
@@ -19,6 +20,7 @@ public static class InfrastructureExtensions
         .AddEmailServices(configuration)
         .RegisterFeaturesSettings(configuration)
         .AddHostedService<ApplyMigrationJob>()
+        .AddScoped<E2EUsersSeeder>()
         .AddDbContext<ApplicationDbContext>(options =>
             options.UseNpgsql(
                 configuration.GetConnectionString("DefaultConnection"),

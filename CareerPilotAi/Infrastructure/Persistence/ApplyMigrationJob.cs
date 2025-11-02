@@ -1,3 +1,4 @@
+using CareerPilotAi.Infrastructure.Persistence.Seeders;
 using Microsoft.EntityFrameworkCore;
 
 namespace CareerPilotAi.Infrastructure.Persistence;
@@ -5,11 +6,13 @@ internal class ApplyMigrationJob : BackgroundService
 {
     private readonly IServiceScopeFactory _serviceScopeFactory;
     private readonly ILogger<ApplyMigrationJob> _logger;
+    private readonly IHostEnvironment _hostEnvironment;
 
-    public ApplyMigrationJob(IServiceScopeFactory serviceScopeFactory, ILogger<ApplyMigrationJob> logger)
+    public ApplyMigrationJob(IServiceScopeFactory serviceScopeFactory, ILogger<ApplyMigrationJob> logger, IHostEnvironment hostEnvironment)
     {
         _serviceScopeFactory = serviceScopeFactory;
         _logger = logger;
+        _hostEnvironment = hostEnvironment;
     }
 
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
@@ -17,6 +20,7 @@ internal class ApplyMigrationJob : BackgroundService
         _logger.LogInformation("Start ApplyMigrationJob...");
         using var scope = _serviceScopeFactory.CreateScope();
         var dbContext = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
+        var e2EUsersSeeder = scope.ServiceProvider.GetRequiredService<E2EUsersSeeder>();
         if (!dbContext.Database.IsRelational())
         {
             _logger.LogInformation("Database is not relational!");
@@ -28,6 +32,11 @@ internal class ApplyMigrationJob : BackgroundService
             _logger.LogInformation("Found some pendingMigrations");
             await dbContext.Database.MigrateAsync(stoppingToken);
             _logger.LogInformation("Migration finished.");
+
+            if (_hostEnvironment.IsEnvironment("e2e"))
+            {
+                await e2EUsersSeeder.Seed(dbContext);
+            }
         } else
         {
             _logger.LogInformation("None pendingMigrations found");

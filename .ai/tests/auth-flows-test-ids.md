@@ -28,7 +28,7 @@ Ten dokument zawiera proponowane atrybuty `data-test-id` dla każdego widoku w p
 -   **Checkbox "Zapamiętaj mnie"**: `remember-me-checkbox`
 -   **Przycisk "Continue" (Zaloguj)**: `login-button`
 -   **Link "Forgot password?"**: `forgot-password-link`
--   **Link "Sign up"**: `register-link`
+-   **Link "Sign up"**: `register-form-link`
 -   **Podsumowanie walidacji**: `validation-summary`
 -   **Banner z komunikatem**: `login-message-banner` (dla komunikatów, np. o już istniejącym koncie)
 

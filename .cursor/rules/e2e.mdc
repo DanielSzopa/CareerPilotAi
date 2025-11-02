@@ -11,3 +11,6 @@ alwaysApply: true
 - Leverage parallel execution for faster test runs
 - Follow 'Arrange', 'Act', 'Assert' approach to test structure for simplicity and readability.
 - Try to write parametrized tests for common actions using Theory.
+- Avoid unnecessary comments in code.
+- Try to use Shouldly assertions for better readability.
+- Use Faker/Bogus for generating test data.
