@@ -1,29 +1,19 @@
-4. Implement the OpenTelemetry
-5. Implement cache mechanisms
-7. CreatedAt = DateTime.UtcNow, - Fix the UTC to local time
-- https://localhost:5000/job-applications/details/edf24d1c-bafc-4f99-b43a-2ef760feb87e enhance button doesn't work correctly
-- statuses
-- improve logs
-- optimise db queries, add indexes
-- create dashboard
+## Future
 
--------------------------------------- 
-- Explain architecture of CareerPilotAi
-- What Application, Core, Infrastructure, Models, Prompts, View keeps
-- DI registration, how to register things in DI
-- How Prompts works, explain mechanism
-- Logging, how to write logs
-- Adding information to styling: one lines if statements, one line namespaces
-- Create command handler architecture description
+1. Implement OpenTelemetry + improve logs
+2. Implement cache mechanisms
+3. After correct OpenTelemetry implementation try to optimise db queries and idexes 
 
+## MVP
 
--------------------------------------- 
-2. Poprawić prompt do parsowania. Mapować lepiej skille level itp.
-3. Dodać trochę więcej styli do create view, żeby bardziej pasowało stylingiem do job details page.
+1. Add dashboard feature.
+2. Add edit feature.
+3. Improve parsing prompt, mapping batter skills level.
+4. Improve InterviewQuestions preparation, increase context.
+5. Home page improvements.
+6. Improve readme = Key informations about project, how to run test with docker containers and selfHosted mode, Goal of project etc. information about automatic migrations
 
-
-
-Features:
-1. Edit job application
-2. Dashboard
-3. Upgrade InterviewQuestions, dostarczenie większego contextu
+## Nice to have
+1. CD pipeline, host on azure.
+2. Check what can be refactored.
+3. Add more styling to create view to be close with Job Details Page.
