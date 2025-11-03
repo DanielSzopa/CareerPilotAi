@@ -281,6 +281,7 @@ class InterviewQuestionsManager {
                     if (!this.interviewPrepWordCounter) {
                         this.initializeInterviewPrepWordCounter();
                     }
+                    this.interviewPrepWordCounter.validateWordCount();
                     
                     // Focus on textarea
                     $('#interviewPrepTextArea').focus();

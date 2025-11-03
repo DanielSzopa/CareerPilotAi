@@ -8,8 +8,7 @@
 
 1. Add dashboard feature.
 2. Add edit feature.
-3. Improve parsing prompt, mapping batter skills level.
-4. Improve InterviewQuestions preparation, increase context.
+3. Improve parsing prompt, mapping batter skills level. Improve Create page.
 5. Home page improvements.
 6. Improve readme = Key informations about project, how to run test with docker containers and selfHosted mode, Goal of project etc. information about automatic migrations
 

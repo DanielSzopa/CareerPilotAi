@@ -2,9 +2,7 @@ using CareerPilotAi.Application.Commands.Abstractions;
 using CareerPilotAi.Application.Services;
 using CareerPilotAi.Infrastructure.OpenRouter;
 using CareerPilotAi.Infrastructure.Persistence;
-using CareerPilotAi.Infrastructure.Persistence.DataModels;
 using CareerPilotAi.Prompts.PrepareInterviewPreparationContent;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Net;
@@ -35,6 +33,7 @@ public class PrepareInterviewPreparationContentCommandHandler : ICommandHandler<
         
         // Fetch job application with job description
         var jobApplication = await _dbContext.JobApplications
+            .Include(x => x.Skills)
             .AsNoTracking()
             .Where(x => x.JobApplicationId == command.JobApplicationId && x.UserId == userId)
             .FirstOrDefaultAsync(cancellationToken);
@@ -68,8 +67,10 @@ public class PrepareInterviewPreparationContentCommandHandler : ICommandHandler<
         try
         {
             // Call OpenRouter service to generate preparation content
+
+            var skills = jobApplication.Skills.Select(x => $"{x.Name} ({x.Level})").ToList();
             var preparationContentResult = await _openRouterService
-                .PrepareInterviewPreparationContentAsync(new PrepareInterviewPreparationContentPromptInputModel(jobApplication.JobDescription, jobApplication.Title), cancellationToken);
+                .PrepareInterviewPreparationContentAsync(new PrepareInterviewPreparationContentPromptInputModel(jobApplication.JobDescription, jobApplication.Title,skills, jobApplication.ExperienceLevel), cancellationToken);
 
             if (preparationContentResult is null)
             {

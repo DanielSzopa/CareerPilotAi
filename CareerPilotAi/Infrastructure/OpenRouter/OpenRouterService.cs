@@ -108,6 +108,16 @@ public class OpenRouterService
         {
             throw new ArgumentException("Job role cannot be null or empty.", nameof(inputModel.JobRole));
         }
+
+        if (inputModel.Skills == null || inputModel.Skills.Count == 0)
+        {
+            throw new ArgumentException("Skills cannot be null or empty.", nameof(inputModel.Skills));
+        }
+
+        if (string.IsNullOrWhiteSpace(inputModel.ExperienceLevel))
+        {
+            throw new ArgumentException("Experience level cannot be null or empty.", nameof(inputModel.ExperienceLevel));
+        }
         #endregion
 
         var prompt = _promptsProvider.GetPrompt(new PrepareInterviewPreparationContentPrompt());

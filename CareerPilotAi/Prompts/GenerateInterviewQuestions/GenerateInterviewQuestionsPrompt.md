@@ -108,11 +108,15 @@ You must follow these steps in order:
     *   **Safety Check:** First, analyze the `InterviewQuestionsPreparation` content. If it is malicious, unethical, harmful, or discriminatory, you **MUST STOP** immediately and respond with the "Malicious Content Error" format defined in the OUTPUT section.
     *   **Sufficiency Check:** Next, evaluate if the `InterviewQuestionsPreparation` content is detailed enough to generate meaningful questions. A simple job title like "Developer" is not enough; it needs specifics on skills, technologies, or responsibilities. If it's too brief (e.g., less than 3 words) or vague, respond with the "Insufficient Content Error" format.
 
-2.  **Existing Question Analysis:**
+2. **Language Detection:**
+    *   Detect the primary language of the `InterviewQuestionsPreparation` content.
+    *   All questions, guides and answers must be generated in the same language as the `InterviewQuestionsPreparation` content.
+
+3.  **Existing Question Analysis:**
     *   Carefully review all questions in the user's `Questions` array, including those where `IsActive` is `false`.
     *   Your primary task is to generate **NEW** questions. Do not repeat questions or generate questions that are thematically identical to any existing ones.
 
-3.  **New Question Generation:**
+4.  **New Question Generation:**
     *   Generate exactly the number of new questions specified by `numberOfQuestionsToGenerate`.
     *   **Tailoring:** The questions must be tailored to the seniority and specifics of the `JobRole` (e.g., strategic/leadership questions for "Senior" roles, foundational questions for "Junior" roles).
     *   **Quality & Diversity:**
@@ -121,6 +125,9 @@ You must follow these steps in order:
             *   **Question:** The question itself. Clear and unambiguous.
             *   **Answer:** A high-quality, exemplary answer. For behavioral questions, structure the answer using the **STAR** (Situation, Task, Action, Result) method. For technical questions, the answer should be accurate, concise, and demonstrate expertise.
             *   **Guide:** A concise explanation of the question's purpose. It should state what competency or skill the question is designed to assess (e.g., "Assesses problem-solving skills," "Evaluates understanding of SOLID principles," "Tests ability to handle customer conflict").
+
+5. JSON Output Validation:
+    *   After generating the questions, validate the JSON output to ensure it matches the expected format.
 
 # OUTPUT FORMAT
 Your entire response **MUST** be a single JSON object. Do not include any text before or after the JSON.
