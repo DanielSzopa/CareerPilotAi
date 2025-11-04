@@ -3,11 +3,12 @@
   --main-blue-hover:#2F74F7;
   --status-draft-color: #007bff;
   --status-rejected-color: #dc3545;
-  --status-submitted-color: #28a745;
-  --status-interview-scheduled-color: #28a745;
-  --status-waiting-for-offer-color: #28a745;
-  --status-received-offer-color: #28a745;
-  --status-no-contact-color: #dc3545;
+  --status-submitted-color: #0dcaf0;
+  --status-interview-scheduled-color: #6f42c1;
+  --status-waiting-for-offer-color: #ffc107;
+  --status-received-offer-color: #198754;
+  --status-no-contact-color: #6c757d;
+  --status-total-color: #111827;
 }
 
 html {

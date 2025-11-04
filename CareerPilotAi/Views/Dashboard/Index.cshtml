@@ -1,0 +1,135 @@
+@using System.Globalization
+@using System.Text.Json
+@using CareerPilotAi.ViewModels.Dashboard
+@model DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard";
+    var metrics = Model.Metrics ?? new DashboardMetricsViewModel();
+    var charts = Model.ChartsData ?? new DashboardChartsDataViewModel();
+
+    var metricCards = new[]
+    {
+        new { Label = "Total Applications", Value = metrics.TotalApplications, Icon = "fa-chart-line", CardClass = "metric-card--total", TestId = "metric-total" },
+        new { Label = "Draft", Value = metrics.DraftCount, Icon = "fa-pencil", CardClass = "metric-card--draft", TestId = "metric-draft" },
+        new { Label = "Submitted", Value = metrics.SubmittedCount, Icon = "fa-paper-plane", CardClass = "metric-card--submitted", TestId = "metric-submitted" },
+        new { Label = "Interview Scheduled", Value = metrics.InterviewScheduledCount, Icon = "fa-calendar-check", CardClass = "metric-card--interview", TestId = "metric-interview" },
+        new { Label = "Waiting for Offer", Value = metrics.WaitingForOfferCount, Icon = "fa-hourglass-half", CardClass = "metric-card--waiting", TestId = "metric-waiting" },
+        new { Label = "Received Offer", Value = metrics.ReceivedOfferCount, Icon = "fa-handshake", CardClass = "metric-card--received", TestId = "metric-received" },
+        new { Label = "Rejected", Value = metrics.RejectedCount, Icon = "fa-circle-xmark", CardClass = "metric-card--rejected", TestId = "metric-rejected" },
+        new { Label = "No Contact", Value = metrics.NoContactCount, Icon = "fa-user-slash", CardClass = "metric-card--no-contact", TestId = "metric-no-contact" }
+    };
+
+    var numberFormat = CultureInfo.CurrentCulture;
+    var jsonOptions = new JsonSerializerOptions(JsonSerializerDefaults.Web);
+    var chartConfigJson = Model.HasApplications
+        ? JsonSerializer.Serialize(new
+        {
+            statusDistribution = charts.StatusDistribution,
+            thirtyDays = charts.ThirtyDaysData,
+            sixtyDays = charts.SixtyDaysData,
+            ninetyDays = charts.NinetyDaysData
+        }, jsonOptions)
+        : string.Empty;
+}
+
+<div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+    <div>
+        <h1 class="h3 mb-0">Dashboard</h1>
+        <p class="text-muted mb-0">Track your job search progress at a glance.</p>
+    </div>
+    <a class="btn btn-primary" asp-controller="JobApplication" asp-action="Create" data-test-id="dashboard-add-application">
+        <i class="fas fa-plus me-2"></i>Add Application
+    </a>
+</div>
+
+@if (TempData["DashboardError"] is string dashboardError && !string.IsNullOrWhiteSpace(dashboardError))
+{
+    <div class="alert alert-warning" role="alert" data-test-id="dashboard-error">@dashboardError</div>
+}
+
+@if (!Model.HasApplications)
+{
+    <section class="dashboard-empty-state text-center py-5" data-test-id="dashboard-empty-state">
+        <i class="fas fa-compass fa-4x mb-4"></i>
+        <h2 class="h4 mb-3">No applications yet</h2>
+        <p class="text-muted mb-4">Start adding job applications to unlock insights and stay organized.</p>
+        <a class="btn btn-primary btn-lg" asp-controller="JobApplication" asp-action="Create">
+            <i class="fas fa-plus me-2"></i>Add your first application
+        </a>
+    </section>
+}
+else
+{
+    <section class="dashboard-metrics" data-test-id="dashboard-metrics">
+        <div class="row g-3">
+            @foreach (var card in metricCards)
+            {
+                <div class="col-12 col-sm-6 col-xl-3">
+                    <div class="card metric-card @card.CardClass h-100" data-test-id="@card.TestId">
+                        <div class="card-body">
+                            <div class="metric-card__icon">
+                                <i class="fas @card.Icon"></i>
+                            </div>
+                            <div class="metric-card__value">@card.Value.ToString("N0", numberFormat)</div>
+                            <p class="metric-card__label">@card.Label</p>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </section>
+
+    <section class="dashboard-charts mt-4" data-test-id="dashboard-charts">
+        <div class="row g-3">
+            <div class="col-lg-6">
+                <div class="card chart-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h2 class="h5 mb-0">Status Distribution</h2>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="statusChart" aria-label="Job applications by status" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6">
+                <div class="card chart-card h-100">
+                    <div class="card-body">
+                        <div class="d-flex align-items-center justify-content-between mb-3">
+                            <h2 class="h5 mb-0">Applications Over Time</h2>
+                            <div class="btn-group dashboard-range-toggle" role="group" aria-label="Select range">
+                                <button type="button" class="btn btn-outline-primary active" data-dashboard-range="30" data-test-id="dashboard-range-30">30D</button>
+                                <button type="button" class="btn btn-outline-primary" data-dashboard-range="60" data-test-id="dashboard-range-60">60D</button>
+                                <button type="button" class="btn btn-outline-primary" data-dashboard-range="90" data-test-id="dashboard-range-90">90D</button>
+                            </div>
+                        </div>
+                        <div class="chart-container">
+                            <canvas id="applicationsTrendChart" aria-label="Job applications over time" role="img"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+}
+
+@section Styles
+{
+    <link rel="stylesheet" href="~/css/dashboard.css" asp-append-version="true" />
+}
+
+@section Scripts
+{
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.6/dist/chart.umd.min.js"></script>
+    <script src="~/js/dashboard.js" asp-append-version="true"></script>
+
+    @if (!string.IsNullOrWhiteSpace(chartConfigJson))
+    {
+        <script>
+            window.CareerPilotDashboard?.initializeDashboard(@Html.Raw(chartConfigJson));
+        </script>
+    }
+}
+

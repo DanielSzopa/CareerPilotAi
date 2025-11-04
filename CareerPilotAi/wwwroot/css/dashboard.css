@@ -1,0 +1,156 @@
+.dashboard-empty-state i {
+    color: #adb5bd;
+}
+
+.dashboard-empty-state .btn-primary {
+    padding: 0.75rem 1.5rem;
+}
+
+.metric-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.08);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.metric-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 1.5rem 3.5rem rgba(0, 0, 0, 0.12);
+}
+
+.metric-card__icon {
+    width: 3rem;
+    height: 3rem;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    margin-bottom: 0.75rem;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.metric-card__value {
+    font-size: 2rem;
+    font-weight: 700;
+}
+
+.metric-card__label {
+    margin: 0;
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.metric-card--total .metric-card__icon {
+    background: var(--status-total-color);
+}
+
+.metric-card--draft .metric-card__icon {
+    background: var(--status-draft-color);
+}
+
+.metric-card--submitted .metric-card__icon {
+    background: var(--status-submitted-color);
+}
+
+.metric-card--interview .metric-card__icon {
+    background: var(--status-interview-scheduled-color);
+}
+
+.metric-card--waiting .metric-card__icon {
+    background: var(--status-waiting-for-offer-color);
+}
+
+.metric-card--received .metric-card__icon {
+    background: var(--status-received-offer-color);
+}
+
+.metric-card--rejected .metric-card__icon {
+    background: var(--status-rejected-color);
+}
+
+.metric-card--no-contact .metric-card__icon {
+    background: var(--status-no-contact-color);
+}
+
+.metric-card--total .metric-card__value {
+    color: var(--status-total-color);
+}
+
+.metric-card--draft .metric-card__value {
+    color: var(--status-draft-color);
+}
+
+.metric-card--submitted .metric-card__value {
+    color: var(--status-submitted-color);
+}
+
+.metric-card--interview .metric-card__value {
+    color: var(--status-interview-scheduled-color);
+}
+
+.metric-card--waiting .metric-card__value {
+    color: var(--status-waiting-for-offer-color);
+}
+
+.metric-card--received .metric-card__value {
+    color: var(--status-received-offer-color);
+}
+
+.metric-card--rejected .metric-card__value {
+    color: var(--status-rejected-color);
+}
+
+.metric-card--no-contact .metric-card__value {
+    color: var(--status-no-contact-color);
+}
+
+.chart-card {
+    border: none;
+    border-radius: 1rem;
+    box-shadow: 0 1rem 3rem rgba(0, 0, 0, 0.08);
+}
+
+.chart-card .card-body {
+    padding: 1.5rem;
+}
+
+.chart-container {
+    position: relative;
+    min-height: 360px;
+}
+
+.dashboard-range-toggle .btn {
+    font-size: 0.85rem;
+    padding: 0.4rem 0.9rem;
+}
+
+.dashboard-range-toggle .btn.active {
+    color: #fff;
+}
+
+.dashboard-range-toggle .btn[data-range="30"].active {
+    background-color: var(--status-draft-color);
+    border-color: var(--status-draft-color);
+}
+
+.dashboard-range-toggle .btn[data-range="60"].active {
+    background-color: var(--status-interview-scheduled-color);
+    border-color: var(--status-interview-scheduled-color);
+}
+
+.dashboard-range-toggle .btn[data-range="90"].active {
+    background-color: var(--status-received-offer-color);
+    border-color: var(--status-received-offer-color);
+}
+
+@media (max-width: 768px) {
+    .metric-card {
+        margin-bottom: 1rem;
+    }
+
+    .chart-container {
+        min-height: 280px;
+    }
+}
+

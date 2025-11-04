@@ -10,6 +10,7 @@ public static class ApplicationExtensions
         return services
             .AddScoped<IUserService, UserService>()
             .AddScoped<ITimeZoneService, TimeZoneService>()
-            .AddScoped<IClock, Clock>();
+            .AddScoped<IClock, Clock>()
+            .AddScoped<IDashboardDataService, DashboardDataService>();
     }
 }
