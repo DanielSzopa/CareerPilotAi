@@ -13,8 +13,6 @@
 
 html {
   font-size: 14px;
-  position: relative;
-  min-height: 100%;
 }
 
 @media (min-width: 768px) {
@@ -28,7 +26,6 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
   margin: 0;
   padding: 0;
 }
