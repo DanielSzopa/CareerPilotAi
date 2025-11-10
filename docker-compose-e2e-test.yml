@@ -23,13 +23,13 @@ services:
   app:
     build:
       context: .
-      dockerfile: Dockerfile.e2e
+      dockerfile: Dockerfile
     container_name: careerpilot-app-e2e
     environment:
       ASPNETCORE_ENVIRONMENT: e2e
-      ASPNETCORE_URLS: http://+:8080
+      ASPNETCORE_URLS: http://+:9000
     ports:
-      - "8080:8080"
+      - "9000:9000"
     networks:
       - e2e-network
     depends_on:

@@ -18,15 +18,9 @@ RUN dotnet publish "CareerPilotAi.csproj" -c Release -o /app/publish /p:UseAppHo
 # Stage 3: Runtime
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS final
 WORKDIR /app
-EXPOSE 8080
-
-# Set environment to E2E to load appsettings.e2e.json
-ENV ASPNETCORE_ENVIRONMENT=e2e
-ENV ASPNETCORE_URLS=http://+:8080
 
 # Copy published files
 COPY --from=publish /app/publish .
 
 # Run migrations on startup and then start the application
 ENTRYPOINT ["dotnet", "CareerPilotAi.dll"]
-

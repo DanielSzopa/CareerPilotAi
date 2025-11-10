@@ -17,7 +17,7 @@ public class E2ETestFixture : IAsyncLifetime
     private IPlaywright? _playwright;
     private IBrowser? _browser;
 
-    private static readonly int _port = 8080;
+    private static readonly int _port = 9000;
     public IBrowser Browser => _browser ?? throw new InvalidOperationException("Browser not initialized");
     public string BaseUrl { get; private set; } = $"http://localhost:{_port}";
 
@@ -62,7 +62,7 @@ public class E2ETestFixture : IAsyncLifetime
 
         // Step 3: Build and start the application container
         var contextPath = CommonDirectoryPath.GetSolutionDirectory().DirectoryPath;
-        var dockerfilePath = "Dockerfile.e2e";
+        var dockerfilePath = "Dockerfile";
 
         var appImage = new ImageFromDockerfileBuilder()
                 .WithDockerfileDirectory(contextPath)
@@ -77,6 +77,7 @@ public class E2ETestFixture : IAsyncLifetime
             .WithImage(appImage)
             .WithPortBinding(_port, _port)
             .WithEnvironment("ASPNETCORE_ENVIRONMENT", "e2e")
+            .WithEnvironment("ASPNETCORE_URLS", $"http://+:{_port}")
             .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(_port))
             .Build();
 
