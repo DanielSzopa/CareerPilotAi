@@ -96,14 +96,37 @@ $(document).ready(function() {
         updateSkillsCount();
     }
     
+    function getSkillCssClass(level) {
+        if (!level) {
+            return "skill-badge-regular";
+        }
+
+        switch (level.replaceAll(" ", "").toLowerCase()) {
+            case "nicetohave":
+                return "skill-badge-nice-to-have";
+            case "junior":
+                return "skill-badge-junior";
+            case "regular":
+                return "skill-badge-regular";
+            case "advanced":
+                return "skill-badge-advanced";
+            case "master":
+                return "skill-badge-master";
+            default:
+                return "skill-badge-regular";
+        }
+    }
+    
     function renderSkill(skill) {
         const levelDisplay = skill.level.replace(/([A-Z])/g, ' $1').trim();
-        
+        const cssClass = getSkillCssClass(skill.level);
+        const isDarkBg = cssClass !== 'skill-badge-master';
+        const closeButtonClass = isDarkBg ? 'btn-close-white' : '';
+
         const skillHtml = `
-            <span class="badge bg-primary me-2 mb-2" id="skill-${skill.id}" style="font-size: 0.95rem; padding: 0.5rem 0.75rem;">
-                ${escapeHtml(skill.name)} 
-                <span class="badge bg-light text-dark ms-1">${levelDisplay}</span>
-                <button type="button" class="btn-close btn-close-white ms-2" style="font-size: 0.7rem;" onclick="removeSkillById(${skill.id})"></button>
+            <span class="badge ${cssClass} me-2 mb-2 skill-common" id="skill-${skill.id}">
+                ${escapeHtml(skill.name)} (${levelDisplay})
+                <button type="button" class="btn-close ${closeButtonClass} ms-2" style="font-size: 0.7rem;" onclick="removeSkillById(${skill.id})"></button>
             </span>
         `;
         
@@ -138,6 +161,21 @@ $(document).ready(function() {
     // ===========================================
     // 3. AI PARSING FUNCTIONALITY
     // ===========================================
+    
+    // ===========================================
+    // STATUS DROPDOWN
+    // ===========================================
+    $('#statusDropdownMenu').on('click', '.dropdown-item', function(e) {
+        e.preventDefault();
+        
+        const selectedStatus = $(this).data('status');
+        const statusDot = $(this).find('.status-dot').attr('class');
+
+        $('#statusInput').val(selectedStatus);
+        
+        $('#statusDropdown .status-text').text(selectedStatus);
+        $('#statusDropdown .status-dot').attr('class', statusDot);
+    });
     
     $('#parseWithAiButton').on('click', function(e) {
         e.preventDefault();
@@ -263,7 +301,7 @@ $(document).ready(function() {
                 const skillObj = {
                     id: skillIndex++,
                     name: skill.name,
-                    level: skill.level
+                    level: skill.level.charAt(0).toUpperCase() + skill.level.slice(1)
                 };
                 skills.push(skillObj);
                 renderSkill(skillObj);

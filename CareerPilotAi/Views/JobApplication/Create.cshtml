@@ -231,15 +231,28 @@
                             
                             <div class="col-md-6 mb-3">
                                 <label asp-for="Status" class="form-label"></label>
-                                <select asp-for="Status" class="form-select">
-                                    <option value="Draft">Draft</option>
-                                    <option value="Submitted">Submitted</option>
-                                    <option value="Interview Scheduled">Interview Scheduled</option>
-                                    <option value="Waiting for offer">Waiting for Offer</option>
-                                    <option value="Received offer">Received Offer</option>
-                                    <option value="Rejected">Rejected</option>
-                                    <option value="No contact">No Contact</option>
-                                </select>
+                                <input type="hidden" asp-for="Status" id="statusInput" value="Draft" />
+                                <div class="dropdown">
+                                    <button class="btn btn-outline-secondary dropdown-toggle w-100 d-flex justify-content-between align-items-center" 
+                                            type="button" 
+                                            id="statusDropdown" 
+                                            data-bs-toggle="dropdown" 
+                                            aria-expanded="false">
+                                        <span class="d-flex align-items-center gap-2">
+                                            <span class="status-dot status-draft"></span>
+                                            <span class="status-text">Draft</span>
+                                        </span>
+                                    </button>
+                                    <ul class="dropdown-menu w-100" id="statusDropdownMenu" aria-labelledby="statusDropdown">
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="Draft"><span class="status-dot status-draft"></span>Draft</a></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="Submitted"><span class="status-dot status-submitted"></span>Submitted</a></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="Interview Scheduled"><span class="status-dot status-interview-scheduled"></span>Interview Scheduled</a></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="Waiting for offer"><span class="status-dot status-waiting-for-offer"></span>Waiting for offer</a></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="Received offer"><span class="status-dot status-received-offer"></span>Received offer</a></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="Rejected"><span class="status-dot status-rejected"></span>Rejected</a></li>
+                                        <li><a class="dropdown-item d-flex align-items-center gap-2" href="#" data-status="No contact"><span class="status-dot status-no-contact"></span>No contact</a></li>
+                                    </ul>
+                                </div>
                                 <span asp-validation-for="Status" class="text-danger"></span>
                             </div>
                         </div>

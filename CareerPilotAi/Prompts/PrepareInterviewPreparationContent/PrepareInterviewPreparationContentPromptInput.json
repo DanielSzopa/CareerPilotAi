@@ -2,13 +2,13 @@
     "JobDescription": "We are seeking a Senior Full-Stack Developer to join our growing engineering team at TechCorp Inc. The ideal candidate will have 5+ years of experience building scalable web applications using modern technologies. You will be responsible for developing both front-end and back-end components, collaborating with cross-functional teams, and mentoring junior developers.\n\nKey Responsibilities:\n- Design and implement scalable web applications using React, Node.js, and PostgreSQL\n- Collaborate with product managers and designers to translate requirements into technical solutions\n- Write clean, maintainable code following best practices and conducting code reviews\n- Mentor junior developers and contribute to technical documentation\n- Participate in Agile development processes and sprint planning\n\nRequired Qualifications:\n- Bachelor's degree in Computer Science or related field\n- 5+ years of experience in full-stack development\n- Proficiency in JavaScript, TypeScript, React, Node.js\n- Experience with SQL databases (PostgreSQL preferred)\n- Knowledge of RESTful API design and implementation\n- Familiarity with Git, Docker, and CI/CD pipelines\n- Strong problem-solving skills and attention to detail\n\nPreferred Qualifications:\n- Experience with cloud platforms (AWS, Azure)\n- Knowledge of microservices architecture\n- Previous mentoring or leadership experience\n- Contribution to open-source projects\n\nWe offer competitive compensation, comprehensive benefits, flexible work arrangements, and opportunities for professional growth in a collaborative, innovation-driven environment.",
     "JobRole": "Senior Full-Stack Developer",
     "Skills": [
-        "React (NiceToHave)",
+        "React (Nice to have)",
         "Node.js (Regular)",
         "PostgreSQL (Regular)",
         "RESTful API (Master)",
         "Git (Regular)",
         "Docker (Advanced)",
-        "CI/CD (NiceToHave)"
+        "CI/CD (Nice to have)"
     ],
     "ExperienceLevel": "Senior"
 }
