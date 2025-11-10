@@ -9,10 +9,10 @@
 3. Improve parsing prompt, mapping batter skills level. Improve Create page.
 5. Home page improvements.
 6. Improve readme = Key informations about project, how to run test with docker containers and selfHosted mode, Goal of project etc. information about automatic migrations
-7. Add privacy
 
 ## Nice to have
 1. CD pipeline, host on azure.
-2. Check what can be refactored.
-3. Add more styling to create view to be close with Job Details Page.
-4. Add edit feature.
+2. Add privacy
+3. Check what can be refactored.
+4. Add more styling to create view to be close with Job Details Page.
+5. Add edit feature.

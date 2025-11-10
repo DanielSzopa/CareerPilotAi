@@ -2,51 +2,63 @@
     ViewData["Title"] = "CareerPilot AI - Your AI-Powered Career Assistant";
 }
 
+<link rel="stylesheet" href="~/css/home.css" />
+
 <!-- Hero Section -->
 <section class="hero-section">
-    <div class="container-fluid">
-        <div class="row align-items-center min-vh-80">
-            <div class="col-lg-6">
+    <div class="container">
+        <div class="row align-items-center">
+            <div class="col-lg-6 mb-4 mb-lg-0">
                 <div class="hero-content">
-                    <h1 class="hero-title">
-                        Supercharge Your Career with
-                        <span class="text-primary">AI-Powered</span> Job Applications
+                    <h1 class="hero-title fade-in-up">
+                        Manage Your Job Search with AI
                     </h1>
-                    <p class="hero-subtitle">
-                        Create tailored resumes, generate personalized interview questions, and track your job applications—all powered by artificial intelligence to maximize your career success.
+                    <p class="hero-subtitle fade-in-up delay-1">
+                        Track job applications, analyze your progress, and prepare for interviews—all in one place
                     </p>
-                    <div class="hero-actions">
-                        <a href="/job-applications/create" class="btn btn-primary btn-lg hero-btn">
-                            <i class="fas fa-rocket me-2"></i>Start Your First Application
+                    <div class="hero-actions fade-in-up delay-2">
+                        <a href="/auth/register" class="hero-btn hero-btn-primary">
+                            <i class="fas fa-rocket me-2"></i>Get Started Now
                         </a>
-                        <a href="/job-applications" class="btn btn-outline-primary btn-lg hero-btn">
-                            <i class="fas fa-list me-2"></i>View All Applications
+                        <a href="/auth/login" class="hero-btn hero-btn-secondary">
+                            <i class="fas fa-sign-in-alt me-2"></i>Sign In
                         </a>
                     </div>
                 </div>
             </div>
             <div class="col-lg-6">
-                <div class="hero-image">
-                    <div class="feature-preview">
-                        <div class="mock-dashboard">
-                            <div class="dashboard-header">
-                                <i class="fas fa-briefcase text-primary"></i>
-                                <span>Job Applications Dashboard</span>
+                <div class="hero-dashboard-container fade-in-up delay-3">
+                    <div class="hero-dashboard-mock">
+                        <div class="hero-dashboard-header">
+                            <i class="fas fa-briefcase"></i>
+                            <h3>Your Dashboard</h3>
+                        </div>
+                        <div class="hero-dashboard-stats">
+                            <div class="hero-stat-card">
+                                <span class="hero-stat-number">24</span>
+                                <span class="hero-stat-label">Total Applications</span>
                             </div>
-                            <div class="dashboard-stats">
-                                <div class="stat-item">
-                                    <span class="stat-number">15</span>
-                                    <span class="stat-label">Applications</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">8</span>
-                                    <span class="stat-label">Interviews</span>
-                                </div>
-                                <div class="stat-item">
-                                    <span class="stat-number">3</span>
-                                    <span class="stat-label">Offers</span>
-                                </div>
+                            <div class="hero-stat-card">
+                                <span class="hero-stat-number">16</span>
+                                <span class="hero-stat-label">Submitted</span>
                             </div>
+                            <div class="hero-stat-card">
+                                <span class="hero-stat-number">7</span>
+                                <span class="hero-stat-label">Interviews</span>
+                            </div>
+                            <div class="hero-stat-card">
+                                <span class="hero-stat-number">2</span>
+                                <span class="hero-stat-label">Offers</span>
+                            </div>
+                        </div>
+                        <div class="hero-dashboard-chart">
+                            <div class="hero-chart-bar" style="--bar-height: 60%;"></div>
+                            <div class="hero-chart-bar" style="--bar-height: 80%;"></div>
+                            <div class="hero-chart-bar" style="--bar-height: 45%;"></div>
+                            <div class="hero-chart-bar" style="--bar-height: 90%;"></div>
+                            <div class="hero-chart-bar" style="--bar-height: 70%;"></div>
+                            <div class="hero-chart-bar" style="--bar-height: 55%;"></div>
+                            <div class="hero-chart-bar" style="--bar-height: 85%;"></div>
                         </div>
                     </div>
                 </div>
@@ -55,69 +67,64 @@
     </div>
 </section>
 
+<!-- Problem Section -->
+<section class="problem-section">
+    <div class="container">
+        <h2 class="section-title scroll-animate">Stop Losing Track of Your Applications</h2>
+        <p class="section-subtitle scroll-animate">Job hunting is challenging enough without these common frustrations</p>
+        <div class="problem-cards">
+            <div class="problem-card scroll-animate delay-1">
+                <div class="problem-icon">📝</div>
+                <h4>Scattered Information</h4>
+                <p>Applications spread across emails, notes, and different job portals</p>
+            </div>
+            <div class="problem-card scroll-animate delay-2">
+                <div class="problem-icon">⏱️</div>
+                <h4>Time-Consuming Data Entry</h4>
+                <p>Manually copying job details from postings takes valuable time</p>
+            </div>
+            <div class="problem-card scroll-animate delay-3">
+                <div class="problem-icon">📊</div>
+                <h4>No Progress Visibility</h4>
+                <p>Difficult to monitor the status of multiple applications at once</p>
+            </div>
+        </div>
+    </div>
+</section>
+
 <!-- Features Section -->
 <section class="features-section">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="section-title">Transform Your Job Search with AI</h2>
-                <p class="section-subtitle">Everything you need to land your dream job, powered by artificial intelligence</p>
-            </div>
-        </div>
-        <div class="row g-4">
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-wand-magic-sparkles"></i>
-                    </div>
-                    <h3>AI-Enhanced Job Descriptions</h3>
-                    <p>Automatically improve and optimize job descriptions to better understand requirements and tailor your applications accordingly.</p>
+        <h2 class="section-title scroll-animate">Everything You Need in One Place</h2>
+        <p class="section-subtitle scroll-animate">Powerful features to streamline your job search process</p>
+        <div class="feature-grid">
+            <div class="feature-card feature-card--ai scroll-animate delay-1">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-robot"></i>
                 </div>
+                <h3>AI-Powered Job Parsing</h3>
+                <p>Paste a job posting and let AI automatically fill in the application form. Save time while maintaining full control over your data.</p>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-question-circle"></i>
-                    </div>
-                    <h3>Personalized Interview Questions</h3>
-                    <p>Generate custom interview questions based on specific job requirements to help you prepare for your interviews with confidence.</p>
+            <div class="feature-card feature-card--tracking scroll-animate delay-2">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-tasks"></i>
                 </div>
+                <h3>Application Status Tracking</h3>
+                <p>Update application statuses (Draft, Submitted, Interview, Offer) with one click. Filter and search through your applications instantly.</p>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-file-alt"></i>
-                    </div>
-                    <h3>Smart Resume Builder</h3>
-                    <p>Create tailored resumes that match job requirements perfectly, highlighting the most relevant skills and experiences.</p>
+            <div class="feature-card feature-card--dashboard scroll-animate delay-3">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-chart-pie"></i>
                 </div>
+                <h3>Insightful Dashboard Analytics</h3>
+                <p>Visualize your recruitment progress with charts and metrics. Identify trends and improve your job search strategy.</p>
             </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-chart-line"></i>
-                    </div>
-                    <h3>Application Tracking</h3>
-                    <p>Keep track of all your job applications in one place with detailed information, status updates, and progress monitoring.</p>
+            <div class="feature-card feature-card--questions scroll-animate delay-4">
+                <div class="feature-icon-wrapper">
+                    <i class="fas fa-lightbulb"></i>
                 </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-user-graduate"></i>
-                    </div>
-                    <h3>Interview Preparation</h3>
-                    <p>Get AI-generated preparation content and practice questions tailored to each specific role and company you're applying to.</p>
-                </div>
-            </div>
-            <div class="col-md-6 col-lg-4">
-                <div class="feature-card">
-                    <div class="feature-icon">
-                        <i class="fas fa-shield-alt"></i>
-                    </div>
-                    <h3>Secure & Private</h3>
-                    <p>Your personal information and career data are protected with enterprise-grade security and privacy measures.</p>
-                </div>
+                <h3>Interview Preparation</h3>
+                <p>Generate custom interview questions tailored to each job posting. Prepare for interviews with AI-powered preparation content.</p>
             </div>
         </div>
     </div>
@@ -126,39 +133,43 @@
 <!-- How It Works Section -->
 <section class="how-it-works-section">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center mb-5">
-                <h2 class="section-title">How CareerPilot AI Works</h2>
-                <p class="section-subtitle">Simple steps to accelerate your job search success</p>
+        <h2 class="section-title scroll-animate">Three Simple Steps to Organized Job Search</h2>
+        <p class="section-subtitle scroll-animate">Get started in minutes and take control of your career journey</p>
+        <div class="steps-container">
+            <div class="step-card scroll-animate delay-1">
+                <div class="step-number">1</div>
+                <h4>Add Job Offers</h4>
+                <p>Paste the job posting text or fill out the form manually. AI will help you save time.</p>
+            </div>
+            <div class="step-card scroll-animate delay-2">
+                <div class="step-number">2</div>
+                <h4>Track Your Progress</h4>
+                <p>Update application statuses and filter by your preferences to stay organized.</p>
+            </div>
+            <div class="step-card scroll-animate delay-3">
+                <div class="step-number">3</div>
+                <h4>Prepare for Interviews</h4>
+                <p>Generate interview questions and analyze your statistics to improve your approach.</p>
             </div>
         </div>
-        <div class="row g-4">
-            <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-number">1</div>
-                    <div class="step-content">
-                        <h4>Add Job Details</h4>
-                        <p>Start by entering the job title, company name, and job description. Our AI will enhance and analyze the requirements.</p>
-                    </div>
-                </div>
+    </div>
+</section>
+
+<!-- Target Audience Section -->
+<section class="audience-section">
+    <div class="container">
+        <h2 class="section-title scroll-animate">Who Is CareerPilot AI For?</h2>
+        <p class="section-subtitle scroll-animate">Designed for job seekers at every stage of their career</p>
+        <div class="audience-cards">
+            <div class="audience-card scroll-animate delay-1">
+                <div class="audience-icon">🎓</div>
+                <h4>Graduates & Entry-Level</h4>
+                <p>Landing your first job? Track every application and increase your chances of success with organized job search management.</p>
             </div>
-            <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-number">2</div>
-                    <div class="step-content">
-                        <h4>Generate AI Content</h4>
-                        <p>Let our AI create personalized interview questions and preparation content based on the specific job requirements.</p>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="step-card">
-                    <div class="step-number">3</div>
-                    <div class="step-content">
-                        <h4>Build Your Resume</h4>
-                        <p>Create a tailored resume with your personal information, optimized for the specific role and company you're targeting.</p>
-                    </div>
-                </div>
+            <div class="audience-card scroll-animate delay-2">
+                <div class="audience-icon">💼</div>
+                <h4>Professionals</h4>
+                <p>Looking for a career change? Manage your recruitment process efficiently and make informed decisions about your next move.</p>
             </div>
         </div>
     </div>
@@ -167,294 +178,35 @@
 <!-- CTA Section -->
 <section class="cta-section">
     <div class="container">
-        <div class="row">
-            <div class="col-12 text-center">
-                <h2 class="cta-title">Ready to Transform Your Career?</h2>
-                <p class="cta-subtitle">Join thousands of professionals who have accelerated their job search with AI</p>
-                <a href="/job-applications/create" class="btn btn-primary btn-lg cta-btn">
-                    <i class="fas fa-rocket me-2"></i>Get Started Now
-                </a>
-            </div>
+        <div class="cta-content">
+            <h2 class="cta-title">Ready to Streamline Your Job Search?</h2>
+            <p class="cta-subtitle">Join free today and start organizing your job applications</p>
+            <a href="/auth/register" class="cta-btn">
+                <i class="fas fa-rocket me-2"></i>Create Free Account
+            </a>
         </div>
     </div>
 </section>
 
-<style>
-/* Hero Section */
-.hero-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 5rem 0;
-    margin-top: -2rem;
-}
+<script>
+    // Scroll animation observer
+    document.addEventListener('DOMContentLoaded', function() {
+        const observerOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
 
-.min-vh-80 {
-    min-height: 80vh;
-}
+        const observer = new IntersectionObserver(function(entries) {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('active');
+                }
+            });
+        }, observerOptions);
 
-.hero-title {
-    font-size: 3.5rem;
-    font-weight: 700;
-    line-height: 1.2;
-    margin-bottom: 1.5rem;
-}
-
-.hero-subtitle {
-    font-size: 1.25rem;
-    font-weight: 300;
-    line-height: 1.6;
-    margin-bottom: 2.5rem;
-    opacity: 0.9;
-}
-
-.hero-actions {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.hero-btn {
-    padding: 0.75rem 2rem;
-    font-weight: 600;
-    border-radius: 50px;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.hero-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-}
-
-/* Feature Preview */
-.feature-preview {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    height: 100%;
-}
-
-.mock-dashboard {
-    background: white;
-    border-radius: 15px;
-    padding: 2rem;
-    box-shadow: 0 20px 40px rgba(0,0,0,0.1);
-    max-width: 400px;
-    width: 100%;
-}
-
-.dashboard-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    margin-bottom: 1.5rem;
-    color: #333;
-    font-weight: 600;
-}
-
-.dashboard-stats {
-    display: flex;
-    justify-content: space-between;
-    gap: 1rem;
-}
-
-.stat-item {
-    text-align: center;
-    flex: 1;
-}
-
-.stat-number {
-    display: block;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #4a90e2;
-}
-
-.stat-label {
-    display: block;
-    color: #666;
-    font-size: 0.875rem;
-}
-
-/* Features Section */
-.features-section {
-    padding: 5rem 0;
-    background: #f8f9fa;
-}
-
-.section-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: #333;
-    margin-bottom: 1rem;
-}
-
-.section-subtitle {
-    font-size: 1.125rem;
-    color: #666;
-    max-width: 600px;
-    margin: 0 auto;
-}
-
-.feature-card {
-    background: white;
-    padding: 2.5rem 2rem;
-    border-radius: 15px;
-    text-align: center;
-    height: 100%;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-    transition: all 0.3s ease;
-    border: 1px solid #eee;
-}
-
-.feature-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 15px 35px rgba(0,0,0,0.1);
-}
-
-.feature-icon {
-    width: 80px;
-    height: 80px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    margin: 0 auto 1.5rem;
-    color: white;
-    font-size: 2rem;
-}
-
-.feature-card h3 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #333;
-}
-
-.feature-card p {
-    color: #666;
-    line-height: 1.6;
-    margin-bottom: 0;
-}
-
-/* How It Works Section */
-.how-it-works-section {
-    padding: 5rem 0;
-    background: white;
-}
-
-.step-card {
-    text-align: center;
-    padding: 2rem 1rem;
-}
-
-.step-number {
-    width: 60px;
-    height: 60px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 1.5rem;
-    font-weight: 700;
-    margin: 0 auto 1.5rem;
-}
-
-.step-content h4 {
-    font-size: 1.25rem;
-    font-weight: 600;
-    margin-bottom: 1rem;
-    color: #333;
-}
-
-.step-content p {
-    color: #666;
-    line-height: 1.6;
-}
-
-/* CTA Section */
-.cta-section {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
-    padding: 4rem 0;
-}
-
-.cta-title {
-    font-size: 2.5rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-}
-
-.cta-subtitle {
-    font-size: 1.125rem;
-    margin-bottom: 2rem;
-    opacity: 0.9;
-}
-
-.cta-btn {
-    padding: 1rem 2.5rem;
-    font-weight: 600;
-    border-radius: 50px;
-    background: white;
-    color: #667eea;
-    border: none;
-    font-size: 1.125rem;
-    text-decoration: none;
-    transition: all 0.3s ease;
-}
-
-.cta-btn:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 25px rgba(0,0,0,0.2);
-    color: #667eea;
-}
-
-/* Responsive Design */
-@@media (max-width: 768px) {
-    .hero-title {
-        font-size: 2.5rem;
-    }
-    
-    .hero-subtitle {
-        font-size: 1.125rem;
-    }
-    
-    .hero-actions {
-        flex-direction: column;
-        align-items: center;
-    }
-    
-    .hero-btn {
-        width: 100%;
-        max-width: 300px;
-    }
-    
-    .section-title {
-        font-size: 2rem;
-    }
-    
-    .cta-title {
-        font-size: 2rem;
-    }
-    
-    .feature-card {
-        margin-bottom: 2rem;
-    }
-}
-
-/* Override Bootstrap container for full-width hero */
-.hero-section .container-fluid {
-    padding-left: 2rem;
-    padding-right: 2rem;
-}
-
-@@media (max-width: 576px) {
-    .hero-section .container-fluid {
-        padding-left: 1rem;
-        padding-right: 1rem;
-    }
-}
-</style>
+        // Observe all scroll-animate elements
+        document.querySelectorAll('.scroll-animate').forEach(element => {
+            observer.observe(element);
+        });
+    });
+</script>
