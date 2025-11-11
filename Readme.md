@@ -16,7 +16,6 @@
 - [Testing](#testing)
 - [Project scope](#project-scope)
 - [Project status](#project-status)
-- [License](#license)
 
 ### Project description
 CareerPilotAi is a web application that helps job seekers organize and track their job applications with intelligent assistance. Users can paste a job offer from a job board, and AI will structure the details into a manageable application entry. The system centralizes applications, enables quick status updates, and provides a dashboard with key metrics to monitor progress.
@@ -260,6 +259,3 @@ Out of MVP scope (post-MVP examples):
 ### Project status
 - Active development; not production-hardened yet.
 - Authentication, email flows, and AI features follow the patterns documented in `docs/auth-flows.md` and `docs/prompts-architecture.md`.
-
-### License
-No license has been specified yet. It will be added later.
