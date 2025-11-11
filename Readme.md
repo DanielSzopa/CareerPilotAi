@@ -8,6 +8,7 @@
 
 ### Table of Contents
 - [Project description](#project-description)
+- [Features](#features)
 - [Tech stack](#tech-stack)
 - [Getting started locally](#getting-started-locally)
 - [Available scripts](#available-scripts)
@@ -17,25 +18,44 @@
 - [License](#license)
 
 ### Project description
-CareerPilotAi is a web application that helps job seekers organize and track their job applications with intelligent assistance. Users can paste a job posting, and AI will structure the details into a manageable application entry. The system centralizes applications, enables quick status updates, and provides a dashboard with key metrics to monitor progress.
+CareerPilotAi is a web application that helps job seekers organize and track their job applications with intelligent assistance. Users can paste a job offer from a job board, and AI will structure the details into a manageable application entry. The system centralizes applications, enables quick status updates, and provides a dashboard with key metrics to monitor progress.
+
+An amazing feature is that you can generate interview questions tailored to the job offer.
 
 Key value:
 - Save time with automated parsing of job postings
 - Keep all applications and their status history in one place
 - Filter, search, and review details quickly
-- Prepare for interviews with AI-generated questions and preparation content
+- Prepare for interviews with AI-generated questions.
 
-For authentication and AI architecture, see:
-- `docs/auth-flows.md` – end-to-end Identity flows (login, register, email confirmation, reset password)
-- `docs/prompts-architecture.md` – prompt system, OpenRouter integration, and best practices
+### Features
+
+*   **Job Application Management**
+    *   **AI-Powered Creation**: Paste a job description and let AI automatically parse and fill in details like company, title, location, salary, and required skills.
+    *   **Comprehensive Tracking**: Manage full application details, including status, job URL, contract type, and experience level.
+    *   **Full CRUD**: Create, view, edit, and delete job applications.
+    *   **Advanced Search & Filtering**: Quickly find applications with powerful filters for status, salary range, location, work mode, and experience level, plus a text search for company and title.
+    *   **Status Updates**: Easily update the status of each application to track its progress.
+
+*   **AI-Powered Interview Preparation**
+    *   **Custom Question Generation**: Generate interview questions tailored specifically to the job description and your skills.
+
+*   **Personal Dashboard**
+    *   **At-a-Glance Metrics**: A central dashboard provides key statistics on your job search.
+    *   **Visual Insights**: Charts visualize application status distribution and track your activity over time.
+
+*   **Account Management**
+    *   **Secure Authentication**: Standard user registration with email confirmation, login, and password reset flows.
+    *   **User Settings**: Customize your experience with settings like your local time zone for accurate date tracking.
 
 ### Tech stack
 - **Frontend**: ASP.NET Core MVC (Razor Views), Bootstrap 5, JavaScript, Chart.js
-- **Backend**: .NET 8, ASP.NET Core, Entity Framework Core, ASP.NET Identity
+- **Backend**: .NET 8, ASP.NET Core, Entity Framework Core
+- **Identity**: ASP.NET Identity
 - **Database**: PostgreSQL
 - **AI Integration**: OpenRouter (configurable models per feature)
 - **Email**: SendGrid (account verification and password reset)
-- **CI/CD & Hosting**: GitHub Actions (planned), Docker (local), Azure (optional)
+- **CI/CD & Hosting**: GitHub Actions, Docker (local), Azure (production)
 
 ### Getting started locally
 
