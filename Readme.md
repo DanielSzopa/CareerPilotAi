@@ -10,6 +10,7 @@
 - [Project description](#project-description)
 - [Features](#features)
 - [Tech stack](#tech-stack)
+- [Configuration](#configuration)
 - [Getting started locally](#getting-started-locally)
 - [Available scripts](#available-scripts)
 - [Testing](#testing)
@@ -57,126 +58,148 @@ Key value:
 - **Email**: SendGrid (account verification and password reset)
 - **CI/CD & Hosting**: GitHub Actions, Docker (local), Azure (production)
 
-### Getting started locally
+### Configuration
 
-Prerequisites:
-- .NET SDK 8.0+
-- Docker Desktop (with Docker Compose v2)
-- Git
-- OpenRouter API key (for AI features)
-- SendGrid API key and template IDs (for email confirmation/password reset)
+The application is configured through `appsettings.json` and environment-specific files like `appsettings.Development.json`. Sensitive data should be stored using user secrets or environment variables.
 
-1) Clone the repository
-```bash
-git clone https://github.com/your-org/CareerPilotAi.git
-cd CareerPilotAi
-```
+#### Features
 
-2) Start PostgreSQL with Docker Compose
-```bash
-docker compose up -d
-```
-Defaults from `docker-compose.yml`:
-- Image: postgres:15
-- Port: 5432 → 5432
-- Database: `careerpilotdb`
-- Username: `postgres`
-- Password: `postgres`
+The `Features` section allows toggling certain application behaviors.
 
-3) Configure application settings (development)
-- The project reads `CareerPilotAi/appsettings.json` and supports user-secrets for sensitive values.
-- Recommended: store secrets with `dotnet user-secrets` (per project).
-
-```bash
-# from repo root
-dotnet user-secrets init -p CareerPilotAi/CareerPilotAi.csproj
-
-# OpenRouter
-dotnet user-secrets set -p CareerPilotAi/CareerPilotAi.csproj "OpenRouter:AuthToken" "YOUR_OPENROUTER_TOKEN"
-
-# SendGrid (required for email confirmation & password reset)
-dotnet user-secrets set -p CareerPilotAi/CareerPilotAi.csproj "SendGrid:ApiKey" "YOUR_SENDGRID_API_KEY"
-dotnet user-secrets set -p CareerPilotAi/CareerPilotAi.csproj "SendGrid:FromEmail" "no-reply@example.com"
-dotnet user-secrets set -p CareerPilotAi/CareerPilotAi.csproj "SendGrid:RegistrationVerificationTemplateId" "d-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-dotnet user-secrets set -p CareerPilotAi/CareerPilotAi.csproj "SendGrid:PasswordResetTemplateId" "d-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
-```
-
-Configuration reference (excerpt):
 ```json
-{
-  "ConnectionStrings": {
-    "DefaultConnection": "Host=localhost;Port=5432;Database=careerpilotdb;Username=postgres;Password=postgres"
-  },
-  "SendGrid": {
-    "ApiKey": "",
-    "FromEmail": "",
-    "RegistrationVerificationTemplateId": "",
-    "PasswordResetTemplateId": ""
-  },
-  "OpenRouter": {
-    "BaseAddress": "https://openrouter.ai",
-    "AuthToken": "",
-    "Features": [
-      { "Name": "EnhanceJobDescription", "Model": "google/gemini-2.0-flash-lite-001", "Temperature": 0.5 },
-      { "Name": "GenerateInterviewQuestions", "Model": "google/gemini-2.5-flash", "Temperature": 1 },
-      { "Name": "PrepareInterviewPreparationContent", "Model": "google/gemini-2.0-flash-lite-001", "Temperature": 0.5 }
-    ]
-  }
+"Features": {
+  "ConfirmRegistration": true
 }
 ```
 
-4) Create the database schema (EF Core migrations)
-```bash
-# optional: install EF CLI if not present
-dotnet tool install --global dotnet-ef
+-   **`ConfirmRegistration`**: When set to `true`, new users must confirm their email address to log in. For local development, it's recommended to set this to `false` in `appsettings.Development.json` to bypass email validation.
 
-# apply migrations against the development database
-dotnet ef database update -p CareerPilotAi/CareerPilotAi.csproj -s CareerPilotAi/CareerPilotAi.csproj
+#### SendGrid (Email Service)
+
+SendGrid is used for sending transactional emails like registration confirmation and password resets.
+
+```json
+"SendGrid": {
+  "ApiKey": "YOUR_SENDGRID_API_KEY",
+  "FromEmail": "no-reply@yourdomain.com",
+  "RegistrationVerificationTemplateId": "d-xxxxxxxxxxxxxxxx",
+  "PasswordResetTemplateId": "d-xxxxxxxxxxxxxxxx"
+}
 ```
 
-5) Run the application
-```bash
-dotnet run --project CareerPilotAi/CareerPilotAi.csproj
+-   **`ApiKey`**: Your SendGrid API key.
+-   **`FromEmail`**: The email address from which emails are sent.
+-   **`RegistrationVerificationTemplateId`** and **`PasswordResetTemplateId`**: IDs of the dynamic templates created in your SendGrid account.
+
+If you are not using email features, ensure `Features:ConfirmRegistration` is set to `false`.
+
+#### OpenRouter (AI Integration)
+
+OpenRouter provides access to various Large Language Models (LLMs) used for AI-powered features. An `AuthToken` is required.
+
+```json
+"OpenRouter": {
+  "BaseAddress": "https://openrouter.ai",
+  "AuthToken": "YOUR_OPENROUTER_TOKEN",
+  "Features": [
+    { "Name": "ParseJobDescription", "Model": "google/gemini-2.5-flash-lite-preview-09-2025", "Temperature": 0.3 },
+    { "Name": "GenerateInterviewQuestions", "Model": "google/gemini-2.5-flash-lite-preview-09-2025", "Temperature": 1 },
+    { "Name": "PrepareInterviewPreparationContent", "Model": "google/gemini-2.5-flash-lite-preview-09-2025", "Temperature": 0.5 }
+  ]
+}
 ```
-Default URLs (from launch settings):
-- HTTPS: `https://localhost:5000`
-- HTTP: `http://localhost:5001`
 
-6) Sign up and sign in
-- Browse to `/auth/register` to create an account. Email confirmation is required by default.
-- Ensure SendGrid is configured to receive confirmation and reset emails.
+-   **`AuthToken`**: Your OpenRouter API key. This is required for the application to function correctly.
+-   **`Features`**: Each AI-powered feature can be configured independently. You can specify the `Model` to use and its `Temperature` (creativity level). This allows for fine-tuning the AI's behavior for different tasks.
 
-7) Using AI features
-- Ensure `OpenRouter:AuthToken` is set via user-secrets. Feature models and temperatures are configured in `appsettings.json` under `OpenRouter:Features`.
+### Getting started locally
 
-### Available scripts
+There are two primary ways to run the application locally, depending on your needs.
 
-Common commands:
-- Restore dependencies
-  ```bash
-  dotnet restore
-  ```
-- Build
-  ```bash
-  dotnet build
-  ```
-- Run (development)
-  ```bash
-  dotnet run --project CareerPilotAi/CareerPilotAi.csproj
-  ```
-- Run tests
-  ```bash
-  dotnet test
-  ```
-- Apply EF Core migrations
-  ```bash
-  dotnet ef database update -p CareerPilotAi/CareerPilotAi.csproj -s CareerPilotAi/CareerPilotAi.csproj
-  ```
-- Start/stop database (Docker Compose)
-  ```bash
-  docker compose up -d
-  docker compose down -v
-  ```
+**Prerequisites:**
+- .NET SDK 8.0+
+- Docker Desktop (with Docker Compose v2)
+- Git
+- OpenRouter API key (Required for AI features)
+
+---
+
+#### Option 1: Full Docker Compose (Recommended for quick start)
+
+This approach runs both the application and the PostgreSQL database in Docker containers. It's the fastest way to get the application running.
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/DanielSzopa/CareerPilotAi.git
+    cd CareerPilotAi
+    ```
+
+2.  **Create a `.env` file**
+    In the root directory of the project, create a file named `.env` and add your OpenRouter API key. This is required for the application to start.
+
+    ```
+    OPENROUTER__AUTHTOKEN=YOUR_OPENROUTER_TOKEN
+    ```
+
+3.  **Start the services**
+    ```bash
+    docker compose up -d
+    ```
+    This command will build the application image and start the `app` and `postgres` services. The database connection is pre-configured for the container environment.
+
+    > **Note:** The application automatically applies any pending Entity Framework database migrations on startup.
+
+4.  **Access the application**
+    The application will be available at `http://localhost:8080`.
+
+---
+
+#### Option 2: Hybrid - Database in Docker, App via `dotnet run` (Recommended for development)
+
+This approach is ideal for development, as it allows you to run and debug the application directly from your IDE or command line, while the database runs in a Docker container.
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/your-org/CareerPilotAi.git
+    cd CareerPilotAi
+    ```
+
+2.  **Start the database**
+    Run only the PostgreSQL service from the `docker-compose.yml` file.
+    ```bash
+    docker compose up -d postgres
+    ```
+    The database will be available at `localhost:5432`.
+
+3.  **Configure application secrets**
+    Use the .NET user secrets manager to store your OpenRouter API key. This is required.
+    ```bash
+    # Navigate to the project directory
+    cd CareerPilotAi
+
+    # Initialize user secrets for the project
+    dotnet user-secrets init
+
+    # Set your OpenRouter token
+    dotnet user-secrets set "OpenRouter:AuthToken" "YOUR_OPENROUTER_TOKEN"
+    ```
+
+    > **Optional: Configure SendGrid**
+    > If you want to use email features (like email confirmation or password reset), configure your SendGrid secrets. Otherwise, make sure `Features:ConfirmRegistration` is set to `false` in `appsettings.Development.json`.
+    > ```bash
+    > dotnet user-secrets set "SendGrid:ApiKey" "YOUR_SENDGRID_API_KEY"
+    > dotnet user-secrets set "SendGrid:FromEmail" "no-reply@yourdomain.com"
+    > # ... and other SendGrid settings
+    > ```
+
+4.  **Run the application**
+    ```bash
+    dotnet run --project CareerPilotAi.csproj
+    ```
+    The application will start and connect to the PostgreSQL database running in Docker. On startup, it will automatically apply any pending database migrations.
+
+5.  **Access the application**
+    The application will be available at `https://localhost:5000` and `http://localhost:5001`.
 
 ### Testing
 
