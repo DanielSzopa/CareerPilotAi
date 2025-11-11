@@ -7,16 +7,16 @@
 ![Docker](https://img.shields.io/badge/Docker-Compose-2496ED?logo=docker&logoColor=white)
 
 ### Table of Contents
-- [Project description](#project-description)
-- [Features](#features)
-- [Tech stack](#tech-stack)
-- [Getting started locally](#getting-started-locally)
-- [Configuration](#configuration)
-- [Testing](#testing)
-- [Project roadmap](#project-roadmap)
-- [Project status](#project-status)
+- 📋 [Project description](#project-description)
+- ✨ [Features](#features)
+- 🛠️ [Tech stack](#tech-stack)
+- 🚀 [Getting started locally](#getting-started-locally)
+- ⚙️ [Configuration](#configuration)
+- 🧪 [Testing](#testing)
+- 🗺️ [Project roadmap](#project-roadmap)
+- 📊 [Project status](#project-status)
 
-### Project description
+### 📋 Project description
 CareerPilotAi is a web application that helps job seekers organize and track their job applications with intelligent assistance. Users can paste a job offer from a job board, and AI will structure the details into a manageable application entry. The system centralizes applications, enables quick status updates, and provides a dashboard with key metrics to monitor progress.
 
 An amazing feature is that you can generate interview questions tailored to the job offer.
@@ -27,36 +27,36 @@ Key value:
 - Filter, search, and review details quickly
 - Prepare for interviews with AI-generated questions.
 
-### Features
+### ✨ Features
 
-*   **Job Application Management**
-    *   **AI-Powered Creation**: Paste a job description and let AI automatically parse and fill in details like company, title, location, salary, and required skills.
-    *   **Comprehensive Tracking**: Manage full application details, including status, job URL, contract type, and experience level.
-    *   **CRUD**: Create, view and delete job applications. Edit feature is not yet implemented.
-    *   **Advanced Search & Filtering**: Quickly find applications with powerful filters for status, salary range, location, work mode, and experience level, plus a text search for company and title.
-    *   **Status Updates**: Easily update the status of each application to track its progress.
+*   **📋 Job Application Management**
+    *   **🤖 AI-Powered Creation**: Paste a job description and let AI automatically parse and fill in details like company, title, location, salary, and required skills.
+    *   **📊 Comprehensive Tracking**: Manage full application details, including status, job URL, contract type, and experience level.
+    *   **🔄 CRUD**: Create, view and delete job applications. Edit feature is not yet implemented.
+    *   **🔍 Advanced Search & Filtering**: Quickly find applications with powerful filters for status, salary range, location, work mode, and experience level, plus a text search for company and title.
+    *   **✏️ Status Updates**: Easily update the status of each application to track its progress.
 
-*   **AI-Powered Interview Preparation**
-    *   **Custom Question Generation**: Generate interview questions tailored specifically to the job description and your skills.
+*   **🎓 AI-Powered Interview Preparation**
+    *   **❓ Custom Question Generation**: Generate interview questions tailored specifically to the job description and your skills.
 
-*   **Personal Dashboard**
-    *   **At-a-Glance Metrics**: A central dashboard provides key statistics on your job search.
-    *   **Visual Insights**: Charts visualize application status distribution and track your activity over time.
+*   **📈 Personal Dashboard**
+    *   **📊 At-a-Glance Metrics**: A central dashboard provides key statistics on your job search.
+    *   **📉 Visual Insights**: Charts visualize application status distribution and track your activity over time.
 
-*   **Account Management**
-    *   **Secure Authentication**: Standard user registration with email confirmation, login, and password reset flows.
-    *   **User Settings**: Customize your experience with settings like your local time zone for accurate date tracking.
+*   **👤 Account Management**
+    *   **🔐 Secure Authentication**: Standard user registration with email confirmation, login, and password reset flows.
+    *   **⚙️ User Settings**: Customize your experience with settings like your local time zone for accurate date tracking.
 
-### Tech stack
-- **Frontend**: ASP.NET Core MVC (Razor Views), Bootstrap 5, JavaScript, Chart.js
-- **Backend**: .NET 8, ASP.NET Core, Entity Framework Core
-- **Identity**: ASP.NET Identity
-- **Database**: PostgreSQL
-- **AI Integration**: OpenRouter (configurable models per feature)
-- **Email**: SendGrid (account verification and password reset)
-- **CI/CD & Hosting**: GitHub Actions, Docker (local), Azure (production)
+### 🛠️ Tech stack
+- 🎨 **Frontend**: ASP.NET Core MVC (Razor Views), Bootstrap 5, JavaScript, Chart.js
+- ⚙️ **Backend**: .NET 8, ASP.NET Core, Entity Framework Core
+- 👤 **Identity**: ASP.NET Identity
+- 🗄️ **Database**: PostgreSQL
+- 🤖 **AI Integration**: OpenRouter (configurable models per feature)
+- 📧 **Email**: SendGrid (account verification and password reset)
+- 🚀 **CI/CD & Hosting**: GitHub Actions, Docker (local), Azure (production)
 
-### Getting started locally
+### 🚀 Getting started locally
 
 There are two primary ways to run the application locally, depending on your needs.
 
@@ -145,7 +145,7 @@ This approach is ideal for development, as it allows you to run and debug the ap
 5.  **Access the application**
     The application will be available at `https://localhost:5000` and `http://localhost:5001`.
 
-### Configuration
+### ⚙️ Configuration
 
 The application is configured through `appsettings.json` and environment-specific files like `appsettings.Development.json`. Sensitive data should be stored using user secrets or environment variables.
 
@@ -199,7 +199,7 @@ OpenRouter provides access to various Large Language Models (LLMs) used for AI-p
 -   **`AuthToken`**: Your OpenRouter API key. This is required for the application to function correctly.
 -   **`Features`**: Each AI-powered feature can be configured independently. You can specify the `Model` to use and its `Temperature` (creativity level). This allows for fine-tuning the AI's behavior for different tasks.
 
-### Testing
+### 🧪 Testing
 
 The project follows a comprehensive testing strategy with unit, integration, and end-to-end (E2E) tests. The testing stack includes:
 - **Test Framework**: xUnit
@@ -239,7 +239,7 @@ dotnet test tests/CareerPilotAi.UnitTests
 dotnet test tests/CareerPilotAi.E2ETests
 ```
 
-### Project roadmap
+### 🗺️ Project roadmap
 
 - CV/Resume generation and tailoring
 - Cover letter generation
@@ -252,5 +252,5 @@ dotnet test tests/CareerPilotAi.E2ETests
 - Implement cache mechanisms
 - Optimise db queries and indexes
 
-### Project status
+### 📊 Project status
 Active development.
