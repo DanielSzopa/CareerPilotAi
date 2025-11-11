@@ -10,11 +10,10 @@
 - [Project description](#project-description)
 - [Features](#features)
 - [Tech stack](#tech-stack)
-- [Configuration](#configuration)
 - [Getting started locally](#getting-started-locally)
-- [Available scripts](#available-scripts)
+- [Configuration](#configuration)
 - [Testing](#testing)
-- [Project scope](#project-scope)
+- [Project roadmap](#project-roadmap)
 - [Project status](#project-status)
 
 ### Project description
@@ -33,7 +32,7 @@ Key value:
 *   **Job Application Management**
     *   **AI-Powered Creation**: Paste a job description and let AI automatically parse and fill in details like company, title, location, salary, and required skills.
     *   **Comprehensive Tracking**: Manage full application details, including status, job URL, contract type, and experience level.
-    *   **Full CRUD**: Create, view, edit, and delete job applications.
+    *   **CRUD**: Create, view and delete job applications. Edit feature is not yet implemented.
     *   **Advanced Search & Filtering**: Quickly find applications with powerful filters for status, salary range, location, work mode, and experience level, plus a text search for company and title.
     *   **Status Updates**: Easily update the status of each application to track its progress.
 
@@ -56,6 +55,95 @@ Key value:
 - **AI Integration**: OpenRouter (configurable models per feature)
 - **Email**: SendGrid (account verification and password reset)
 - **CI/CD & Hosting**: GitHub Actions, Docker (local), Azure (production)
+
+### Getting started locally
+
+There are two primary ways to run the application locally, depending on your needs.
+
+**Prerequisites:**
+- .NET SDK 8.0+
+- Docker Desktop (with Docker Compose v2)
+- Git
+- OpenRouter API key (Required for AI features)
+
+---
+
+#### Option 1: Full Docker Compose (Recommended for quick start)
+
+This approach runs both the application and the PostgreSQL database in Docker containers. It's the fastest way to get the application running.
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/DanielSzopa/CareerPilotAi.git
+    cd CareerPilotAi
+    ```
+
+2.  **Create a `.env` file**
+    In the root directory of the project, create a file named `.env` and add your OpenRouter API key. This is required for the application to start.
+
+    ```
+    OPENROUTER__AUTHTOKEN=YOUR_OPENROUTER_TOKEN
+    ```
+
+3.  **Start the services**
+    ```bash
+    docker compose up -d
+    ```
+    This command will build the application image and start the `app` and `postgres` services. The database connection is pre-configured for the container environment.
+
+    > **Note:** The application automatically applies any pending Entity Framework database migrations on startup.
+
+4.  **Access the application**
+    The application will be available at `http://localhost:8080`.
+
+---
+
+#### Option 2: Hybrid - Database in Docker, App via `dotnet run` (Recommended for development)
+
+This approach is ideal for development, as it allows you to run and debug the application directly from your IDE or command line, while the database runs in a Docker container.
+
+1.  **Clone the repository**
+    ```bash
+    git clone https://github.com/DanielSzopa/CareerPilotAi.git
+    cd CareerPilotAi
+    ```
+
+2.  **Start the database**
+    Run only the PostgreSQL service from the `docker-compose.yml` file.
+    ```bash
+    docker compose up -d postgres
+    ```
+    The database will be available at `localhost:5432`.
+
+3.  **Configure application secrets**
+    Use the .NET user secrets manager to store your OpenRouter API key. This is required.
+    ```bash
+    # Navigate to the project directory
+    cd CareerPilotAi
+
+    # Initialize user secrets for the project
+    dotnet user-secrets init
+
+    # Set your OpenRouter token
+    dotnet user-secrets set "OpenRouter:AuthToken" "YOUR_OPENROUTER_TOKEN"
+    ```
+
+    > **Optional: Configure SendGrid**
+    > If you want to use email features (like email confirmation or password reset), configure your SendGrid secrets. Otherwise, make sure `Features:ConfirmRegistration` is set to `false` in `appsettings.Development.json`.
+    > ```bash
+    > dotnet user-secrets set "SendGrid:ApiKey" "YOUR_SENDGRID_API_KEY"
+    > dotnet user-secrets set "SendGrid:FromEmail" "no-reply@yourdomain.com"
+    > # ... and other SendGrid settings
+    > ```
+
+4.  **Run the application**
+    ```bash
+    dotnet run --project CareerPilotAi.csproj
+    ```
+    The application will start and connect to the PostgreSQL database running in Docker. On startup, it will automatically apply any pending database migrations.
+
+5.  **Access the application**
+    The application will be available at `https://localhost:5000` and `http://localhost:5001`.
 
 ### Configuration
 
@@ -111,95 +199,6 @@ OpenRouter provides access to various Large Language Models (LLMs) used for AI-p
 -   **`AuthToken`**: Your OpenRouter API key. This is required for the application to function correctly.
 -   **`Features`**: Each AI-powered feature can be configured independently. You can specify the `Model` to use and its `Temperature` (creativity level). This allows for fine-tuning the AI's behavior for different tasks.
 
-### Getting started locally
-
-There are two primary ways to run the application locally, depending on your needs.
-
-**Prerequisites:**
-- .NET SDK 8.0+
-- Docker Desktop (with Docker Compose v2)
-- Git
-- OpenRouter API key (Required for AI features)
-
----
-
-#### Option 1: Full Docker Compose (Recommended for quick start)
-
-This approach runs both the application and the PostgreSQL database in Docker containers. It's the fastest way to get the application running.
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/DanielSzopa/CareerPilotAi.git
-    cd CareerPilotAi
-    ```
-
-2.  **Create a `.env` file**
-    In the root directory of the project, create a file named `.env` and add your OpenRouter API key. This is required for the application to start.
-
-    ```
-    OPENROUTER__AUTHTOKEN=YOUR_OPENROUTER_TOKEN
-    ```
-
-3.  **Start the services**
-    ```bash
-    docker compose up -d
-    ```
-    This command will build the application image and start the `app` and `postgres` services. The database connection is pre-configured for the container environment.
-
-    > **Note:** The application automatically applies any pending Entity Framework database migrations on startup.
-
-4.  **Access the application**
-    The application will be available at `http://localhost:8080`.
-
----
-
-#### Option 2: Hybrid - Database in Docker, App via `dotnet run` (Recommended for development)
-
-This approach is ideal for development, as it allows you to run and debug the application directly from your IDE or command line, while the database runs in a Docker container.
-
-1.  **Clone the repository**
-    ```bash
-    git clone https://github.com/your-org/CareerPilotAi.git
-    cd CareerPilotAi
-    ```
-
-2.  **Start the database**
-    Run only the PostgreSQL service from the `docker-compose.yml` file.
-    ```bash
-    docker compose up -d postgres
-    ```
-    The database will be available at `localhost:5432`.
-
-3.  **Configure application secrets**
-    Use the .NET user secrets manager to store your OpenRouter API key. This is required.
-    ```bash
-    # Navigate to the project directory
-    cd CareerPilotAi
-
-    # Initialize user secrets for the project
-    dotnet user-secrets init
-
-    # Set your OpenRouter token
-    dotnet user-secrets set "OpenRouter:AuthToken" "YOUR_OPENROUTER_TOKEN"
-    ```
-
-    > **Optional: Configure SendGrid**
-    > If you want to use email features (like email confirmation or password reset), configure your SendGrid secrets. Otherwise, make sure `Features:ConfirmRegistration` is set to `false` in `appsettings.Development.json`.
-    > ```bash
-    > dotnet user-secrets set "SendGrid:ApiKey" "YOUR_SENDGRID_API_KEY"
-    > dotnet user-secrets set "SendGrid:FromEmail" "no-reply@yourdomain.com"
-    > # ... and other SendGrid settings
-    > ```
-
-4.  **Run the application**
-    ```bash
-    dotnet run --project CareerPilotAi.csproj
-    ```
-    The application will start and connect to the PostgreSQL database running in Docker. On startup, it will automatically apply any pending database migrations.
-
-5.  **Access the application**
-    The application will be available at `https://localhost:5000` and `http://localhost:5001`.
-
 ### Testing
 
 The project follows a comprehensive testing strategy with unit, integration, and end-to-end (E2E) tests. The testing stack includes:
@@ -216,6 +215,15 @@ tests/
 ├── CareerPilotAi.IntegrationTests/
 └── CareerPilotAi.E2ETests/
 ```
+- **Unit Tests (`UnitTests`)**: Fully implemented, verifying individual application components in isolation.
+- **Integration Tests (`IntegrationTests`)**: Currently in the planning stage and not yet implemented.
+- **End-to-End Tests (`E2ETests`)**: Verify complete application flows from the user's perspective.
+
+#### Running E2E Tests
+
+E2E tests are designed for flexibility. By default, they automatically set up the required environment (the application and database) in Docker containers using the **Testcontainers** library.
+
+For easier development and debugging, the environment can also be run manually using the `docker-compose-e2e-test.yml` file. To switch to this mode, change the `isSelfHostedRun` flag to `false` in `tests/CareerPilotAi.E2ETests/E2ETestFixture.cs`. In this mode, the tests will expect the containers to be running, allowing for faster iterations and database state inspection.
 
 To run all tests, use the command from the root directory:
 ```bash
@@ -227,35 +235,22 @@ To run specific test suites:
 # Run Unit Tests
 dotnet test tests/CareerPilotAi.UnitTests
 
-# Run Integration Tests
-dotnet test tests/CareerPilotAi.IntegrationTests
-
 # Run End-to-End (E2E) Tests
 dotnet test tests/CareerPilotAi.E2ETests
 ```
 
-### Project scope
+### Project roadmap
 
-Per the Product Requirements Document (PRD):
-
-In MVP scope:
-- Add application with AI parsing from pasted job ad
-- Full CRUD for job applications
-- Status system with history of changes
-- Filtering and search (status, salary range, location, work mode, experience; text search)
-- Sorting by date added
-- Dashboard with key metrics and charts (status distribution, applications over time, recent activity)
-- Responsive design (mobile-first)
-- User authentication and authorization
-
-Out of MVP scope (post-MVP examples):
 - CV/Resume generation and tailoring
 - Cover letter generation
+- Advance interview preparation with AI Agent
 - Bulk actions, archiving, pagination
-- Onboarding/tutorial and landing page for anonymous users
-- Monetization, multi-currency
+- Onboarding/tutorial
 - Advanced analytics and metrics
+- Job Application editing
+- Implement OpenTelemetry + logs improvement
+- Implement cache mechanisms
+- Optimise db queries and indexes
 
 ### Project status
-- Active development; not production-hardened yet.
-- Authentication, email flows, and AI features follow the patterns documented in `docs/auth-flows.md` and `docs/prompts-architecture.md`.
+Active development.
