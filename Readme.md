@@ -9,6 +9,7 @@
 ### Table of Contents
 - 📋 [Project description](#project-description)
 - ✨ [Features](#features)
+- 📷 [Screenshots](#screenshots)
 - 🛠️ [Tech stack](#tech-stack)
 - 🚀 [Getting started locally](#getting-started-locally)
 - ⚙️ [Configuration](#configuration)
@@ -46,6 +47,39 @@ Key value:
 *   **👤 Account Management**
     *   **🔐 Secure Authentication**: Standard user registration with email confirmation, login, and password reset flows.
     *   **⚙️ User Settings**: Customize your experience with settings like your local time zone for accurate date tracking.
+
+### 📷 Screenshots
+
+<table>
+  <tr>
+    <td><a href=".github/images/sign up.png"><img src=".github/images/sign up.png" alt="Sign Up page" width="260"/></a></td>
+    <td><a href=".github/images/sign in.png"><img src=".github/images/sign in.png" alt="Sign In page" width="260"/></a></td>
+    <td><a href=".github/images/dashboard.png"><img src=".github/images/dashboard.png" alt="Dashboard view" width="260"/></a></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">Sign Up</td>
+    <td style="text-align:center;">Sign In</td>
+    <td style="text-align:center;">Dashboard</td>
+  </tr>
+  <tr>
+    <td><a href=".github/images/create.png"><img src=".github/images/create.png" alt="Create job application" width="260"/></a></td>
+    <td><a href=".github/images/job applications.png"><img src=".github/images/job applications.png" alt="Job applications list" width="260"/></a></td>
+    <td><a href=".github/images/jobdetails.png"><img src=".github/images/jobdetails.png" alt="Job application details" width="260"/></a></td>
+  </tr>
+  <tr>
+    <td style="text-align:center;">Create Job Application</td>
+    <td style="text-align:center;">Job Applications List</td>
+    <td style="text-align:center;">Job Details</td>
+  </tr>
+  <tr>
+    <td colspan="3" style="text-align:center;" halign="center">
+      <a href=".github/images/interview_questions.png"><img src=".github/images/interview_questions.png" alt="AI-generated interview questions" width="520"/></a>
+    </td>
+  </tr>
+  <tr>
+    <td colspan="3" style="text-align:center;">AI-Generated Interview Questions</td>
+  </tr>
+</table>
 
 ### 🛠️ Tech stack
 - 🎨 **Frontend**: ASP.NET Core MVC (Razor Views), Bootstrap 5, JavaScript, Chart.js
