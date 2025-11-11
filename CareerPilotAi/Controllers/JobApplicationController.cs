@@ -264,8 +264,9 @@ namespace CareerPilotAi.Controllers
 
             var timeZoneId = await _applicationDbContext.UserSettings
                 .AsNoTracking()
+                .Where(us => us.UserId == userId)
                 .Select(us => us.TimeZoneId)
-                .SingleAsync();
+                .SingleAsync(cancellationToken);
 
             var jobApplicationDataModel = await _applicationDbContext.JobApplications
                 .Include(j => j.Skills)

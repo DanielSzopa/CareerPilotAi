@@ -31,6 +31,7 @@ services:
     environment:
       - ASPNETCORE_ENVIRONMENT=Development
       - ASPNETCORE_URLS=http://+:8080
+      - ConnectionStrings__DefaultConnection=Host=postgres;Port=5432;Database=careerpilotdb;Username=postgres;Password=postgres
       - OPENROUTER__AUTHTOKEN=${OPENROUTER__AUTHTOKEN}
     ports:
       - "8080:8080"
