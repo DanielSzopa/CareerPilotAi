@@ -114,6 +114,7 @@ This approach runs both the application and the PostgreSQL database in Docker co
 
 2.  **Create a `.env` file**
     In the root directory of the project, create a file named `.env` and add your OpenRouter API key. This is required for the application to start.
+    You can check `.env.example` file for the structure.
 
     ```
     OPENROUTER__AUTHTOKEN=YOUR_OPENROUTER_TOKEN
