@@ -60,8 +60,8 @@ $(document).ready(function() {
             return;
         }
         
-        if (skills.length >= 20) {
-            showAlert('Maximum 20 skills allowed');
+        if (skills.length >= 35) {
+            showAlert('Maximum 35 skills allowed');
             return;
         }
         

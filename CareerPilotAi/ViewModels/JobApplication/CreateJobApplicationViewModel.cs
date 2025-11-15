@@ -27,7 +27,7 @@ public class CreateJobApplicationViewModel
     public string JobDescription { get; set; } = string.Empty;
 
     [MinimumCount(0)]
-    [MaximumCount(20, ErrorMessage = "You can add maximum 20 skills")]
+    [MaximumCount(35, ErrorMessage = "You can add maximum 35 skills")]
     public List<SkillViewModel> Skills { get; set; } = new List<SkillViewModel>();
 
     [Required(ErrorMessage = "Experience level is required")]
