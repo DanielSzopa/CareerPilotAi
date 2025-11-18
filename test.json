@@ -1,0 +1,18 @@
+{
+    "Usings": [
+        {
+            "Name": "System.Console",
+            "UsageQuantity": 1,
+            "FilePaths": [
+                "C:\\Users\\Daniel\\source\\repos\\CareerPilotAi\\CareerPilotAi\\Controllers\\AuthController.cs",
+            ]
+        }
+    ],
+    "GlobalUsings": [
+        {
+            "Name": "System.Console",
+            "UsageQuantity": 1,
+            "FilePath": "C:\\Users\\Daniel\\source\\repos\\CareerPilotAi\\CareerPilotAi\\GlobalUsingsSample.cs"
+        }
+    ]
+}
