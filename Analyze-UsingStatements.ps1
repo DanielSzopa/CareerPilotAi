@@ -1,7 +1,7 @@
 # Script to collect and count all using statements in C# files and output as JSON
 
 param(
-    [string]$SolutionPath = "C:\Users\Daniel\source\repos\CareerPilotAi"
+    [string]$SolutionPath = "Provide your solution directory"
 )
 
 # Get all .cs files recursively
